@@ -154,12 +154,12 @@ public abstract class Unity implements IBaseRavage,ICallBackAStar
 		// on vérifie si cette enemy existe toujours dans l'entity mananger (si il a n'a pas été tué)
 		if(this.enemyAttribute != null)
 		{
-			if(EntityManager.getVectorUnityNet().contains(this.enemyAttribute))
+			/*if(EntityManager.getVectorUnityNet().contains(this.enemyAttribute))
 				return enemyAttribute;
 			else
 			{
 				this.enemyAttribute = null;
-			}
+			}*/
 	
 		}
 		
@@ -224,59 +224,7 @@ public abstract class Unity implements IBaseRavage,ICallBackAStar
 
 
 
-	public boolean setTargetPosition(float px,float py,int tx,int ty,Vec2 dir)
-	{
-		// instance de vecteur de formation finale
-		this.vecDirFormation = dir;
-		
-		this.tfx = px;
-		this.tfy = py;
-		// une demande de chemin va être effectuée, on stoppe l'unité pour éviter le phénomène de rebond
-		this.body.setLinearVelocity(new Vec2(0f,0f)); // il est arrivÃ© Ã  destination
-		
-		//this.targetPosition = new Vec2((float)tx + 0.5f,(float)ty + 0.5f);
-		this.tx = tx;
-		this.ty = ty;
-		// on fait une demande au manager
-		int pdx =  (int) ((int)this.getBody().getPosition().x );
-		int pdy =  (int) ((int)this.getBody().getPosition().y );
-		
-		float fx = this.getBody().getPosition().x - 0.5f;
-		float fy = this.getBody().getPosition().y - 0.5f;
-		
-		float ftx = (float)tx;
-		float fty = (float)ty;
-		
-		try 
-		{
-			// si le target position est sur un node noir, on ne fait aucune recherche
-			if(LevelManager.getLevel().getNodes()[(ty * 375) + tx].getType() == 0)
-			{
-				// on remet Ã  zero l'elapsed timer pour la tÃ©lÃ©portation
-				elapseSearchClock = Time.ZERO;
-				// on remet Ã  zero le pathfinal
-			//	if(this.pathFinalPath != null)
-					//this.pathFinalPath.clear();
-				// Lancement recherche
-				AstarManager.askPath(this, pdx, pdy, tx, ty); // classic
-				//AstarManager.askPath(this, fx, fy, ftx, fty);
-				return true;
-			}
-			else
-			{
-				return false; // return false car il n'y pas de destination possible
-			}
-			
-		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		  catch(ArrayIndexOutOfBoundsException ex)
-		{
-			  
-		}
-		return false;
-	}
+	
 	
 	public void setLinearVelocity(Vec2 v)
 	{
@@ -439,7 +387,7 @@ public abstract class Unity implements IBaseRavage,ICallBackAStar
 		// -------------
 		
 		
-		if(!nextNode && this.enemyAttribute == null) // si il n'y a pas de nextnode et qu'il n'y a pas d'unité enemy attribuée
+		/*if(!nextNode && this.enemyAttribute == null) // si il n'y a pas de nextnode et qu'il n'y a pas d'unité enemy attribuée
 		{
 			elapseSearchClock = Time.add(elapseSearchClock, deltaTime);
 			if(elapseSearchClock.asSeconds() > TIME_BEFORE_TELEPORTATION) // si bloquÃ© plus de 2 secondes
@@ -474,7 +422,7 @@ public abstract class Unity implements IBaseRavage,ICallBackAStar
 
 			}
 		}
-		
+		*/
 		
 		// ------------------------------------
 		// récupération d'une nouvelle position
@@ -486,6 +434,8 @@ public abstract class Unity implements IBaseRavage,ICallBackAStar
 				
 					int nx = this.pathFinalPath.getX(this.indexNode);
 					int ny = this.pathFinalPath.getY(this.indexNode);
+					
+					// on capte la node si 
 					
 					// on lance le clock du resetSearchClock
 					elapseSearchClock = Time.ZERO;
@@ -599,7 +549,7 @@ public abstract class Unity implements IBaseRavage,ICallBackAStar
 						Vec2 vDir = vEnemy.sub(vFinal);
 						vDir.normalize();
 						
-						this.setTargetPosition(vFinal.x * PhysicWorldManager.getRatioPixelMeter(), vFinal.y * PhysicWorldManager.getRatioPixelMeter(), (int)vFinal.x, (int)vFinal.y, vDir);
+						//this.setTargetPosition(vFinal.x * PhysicWorldManager.getRatioPixelMeter(), vFinal.y * PhysicWorldManager.getRatioPixelMeter(), (int)vFinal.x, (int)vFinal.y, vDir);
 						elapsedSearchFollowEnemy = Time.ZERO;
 					}
 				}

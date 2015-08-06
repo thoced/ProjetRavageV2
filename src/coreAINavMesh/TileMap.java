@@ -23,8 +23,7 @@ public class TileMap implements TileBasedMap
 	public TileMap(Node[] map)
 	{
 		this.map = map;
-		
-		
+
 	}
 
 	@Override

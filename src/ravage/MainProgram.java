@@ -3,6 +3,7 @@ package ravage;
 import java.awt.event.KeyEvent;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.List;
 
 import org.jsfml.graphics.RenderWindow;
@@ -24,7 +25,12 @@ public class MainProgram
 		try
 		{
 			try {
-				frameWork.init();
+				try {
+					frameWork.init();
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 			} catch (InterruptedException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();

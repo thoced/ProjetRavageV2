@@ -12,6 +12,7 @@ import javax.swing.JOptionPane;
 
 import org.jsfml.graphics.RenderStates;
 import org.jsfml.graphics.RenderTexture;
+import org.jsfml.graphics.Sprite;
 import org.jsfml.graphics.Texture;
 import org.jsfml.graphics.TextureCreationException;
 import org.jsfml.system.Time;
@@ -25,6 +26,8 @@ public class TexturesManager implements IBaseRavage
 
 	// hash des textures
 	private static Hashtable<String,Texture> hashTextures;
+	// hash des sprites
+	private static Hashtable<String, Sprite> hashSprites;
 	// Texture blanck pour Ã©viter le plantage
 	private static Texture blankTexture = null;
 	
@@ -36,6 +39,7 @@ public class TexturesManager implements IBaseRavage
 	{
 		// instance du hashtextures
 		hashTextures = new Hashtable<String,Texture>();
+		hashSprites = new Hashtable<String,Sprite>();
 		
 		manager = this;
 	}
@@ -52,6 +56,22 @@ public class TexturesManager implements IBaseRavage
 			return blankTexture;
 		
 		return hashTextures.get(name);
+	}
+	
+	public static Sprite GetSpriteByName(String name)
+	{
+		// le nom du sprite n'existe pas, on le crée
+		if(!hashSprites.containsKey(name))
+		{
+			manager.LoadTexture(name);
+			Sprite sprite = new Sprite(GetTextureByName(name));
+			hashSprites.put(name, sprite);
+			return sprite;
+		}
+		else
+			return hashSprites.get(name);
+			
+
 	}
 	
 	
@@ -77,20 +97,14 @@ public class TexturesManager implements IBaseRavage
 		}
 	}
 
-	
-	public void update(Time deltaTime) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	
+	@Override
 	public void init() {
 		// TODO Auto-generated method stub
 		
 	}
 
-	
-	public void catchEvent(Event e) {
+	@Override
+	public void update(Time deltaTime) {
 		// TODO Auto-generated method stub
 		
 	}
@@ -100,7 +114,10 @@ public class TexturesManager implements IBaseRavage
 		// TODO Auto-generated method stub
 		
 	}
+	
+	
 
+	
 
 	
 

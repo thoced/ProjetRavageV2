@@ -7,18 +7,19 @@ import org.jbox2d.callbacks.QueryCallback;
 import org.jbox2d.dynamics.Body;
 import org.jbox2d.dynamics.Fixture;
 
+import coreEntity.UnityBaseController;
 import coreEntity.UnityNet;
 
 public class ListBodyEnemyForOneRegion implements QueryCallback {
 
 	
 	// list des body dans la région
-	private List<UnityNet> listUnityEnemy;
+	private List<UnityBaseController> listUnityEnemy;
 	
 	public ListBodyEnemyForOneRegion()
 	{
 		// instance de listbody
-		this.listUnityEnemy = new ArrayList<UnityNet>();
+		this.listUnityEnemy = new ArrayList<UnityBaseController>();
 	}
 	
 	@Override
@@ -30,7 +31,7 @@ public class ListBodyEnemyForOneRegion implements QueryCallback {
 		if(b.getUserData() != null && b.getUserData().getClass() != String.class && b.getUserData().getClass().getSuperclass() == UnityNet.class)
 		{
 			// ajout dans la liste body
-			this.listUnityEnemy.add((UnityNet)b.getUserData());
+			this.listUnityEnemy.add((UnityBaseController)b.getUserData());
 		}
 		
 		return true;
@@ -42,7 +43,7 @@ public class ListBodyEnemyForOneRegion implements QueryCallback {
 		return this.listUnityEnemy.size();
 	}
 
-	public List<UnityNet> getListEnemy() {
+	public List<UnityBaseController> getListEnemy() {
 		return listUnityEnemy;
 	}
 

@@ -6,6 +6,7 @@ import java.util.concurrent.Semaphore;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
+import org.jbox2d.common.Vec2;
 import org.jsfml.system.Time;
 import org.newdawn.slick.util.pathfinding.AStarPathFinder;
 import org.newdawn.slick.util.pathfinding.Path;
@@ -118,7 +119,7 @@ public class AstarManager extends Thread implements IBaseRavage
 		
 	}
 	
-	public static void askPath(ICallBackAStar caller,int posx,int posy,int targetx,int targety) throws InterruptedException
+	/*public static void askPath(ICallBackAStar caller,int posx,int posy,int targetx,int targety) throws InterruptedException
 	{
 		// on créé une demande
 		AskPath ask = new AskPath(caller,posx,posy,targetx,targety);
@@ -132,12 +133,12 @@ public class AstarManager extends Thread implements IBaseRavage
 		semaphore.release();
 		
 		
-	}
+	}*/
 	
-	public static void askPath(ICallBackAStar caller,float posx,float posy,float targetx,float targety) throws InterruptedException
+	public static void askPath(ICallBackAStar caller,Vec2 position,Vec2 positionFinal) throws InterruptedException
 	{
 		// on créé une demande
-		AskPath ask = new AskPath(caller,posx,posy,targetx,targety);
+		AskPath ask = new AskPath(caller,position,positionFinal);
 		
 		
 		// on place la demande dans la liste

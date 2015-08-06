@@ -80,7 +80,6 @@ public class Knight extends Unity
 	public void update(Time deltaTime) 
 	{
 		
-		
 			// appel au super constructeur
 			super.update(deltaTime);
 			
@@ -193,7 +192,7 @@ public class Knight extends Unity
 			// emission sur le réseau
 			this.NetKill(this.getId());
 			// on est mort
-			EntityManager.IamKilled(this);
+		//	EntityManager.IamKilled(this);
 			// je place le mort
 			BloodManager.addUnityKilled(this.getPosx(), this.getPosy(),this.getMyCamp());
 			

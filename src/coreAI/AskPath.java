@@ -2,6 +2,8 @@ package coreAI;
 
 import java.util.List;
 
+import org.jbox2d.common.Vec2;
+
 public class AskPath 
 {
 	private ICallBackAStar caller;
@@ -15,30 +17,21 @@ public class AskPath
 	private float fy;
 	private float tfx;
 	private float tfy;
+	
+	private Vec2 positionInitial;
+	private Vec2 positionFinal;
 
 	
-	public AskPath(ICallBackAStar caller,int posx,int posy,int targetx,int targety)
+	public AskPath(ICallBackAStar caller,Vec2 positionInitial,Vec2 positionFinal)
 	
 	{
 		this.caller = caller;
-		this.x = posx;
-		this.y = posy;
-		this.tx = targetx;
-		this.ty = targety;
+		this.positionInitial = positionInitial;
+		this.positionFinal = positionFinal;
 		
 	}
 	
-	public AskPath(ICallBackAStar caller,float posx,float posy,float targetx,float targety)
 	
-	{
-		this.caller = caller;
-		this.fx = posx;
-		this.fy = posy;
-		this.tfx = targetx;
-		this.tfy = targety;
-		
-	}
-
 	
 
 

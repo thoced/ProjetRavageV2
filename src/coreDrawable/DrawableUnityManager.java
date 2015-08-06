@@ -19,6 +19,7 @@ import org.jsfml.system.Vector2f;
 import CoreTexturesManager.TexturesManager;
 import coreEntity.Knight;
 import coreEntity.Unity;
+import coreEntity.UnityBaseController;
 import coreEntityManager.EntityManager;
 import coreEntityManager.EntityManager.CAMP;
 import ravage.IBaseRavage;
@@ -103,26 +104,18 @@ public class DrawableUnityManager implements IBaseRavage, Drawable
 		// on appel le BACK draw
 		this.CallBackDrawableBACK(arg0, arg1);
 		
-		for(Unity unity : EntityManager.getVectorUnity().values() )
+		for(UnityBaseController unity : EntityManager.getVectorUnity().values() )
 		{
-			// on rÃ©cupÃ¨re la position
-			/*Vector2f pos = new Vector2f(unity.getPosx(),unity.getPosy());
-			// on crÃ©e les 4 vertex
-			Vertex v1 = new Vertex(Vector2f.add(pos, new Vector2f(-16f,-16f)), this.getCoordText(1));
-			Vertex v2 = new Vertex(Vector2f.add(pos, new Vector2f(16f,-16f)), this.getCoordText(2));
-			Vertex v3 = new Vertex(Vector2f.add(pos,new Vector2f(16f,16f)), this.getCoordText(3));
-			Vertex v4 = new Vertex(Vector2f.add(pos, new Vector2f(-16f,16f)), this.getCoordText(4));
-			
-			// on ajoute dans le buffer
-			buffer.add(v1);
-			buffer.add(v2);
-			buffer.add(v3);
-			buffer.add(v4);*/
+			unity.getView().draw(arg0, arg1);
+		}
+		/*
+		for(UnityBaseController unity : EntityManager.getVectorUnity().values() )
+		{
 			
 			// test affichage sprite
 			
 		
-			if(unity.getMyCamp() == CAMP.YELLOW)
+			if(unity.getModel().getMyCamp() == CAMP.YELLOW)
 			{
 			
 				switch(unity.getClass().getSimpleName())
@@ -159,46 +152,10 @@ public class DrawableUnityManager implements IBaseRavage, Drawable
 			
 			
 		}
-		
+		*/
+			
 		// pour chaque unity réseau
-		for(Unity unity : EntityManager.getVectorUnityNet().values() )
-		{
-		
-			
-			//arg0.draw(sprite_knight);
-			
-			if(unity.getMyCamp() == CAMP.YELLOW)
-			{
-				
-				switch(unity.getClass().getSimpleName())
-				{
-					case "KnightNet" :	sprite_knight_YELLOW.setPosition(new Vector2f(unity.getPosx(),unity.getPosy()));		
-									// on spécifie la roation
-										sprite_knight_YELLOW.setRotation((float)((unity.getBody().getAngle() * 180f) / Math.PI) % 360f);
-									// on spécifie l'anim a jouer
-										sprite_knight_YELLOW.setTextureRect(unity.getCurrentAnim());
-									// on affiche
-										arg0.draw(sprite_knight_YELLOW);
-					break;
-				}
-			
-			}
-			else if(unity.getMyCamp() == CAMP.BLUE)
-			{
-				switch(unity.getClass().getSimpleName())
-				{
-						case "KnightNet" :	sprite_knight_BLUE.setPosition(new Vector2f(unity.getPosx(),unity.getPosy()));		
-									// on spécifie la roation
-										sprite_knight_BLUE.setRotation((float)((unity.getBody().getAngle() * 180f) / Math.PI) % 360f);
-									// on spécifie l'anim a jouer
-										sprite_knight_BLUE.setTextureRect(unity.getCurrentAnim());
-					// on affiche
-										arg0.draw(sprite_knight_BLUE);
-										break;
-				}
-			}
-			
-		}
+	
 		
 		
 		// affichage

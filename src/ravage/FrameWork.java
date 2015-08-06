@@ -1,5 +1,8 @@
 package ravage;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 
 import org.newdawn.slick.geom.Path;
@@ -38,6 +41,7 @@ import coreAI.Node;
 import coreCamera.CameraManager;
 import coreDrawable.DrawableUnityManager;
 import coreEntity.Unity;
+import coreEntity.UnityBaseModel;
 import coreEntityManager.BloodManager;
 import coreEntityManager.EntityManager;
 import coreEvent.EventManager;
@@ -84,8 +88,10 @@ public class FrameWork
 	
 	private menuDialogRavage menu;
 	
-	public void init() throws TextureCreationException, InterruptedException 
+	public void init() throws TextureCreationException, InterruptedException, IOException 
 	{
+		
+		
 		
 		// Instance du réseau
 		netManager = new NetManager();
@@ -177,6 +183,7 @@ public class FrameWork
 		button2.Init();
 	    panel.addGui(button2);
 
+	   
 		
 	}
 

@@ -4,6 +4,7 @@ import java.io.Serializable;
 
 import org.jbox2d.common.Vec2;
 import org.jbox2d.dynamics.Body;
+import org.newdawn.slick.util.pathfinding.Path;
 
 import coreEntity.Unity.TYPEUNITY;
 import coreEntityManager.EntityManager;
@@ -15,9 +16,11 @@ public class UnityBaseModel implements Serializable
 	//protected type d'unité
 	protected TYPEUNITY idType;
 	
-	protected Vec2 position; // en mètre
+	protected Vec2 position; // en mètre - est utilisé car pas de sérialisation de l'objet Body
 	
-	protected Vec2 positionPixelFinal; // position final de l'unité
+	protected Vec2 positionNode; // position en node;
+	
+	protected Vec2 positionlFinal; // position final de l'unité
 	
 	protected Vec2 positionNodeFinal; // coordonnée de position node
 	
@@ -30,9 +33,21 @@ public class UnityBaseModel implements Serializable
 	protected int id;
 	
 	protected UnityBaseController enemy;
+	
+	protected transient  Body body; // le body n'est pas sérializable -> transient
+	
+	protected Path paths;
+	protected int  indicePaths = 0;
 
 	//est on mort ?
 	protected boolean isKilled = false;
+	
+	
+	public UnityBaseModel() {
+		super();
+		// création du body
+		
+	}
 
 	public EntityManager.CAMP getMyCamp() {
 		return myCamp;
@@ -43,24 +58,45 @@ public class UnityBaseModel implements Serializable
 	}
 	
 	
-	
 
-	
-
-	public Vec2 getPositionPixelFinal() {
-		return positionPixelFinal;
+	public void setBody(Body body) {
+		this.body = body;
 	}
+
+	public Body getBody() {
+		return body;
+	}
+
+	
 
 	public Vec2 getPositionNodeFinal() {
 		return positionNodeFinal;
 	}
 
-	public void setPositionPixelFinal(Vec2 positionPixelFinal) {
-		this.positionPixelFinal = positionPixelFinal;
+	
+
+	public Vec2 getPositionlFinal() {
+		return positionlFinal;
+	}
+
+	public void setPositionlFinal(Vec2 positionlFinal) {
+		this.positionlFinal = positionlFinal;
 	}
 
 	public void setPositionNodeFinal(Vec2 positionNodeFinal) {
 		this.positionNodeFinal = positionNodeFinal;
+	}
+	
+	public Vec2 getPositionNode() 
+	{
+		positionNode = this.getPosition();
+		positionNode.x = (int)positionNode.x;
+		positionNode.y = (int)positionNode.y;
+		return positionNode;
+	}
+
+	public void setPositionNode(Vec2 positionNode) {
+		this.positionNode = positionNode;
 	}
 
 	public Vec2 getDirFormation() {
@@ -71,12 +107,17 @@ public class UnityBaseModel implements Serializable
 		this.dirFormation = dirFormation;
 	}
 
-	public Vec2 getPosition() {
-		return position;
+	public Vec2 getPosition() 
+	{
+		this.position = body.getPosition();
+		return this.position;
 	}
 
-	public void setPosition(Vec2 position) {
+	public void setPosition(Vec2 position) 
+	{
+		//this.position = position.add(new Vec2(0.5f,0.5f));
 		this.position = position;
+		body.setTransform(this.position, rotation);
 	}
 
 	public float getRotation() {
@@ -126,6 +167,29 @@ public class UnityBaseModel implements Serializable
 
 	public void setSelected(boolean isSelected) {
 		this.isSelected = isSelected;
+	}
+
+	public Path getPaths() {
+		return paths;
+	}
+
+	public void setPaths(Path paths) 
+	{
+		this.paths = paths;
+		// on replace l'indice à 00
+		this.setIndicePaths(0);
+	}
+
+	public int getIndicePathsAndIncrement() {
+		return indicePaths++; // incrémente autamatiquement l'indice de chemin et commence par le 0
+	}
+
+	public void setIndicePaths(int indicePaths) {
+		this.indicePaths = indicePaths;
+	}
+
+	public int getIndicePaths() {
+		return indicePaths;
 	}
 
 	

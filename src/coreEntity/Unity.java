@@ -724,34 +724,7 @@ public abstract class Unity implements IBaseRavage,ICallBackAStar
 			System.out.println("Unité : " + this.toString() + " est sélectionné");
 	}
 
-	@Override
-	public void onCallSearchPath(List<Node> finalPath) 
-	{
-		// TODO Auto-generated method stub
-		this.pathFinal = finalPath;
-		
-		System.out.println(this.toString() +  " : " + finalPath.size());
-		
-	}
-
-	@Override
-	public void onCallSearchPath(NavPath finalPath) 
-	{
-		
-		if(finalPath != null)
-		{
-			this.pathFinalNavMesh = finalPath;
-			this.cptNavMesh = this.pathFinalNavMesh.length();
-			this.indNavMesh = 1;
-			elapseSearchClock = Time.ZERO;
-			this.isArrived = false;
-			
-			
-		
-		}
-		
-		
-	}
+	
 
 	@Override
 	public void onCallsearchPath(Path finalPath) 

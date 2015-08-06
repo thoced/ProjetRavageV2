@@ -1,5 +1,6 @@
 package coreEntity;
 
+import java.io.IOException;
 import java.util.List;
 
 import org.jbox2d.collision.shapes.CircleShape;
@@ -12,13 +13,21 @@ import org.jsfml.graphics.IntRect;
 import org.jsfml.system.Clock;
 import org.jsfml.system.Time;
 import org.jsfml.system.Vector2f;
+import org.jsfml.window.Keyboard.Key;
+import org.jsfml.window.event.KeyEvent;
 import org.newdawn.slick.util.pathfinding.Path;
 import org.newdawn.slick.util.pathfinding.navmesh.NavPath;
 
 import CoreTexturesManager.TexturesManager;
 import coreAI.Node;
 import coreEntity.Unity.TYPEUNITY;
+import coreEntity.UnityBaseView.TYPE_ANIMATION;
 import coreEntityManager.EntityManager.CAMP;
+import coreEvent.EventManager;
+import coreNet.NetHeader;
+import coreNet.NetHeader.TYPE;
+import coreNet.NetManager;
+import coreNet.NetNewUnity;
 import corePhysic.PhysicWorldManager;
 
 public class KnighController extends UnityBaseController {
@@ -44,6 +53,11 @@ public class KnighController extends UnityBaseController {
 
 		this.getView().getSprite().setOrigin(new Vector2f(16f,16f));
 		
+		this.getView().setCurrentTypeAnimation(TYPE_ANIMATION.STRIKE);
+		
+		// ajout au event manager
+		EventManager.addCallBack(this);
+		
 	}
 
 	
@@ -53,37 +67,43 @@ public class KnighController extends UnityBaseController {
 		// TODO Auto-generated method stub
 		super.update(deltaTime);
 		
+	
 		
 	}
 
 	@Override
-	public void createBody() 
-	{
-		// initialisation du body
-				BodyDef bdef = new BodyDef();
-				bdef.active = true;
-				bdef.bullet = false;
-				bdef.type = BodyType.KINEMATIC;
-				bdef.fixedRotation = false;
-				bdef.userData = this;
-			
-				//bdef.gravityScale = 0.0f;
-				
-				// creation du body
-				this.setBody(PhysicWorldManager.getWorld().createBody(bdef));
-				
-				Shape shape = new CircleShape();
-				shape.m_radius = 0.55f;
-				
-				FixtureDef fDef = new FixtureDef();
-				fDef.shape = shape;
-				fDef.density = 1.0f;
-				
-				fDef.friction = 0.0f;
-				fDef.restitution = 0.0f;
-			
-				Fixture fix = this.getBody().createFixture(fDef);
+	public void onKeyboard(KeyEvent keyboardEvent) {
+		// TODO Auto-generated method stub
+		super.onKeyboard(keyboardEvent);
 		
+		if(keyboardEvent.key == Key.W)
+		{
+			this.getView().setCurrentTypeAnimation(TYPE_ANIMATION.WALK);
+		}
+		
+		if(keyboardEvent.key == Key.S)
+		{
+			this.getView().setCurrentTypeAnimation(TYPE_ANIMATION.STRIKE);
+		}
+		
+		if(keyboardEvent.key == Key.N)
+		{
+			NetHeader header = new NetHeader();
+			NetNewUnity nu = new NetNewUnity();
+			nu.setModel(this.getModel());
+			header.setMessage(nu);
+			header.setTypeMessage(TYPE.ADD);
+			try 
+			{
+				NetManager.PackMessage(header);
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			
+			
+		}
 	}
 
+	
 }

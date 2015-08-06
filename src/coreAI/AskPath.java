@@ -35,6 +35,22 @@ public class AskPath
 	
 
 
+	public Vec2 getPositionInitial() {
+		return positionInitial;
+	}
+
+
+
+
+
+	public Vec2 getPositionFinal() {
+		return positionFinal;
+	}
+
+
+
+
+
 	/**
 	 * @return the fx
 	 */

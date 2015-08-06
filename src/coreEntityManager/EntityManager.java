@@ -371,7 +371,7 @@ public class EntityManager implements IBaseRavage,IEventCallBack,IRegionSelected
 					dirFormation = arrow.getVectorDirectionFormation();
 					// on calcul la formation
 					Vector2f pos = Vector2f.div(posMouseWorld, PhysicWorldManager.getRatioPixelMeter());
-				    computeFormation(listUnitySelected,posMouseWorld.x,posMouseWorld.y,dirFormation);
+				    computeFormation(listUnitySelected,new Vec2(pos.x,pos.y),dirFormation);
 				    
 				   
 				    // suppression de la fleche dans les callback
@@ -390,8 +390,8 @@ public class EntityManager implements IBaseRavage,IEventCallBack,IRegionSelected
 		// on vient de receptionnÃ© la region selectionnÃ©
 		for(UnityBaseController unity : vectorUnity.values())
 		{
-			if(region.contains(new Vector2f(unity.getBody().getPosition().x * PhysicWorldManager.getRatioPixelMeter(),
-					unity.getBody().getPosition().y * PhysicWorldManager.getRatioPixelMeter())))
+			if(region.contains(new Vector2f(unity.getModel().getBody().getPosition().x * PhysicWorldManager.getRatioPixelMeter(),
+					unity.getModel().getPosition().y * PhysicWorldManager.getRatioPixelMeter())))
 					{
 						unity.getModel().setSelected(true);
 						this.listUnitySelected.add(unity);
@@ -574,14 +574,49 @@ public class EntityManager implements IBaseRavage,IEventCallBack,IRegionSelected
 		
 	}
 
-	public void computeFormation(List<UnityBaseController> listUnity,float px,float py,Vec2 dir)
+	public void computeFormation(List<UnityBaseController> listUnity,Vec2 positionFinal,Vec2 dir)
 	{
 		
 		// variable définissant le nombre maximal d'unité sur une ligne
 		int nbUnityPerLine = 0;
 		int cptLine = 0;
+		
+		// calcul de l'offset
+		dir.normalize();
+		Vec2 offset = dir.skew().mul(2);
+	
+		for(int i=0;i<listUnity.size();i++)
+		{
+			// on calcul l'offset
+			offset = dir.skew().mul(i*2);
+			// on récupère une unité
+			UnityBaseController u = listUnity.get(i);
+			// on calcul sa destination
+			Vec2 posNodeFinal = positionFinal.add(offset);
+			posNodeFinal.x = (int)posNodeFinal.x;
+			posNodeFinal.y = (int)posNodeFinal.y;
+			if(this.computeDestination(u, positionFinal, posNodeFinal, dir) == false)
+			{
+				// aucune position possible pour l'unité, on la place derrière
+				cptLine++;
+				
+			}
+			else
+			{
+				nbUnityPerLine++;
+				
+			}
+			
+			
+			
+			
+		}
+		
+		
+		
+	
 		// on défini les positions
-		float dx = px;
+		/*float dx = px;
 		
 		Vector2f posInitial = new Vector2f(dx,py);
 		Vector2f dep = posInitial;
@@ -753,7 +788,7 @@ public class EntityManager implements IBaseRavage,IEventCallBack,IRegionSelected
 			UnityBaseController best = list.get(0); // on prend le premier
 			for(UnityBaseController u : list)
 			{
-				if((best.getBody().getPosition().sub(unity.getBody().getPosition()).length() > (u.getBody().getPosition().sub(u.getBody().getPosition()).length())))
+				if((best.getModel().getPosition().sub(unity.getBody().getPosition()).length() > (u.getModel().getBody().getPosition().sub(u.getModel().getBody().getPosition()).length())))
 					{
 						best = u;
 					}
@@ -777,15 +812,15 @@ public class EntityManager implements IBaseRavage,IEventCallBack,IRegionSelected
 		
 	}
 	
-	public boolean computeDestination(UnityBaseController unity,Vec2 posPixelFinal,Vec2 posNodeFinal,Vec2 dir)
+	public boolean computeDestination(UnityBaseController unity,Vec2 posFinal,Vec2 posNodeFinal,Vec2 dir)
 	{
 		// instance de vecteur de formation finale
 		unity.getModel().setDirFormation(dir);
 		
-		unity.getModel().setPositionPixelFinal(posPixelFinal); // on spécifie la position final
+		unity.getModel().setPositionlFinal(posFinal); // on spécifie la position final
 		
 		// une demande de chemin va être effectuée, on stoppe l'unité pour éviter le phénomène de rebond
-		unity.getBody().setLinearVelocity(new Vec2(0f,0f)); // il est arrivÃ© Ã  destination
+		unity.getModel().getBody().setLinearVelocity(new Vec2(0f,0f)); // il est arrivÃ© Ã  destination
 		
 		//this.targetPosition = new Vec2((float)tx + 0.5f,(float)ty + 0.5f);
 		unity.getModel().setPositionNodeFinal(posNodeFinal);
@@ -803,7 +838,7 @@ public class EntityManager implements IBaseRavage,IEventCallBack,IRegionSelected
 			//	if(this.pathFinalPath != null)
 					//this.pathFinalPath.clear();
 				// Lancement recherche
-				AstarManager.askPath(unity, unity.getModel().getPosition(), unity.getModel().getPositionNodeFinal()); // classic
+				AstarManager.askPath(unity, unity.getModel().getPositionNode(), unity.getModel().getPositionNodeFinal()); // classic
 				//AstarManager.askPath(this, fx, fy, ftx, fty);
 				return true;
 			}
@@ -818,7 +853,7 @@ public class EntityManager implements IBaseRavage,IEventCallBack,IRegionSelected
 		}
 		  catch(ArrayIndexOutOfBoundsException ex)
 		{
-			  
+			  ex.printStackTrace();
 		}
 		return false;
 	}

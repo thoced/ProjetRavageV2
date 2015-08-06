@@ -96,15 +96,18 @@ public class AstarManager extends Thread implements IBaseRavage
 							this.listAsk.remove(0); // suppresion de la demande
 						lock.unlock();
 						
-						// on lance une recherche de chemin
-						//List<Node> finalPath = star.search(LevelManager.getLevel().getNodes(), 375, 250, ask.getX(), ask.getY(), ask.getTx(), ask.getTy());
-						// on lance la recherche de chemin navmesh
-						System.out.println(ask.getX() + " " + ask.getY() + " " + ask.getTx() + " " + ask.getTy());
-						Path paths = this.navmesh.findPath(null,ask.getX(), ask.getY(), ask.getTx(), ask.getTy());
-						// on appel le caller
-						//ask.getCaller().onCallSearchPath(finalPath); // version classic
-						ask.getCaller().onCallsearchPath(paths);
+						try
+						{
+							// on lance une recherche de chemin				
+							Path paths = this.navmesh.findPath(null,(int)ask.getPositionInitial().x,(int) ask.getPositionInitial().y, (int)ask.getPositionFinal().x, (int)ask.getPositionFinal().y);
+							// on appel le caller
+							if(paths != null)
+								ask.getCaller().onCallsearchPath(paths);
 						
+						}catch(ArrayIndexOutOfBoundsException aae)
+						{
+							
+						}
 						
 					}
 					

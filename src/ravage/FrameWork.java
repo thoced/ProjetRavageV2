@@ -183,7 +183,38 @@ public class FrameWork
 		button2.Init();
 	    panel.addGui(button2);
 
-	   
+	    UnityBaseModel model = new UnityBaseModel();
+	    BodyDef bdef = new BodyDef();
+		bdef.active = true;
+		bdef.bullet = false;
+		bdef.type = BodyType.KINEMATIC;
+		bdef.fixedRotation = false;
+		bdef.userData = this;
+	
+		//bdef.gravityScale = 0.0f;
+		
+		// creation du body
+		Body b = (PhysicWorldManager.getWorld().createBody(bdef));
+		
+		Shape shape = new CircleShape();
+		shape.m_radius = 0.55f;
+		
+		FixtureDef fDef = new FixtureDef();
+		fDef.shape = shape;
+		fDef.density = 1.0f;
+		
+		fDef.friction = 0.0f;
+		fDef.restitution = 0.0f;
+	
+		Fixture fix = b.createFixture(fDef);
+		
+		model.setBody(b);
+		
+		ByteArrayOutputStream baos = new ByteArrayOutputStream();
+		ObjectOutputStream oos = new ObjectOutputStream(baos);
+		oos.writeObject(model);
+		oos.flush();
+
 		
 	}
 

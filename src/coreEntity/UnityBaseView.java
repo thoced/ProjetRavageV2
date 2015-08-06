@@ -17,7 +17,11 @@ public abstract class UnityBaseView implements Drawable
 	
 	protected UnityBaseController controller;
 	
-	protected  float elapsedAnimationTime; // temps écoulé pour les animations
+	protected  float elapsedAnimationTime; 				// temps écoulé pour les animations
+	
+	protected enum TYPE_ANIMATION  {NON,WALK,STRIKE};	// type d'animatino possible
+	
+	protected TYPE_ANIMATION currentTypeAnimation;				// animation en cours
 
 	public UnityBaseView(UnityBaseModel model, UnityBaseController controller) {
 		super();
@@ -25,7 +29,12 @@ public abstract class UnityBaseView implements Drawable
 		this.controller = controller;
 	}
 	
-	public abstract void draw(RenderTarget arg0, RenderStates arg1);
+	public void draw(RenderTarget arg0, RenderStates arg1)
+	{
+		// on modifie le sprite grace au model
+		Vec2 pos = this.getModel().getPosition();
+		this.sprite.setPosition(Vector2f.add(this.toPixelVector2f(pos),new Vector2f(8f,8f)));
+	}
 
 	public UnityBaseModel getModel() {
 		return model;
@@ -41,6 +50,16 @@ public abstract class UnityBaseView implements Drawable
 
 	public void setSprite(Sprite sprite) {
 		this.sprite = sprite;
+	}
+	
+	
+
+	public TYPE_ANIMATION getCurrentTypeAnimation() {
+		return currentTypeAnimation;
+	}
+
+	public void setCurrentTypeAnimation(TYPE_ANIMATION currentTypeAnimation) {
+		this.currentTypeAnimation = currentTypeAnimation;
 	}
 
 	protected Vec2 toMeterVec2(Vector2f v)

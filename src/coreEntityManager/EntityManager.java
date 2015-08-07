@@ -580,25 +580,28 @@ public class EntityManager implements IBaseRavage,IEventCallBack,IRegionSelected
 		// variable définissant le nombre maximal d'unité sur une ligne
 		int nbUnityPerLine = 0;
 		int cptLine = 0;
+		Vec2 cpyPositionFinal = positionFinal.clone();
 		
 		// calcul de l'offset
 		dir.normalize();
-		Vec2 offset = dir.skew().mul(2);
+		//Vec2 offset = dir.skew();
 	
 		for(int i=0;i<listUnity.size();i++)
 		{
 			// on calcul l'offset
-			offset = dir.skew().mul(i*2);
+			Vec2 offset = dir.skew().mul(i*1.5f);
 			// on récupère une unité
 			UnityBaseController u = listUnity.get(i);
 			// on calcul sa destination
-			Vec2 posNodeFinal = positionFinal.add(offset);
-			posNodeFinal.x = (int)posNodeFinal.x;
-			posNodeFinal.y = (int)posNodeFinal.y;
-			if(this.computeDestination(u, positionFinal, posNodeFinal, dir) == false)
+			Vec2 posNodeFinal = new Vec2();
+			Vec2 positionFinalAdd = positionFinal.add(offset);
+			posNodeFinal.x = (int)positionFinalAdd.x;
+			posNodeFinal.y = (int)positionFinalAdd.y;
+			if(this.computeDestination(u, positionFinalAdd, posNodeFinal, dir) == false)
 			{
 				// aucune position possible pour l'unité, on la place derrière
 				cptLine++;
+				positionFinal = cpyPositionFinal;
 				
 			}
 			else

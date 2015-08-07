@@ -14,6 +14,7 @@ import org.newdawn.slick.util.pathfinding.navmesh.NavPath;
 
 import coreAI.ICallBackAStar;
 import coreAI.Node;
+import coreEntity.UnityBaseView.TYPE_ANIMATION;
 import coreEvent.IEventCallBack;
 import ravage.IBaseRavage;
 
@@ -24,6 +25,9 @@ public  class UnityBaseController implements IBaseRavage,ICallBackAStar,IEventCa
 	protected UnityBaseModel model;
 	
 	protected Step step = null; // step du chemin
+	
+	protected Vec2 vecStep = null;	// vecteur de déplacement step
+	
 	
 	
 
@@ -59,6 +63,7 @@ public  class UnityBaseController implements IBaseRavage,ICallBackAStar,IEventCa
 	@Override
 	public void update(Time deltaTime) 
 	{
+	
 		// incrémentation du temps écoulé pour les animations
 		this.getView().elapsedAnimationTime += deltaTime.asSeconds();
 		// calcul du déplacement
@@ -68,27 +73,50 @@ public  class UnityBaseController implements IBaseRavage,ICallBackAStar,IEventCa
 			{
 				step = this.getModel().getPaths().getStep(this.getModel().getIndicePathsAndIncrement());
 				// calcul du vecteur de direction
-				Vec2 vecStep = new Vec2(step.getX(),step.getY());
+				vecStep = new Vec2(step.getX(),step.getY());
+				// ajout du 0.5 pour placer l'unité au centre du node
+				vecStep = vecStep.add(new Vec2(.5f,.5f));
+				// soustraction pour déterminer le vecteur de direction + normalisation
 				Vec2 dir = vecStep.sub(this.getModel().getBody().getPosition());
 				dir.normalize();
-				this.getModel().getBody().setLinearVelocity(dir.mul(6));
+				// déplacement 
+				this.getModel().getBody().setLinearVelocity(dir.mul(this.getModel().getSpeed()));
+				// modification de l'animation
+				this.getView().setCurrentTypeAnimation(TYPE_ANIMATION.WALK);
 			}
 			catch(IndexOutOfBoundsException iooe)
 			{
 				this.getModel().getBody().setLinearVelocity(new Vec2(0,0));
+				this.getView().setCurrentTypeAnimation(TYPE_ANIMATION.NON);
 			}
 		}
 		else
 		{
-			if(step != null)
+			if(step != null && vecStep != null)
 			{
 				// l'unité arrive à destination du step, on place le step à null
 				// on vérifie la distance entre le step et la position de l'unité
-				Vec2 vecStep = new Vec2(step.getX(),step.getY());
 				Vec2 diff = vecStep.sub(this.getModel().getBody().getPosition());
 				if(diff.length() < 0.2f)
 				{
-					step = null;
+					
+					// 	si c'est le dernier node, il faut déplacer l'unité jusque sa position réel finale
+					if(this.getModel().getPaths().getLength() == this.getModel().getIndicePaths())
+					{
+						vecStep = this.getModel().getPositionlFinal();
+						Vec2 dir = vecStep.sub(this.getModel().getBody().getPosition());
+						dir.normalize();
+						// déplacement 
+						this.getModel().getBody().setLinearVelocity(dir.mul(this.getModel().getSpeed()));
+						this.getModel().getIndicePathsAndIncrement();
+						
+						
+					}
+					else
+					{
+						step = null;
+						this.getModel().getBody().setLinearVelocity(new Vec2(0f,0f));
+					}
 					
 				}
 			}

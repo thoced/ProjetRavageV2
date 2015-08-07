@@ -33,7 +33,7 @@ public abstract class UnityBaseView implements Drawable
 	{
 		// on modifie le sprite grace au model
 		Vec2 pos = this.getModel().getPosition();
-		this.sprite.setPosition(Vector2f.add(this.toPixelVector2f(pos),new Vector2f(8f,8f)));
+		this.sprite.setPosition(this.toPixelVector2f(pos));
 	}
 
 	public UnityBaseModel getModel() {

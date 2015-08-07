@@ -40,6 +40,9 @@ public class KnightModel extends UnityBaseModel
 		fDef.restitution = 0.0f;
 	
 		Fixture fix = this.getBody().createFixture(fDef);
+		
+		// initialisation de la vitesse
+		this.speed = 6f;
 	}
 	
 }

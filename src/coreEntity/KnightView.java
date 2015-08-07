@@ -31,6 +31,8 @@ public class KnightView extends UnityBaseView
 		
 		switch(this.currentTypeAnimation)
 		{
+			case NON: this.noneAnimation();break;
+		
 			case WALK: this.walkAnimation();break;
 			
 			case STRIKE : this.strikeAnimation();break;
@@ -63,6 +65,11 @@ public class KnightView extends UnityBaseView
 			this.elapsedAnimationTime = 0f;
 		}
 		this.sprite.setTextureRect(rectAnimationWalk[ind]);
+	}
+	
+	private void noneAnimation()
+	{
+		this.sprite.setTextureRect(rectAnimationWalk[0]);
 	}
 
 }

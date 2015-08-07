@@ -26,6 +26,8 @@ public class UnityBaseModel implements Serializable
 	
 	protected float rotation;
 	
+	protected float speed; 			// vitesse;
+	
 	protected boolean isSelected;
 	
 	protected Vec2 dirFormation; // direction de formation que doit prendre l'unité
@@ -68,6 +70,14 @@ public class UnityBaseModel implements Serializable
 	}
 
 	
+
+	public float getSpeed() {
+		return speed;
+	}
+
+	public void setSpeed(float speed) {
+		this.speed = speed;
+	}
 
 	public Vec2 getPositionNodeFinal() {
 		return positionNodeFinal;

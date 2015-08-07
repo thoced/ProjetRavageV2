@@ -1,6 +1,8 @@
 package coreEntity;
 
 import java.io.Serializable;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 import org.jbox2d.common.Vec2;
 import org.jbox2d.dynamics.Body;
@@ -38,8 +40,10 @@ public class UnityBaseModel implements Serializable
 	
 	protected transient  Body body; // le body n'est pas sérializable -> transient
 	
+	protected transient  Object lock;
+	
 	protected Path paths;
-	protected int  indicePaths = 0;
+	protected  int  indicePaths = 0;
 
 	//est on mort ?
 	protected boolean isKilled = false;
@@ -47,7 +51,8 @@ public class UnityBaseModel implements Serializable
 	
 	public UnityBaseModel() {
 		super();
-		// création du body
+
+		lock = new Object();
 		
 	}
 
@@ -179,27 +184,48 @@ public class UnityBaseModel implements Serializable
 		this.isSelected = isSelected;
 	}
 
-	public Path getPaths() {
-		return paths;
+	public Path getPaths() 
+	{
+		synchronized(lock)
+		{
+			return paths;
+		}
+		
 	}
 
 	public void setPaths(Path paths) 
 	{
-		this.paths = paths;
-		// on replace l'indice à 00
-		this.setIndicePaths(0);
+		synchronized(lock)
+		{
+			this.paths = paths;
+			// on replace l'indice à 00
+			this.setIndicePaths(0);
+	
+		}
 	}
 
-	public int getIndicePathsAndIncrement() {
-		return indicePaths++; // incrémente autamatiquement l'indice de chemin et commence par le 0
+	public int getIndicePathsAndIncrement()
+	{
+		synchronized(lock)
+		{
+			return indicePaths++; // incrémente autamatiquement l'indice de chemin et commence par le 0
+		}
+	
 	}
 
-	public void setIndicePaths(int indicePaths) {
+	public void setIndicePaths(int indicePaths)
+	{
+		synchronized(lock)
+		{
 		this.indicePaths = indicePaths;
+		}
 	}
 
-	public int getIndicePaths() {
+	public int getIndicePaths() 
+	{	synchronized(lock)
+		{
 		return indicePaths;
+		}
 	}
 
 	

@@ -585,32 +585,50 @@ public class EntityManager implements IBaseRavage,IEventCallBack,IRegionSelected
 		// calcul de l'offset
 		dir.normalize();
 		//Vec2 offset = dir.skew();
+		Vec2 skew = dir.skew();
+		Vec2 offset = new Vec2();
+		offset.setZero();
 	
 		for(int i=0;i<listUnity.size();i++)
 		{
 			// on calcul l'offset
-			Vec2 offset = dir.skew().mul(i*1.5f);
+			//Vec2 offset = dir.skew().mul(i*1.5f);
 			// on rÈcupËre une unitÈ
 			UnityBaseController u = listUnity.get(i);
 			// on calcul sa destination
+			Vec2 positionFinalAdd = positionFinal.add(offset.add(dir.negate().mul(cptLine * 1.5f )));
 			Vec2 posNodeFinal = new Vec2();
-			Vec2 positionFinalAdd = positionFinal.add(offset);
 			posNodeFinal.x = (int)positionFinalAdd.x;
 			posNodeFinal.y = (int)positionFinalAdd.y;
+			// ajout du vecteur skew ‡ l'offset
+			offset = offset.add(skew.mul(1.5f));
+			
 			if(this.computeDestination(u, positionFinalAdd, posNodeFinal, dir) == false)
 			{
 				// aucune position possible pour l'unitÈ, on la place derriËre
-				cptLine++;
+				cptLine++;																	// incrÈmentation du nombre de ligne
 				positionFinal = cpyPositionFinal;
-				
+				offset.setZero();
+				i--;
+
 			}
 			else
 			{
 				nbUnityPerLine++;
+				if(nbUnityPerLine > 7) 														// le nombre d'unitÈ sur une ligne dÈpasse 7
+				{
+					positionFinal = cpyPositionFinal.clone();									// on replace la position initial
+					nbUnityPerLine = 0;														// nbunity par ligne est Ègale ‡ 0
+					cptLine++;																// incrÈmentation du nombre de ligne
+					offset.setZero();														// on positionne l'offset ‡ 0
+					
+				}
+				
 				
 			}
 			
-			
+			if(cptLine > 12)
+				break;
 			
 			
 		}
@@ -833,16 +851,15 @@ public class EntityManager implements IBaseRavage,IEventCallBack,IRegionSelected
 		try 
 		{
 			// si le target position est sur un node noir, on ne fait aucune recherche
+			// si on est hors de la map
+			if(posNodeFinal.x < 0  || posNodeFinal.x > 374 || posNodeFinal.y < 0 || posNodeFinal.y > 250)
+				return false;
+				
 			if(LevelManager.getLevel().getNodes()[(int) ((posNodeFinal.y * 375) + posNodeFinal.x)].getType() == 0)
 			{
-				// on remet √† zero l'elapsed timer pour la t√©l√©portation
-				//elapseSearchClock = Time.ZERO;
-				// on remet √† zero le pathfinal
-			//	if(this.pathFinalPath != null)
-					//this.pathFinalPath.clear();
 				// Lancement recherche
 				AstarManager.askPath(unity, unity.getModel().getPositionNode(), unity.getModel().getPositionNodeFinal()); // classic
-				//AstarManager.askPath(this, fx, fy, ftx, fty);
+				
 				return true;
 			}
 			else
@@ -850,7 +867,8 @@ public class EntityManager implements IBaseRavage,IEventCallBack,IRegionSelected
 				return false; // return false car il n'y pas de destination possible
 			}
 			
-		} catch (InterruptedException e) {
+		} catch (InterruptedException e) 
+		{
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}

@@ -48,12 +48,12 @@ public class KnighController extends UnityBaseController {
 		if(this.getModel().getMyCamp() == CAMP.YELLOW)
 			this.getView().setSprite(TexturesManager.GetSpriteByName("ANIM_KNIGHT_YELLOW.png"));
 		if(this.getModel().getMyCamp() == CAMP.BLUE)
-			this.getView().setSprite(TexturesManager.GetSpriteByName("ANIM_KNIGHT_BLUE.png"));
+			this.getView().setSprite(TexturesManager.GetSpriteByName("ANIM_Piquiers_Bleus.png"));
 		
 
-		this.getView().getSprite().setOrigin(new Vector2f(16f,16f));
+		this.getView().getSprite().setOrigin(new Vector2f(40f,40f));
 		
-		this.getView().setCurrentTypeAnimation(TYPE_ANIMATION.STRIKE);
+		this.getView().setCurrentTypeAnimation(TYPE_ANIMATION.NON);
 		
 		// ajout au event manager
 		EventManager.addCallBack(this);

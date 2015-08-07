@@ -2,6 +2,7 @@ package coreEntity;
 
 import java.util.List;
 
+import org.jbox2d.common.Rot;
 import org.jbox2d.common.Vec2;
 import org.jbox2d.dynamics.Body;
 import org.jsfml.system.Time;
@@ -14,6 +15,7 @@ import org.newdawn.slick.util.pathfinding.navmesh.NavPath;
 
 import coreAI.ICallBackAStar;
 import coreAI.Node;
+import coreEntity.Unity.ANIMATE;
 import coreEntity.UnityBaseView.TYPE_ANIMATION;
 import coreEvent.IEventCallBack;
 import ravage.IBaseRavage;
@@ -28,12 +30,18 @@ public  class UnityBaseController implements IBaseRavage,ICallBackAStar,IEventCa
 	
 	protected Vec2 vecStep = null;	// vecteur de déplacement step
 	
+	protected Vec2 dir = null;
 	
+	protected Object lock;
+	
+	protected ETAPE etape = ETAPE.NONE;
+	
+	protected enum ETAPE {GETSTEP,MOVE,NONE};
 	
 
 	public UnityBaseController() {
 		super();
-		
+		lock = new Object();
 		// instance de la vue et du model
 		
 	}
@@ -59,73 +67,133 @@ public  class UnityBaseController implements IBaseRavage,ICallBackAStar,IEventCa
 	public void setModel(UnityBaseModel model) {
 		this.model = model;
 	}
+	
+	private void computeNextStep()  // on récupère une étape de chemion
+	{
+		try
+		{
+			step = this.getModel().getPaths().getStep(this.getModel().getIndicePathsAndIncrement());
+			// calcul du vecteur de direction
+			vecStep = new Vec2(step.getX(),step.getY());
+			// ajout du 0.5 pour placer l'unité au centre du node
+			vecStep = vecStep.add(new Vec2(.5f,.5f));
+			
+			// soustraction pour déterminer le vecteur de direction + normalisation
+			dir = vecStep.sub(this.getModel().getBody().getPosition());
+			System.out.println("dir " + dir);
+			dir.normalize();
+			// déplacement 
+			this.getModel().getBody().setLinearVelocity(dir.mul(this.getModel().getSpeed()));
+			System.out.println(dir);
+			// modification de l'animation 
+			this.getView().setCurrentTypeAnimation(TYPE_ANIMATION.WALK);
+			// modifiation de l'etape en move
+			this.etape = ETAPE.MOVE;
+		}
+		catch(IndexOutOfBoundsException iooe)
+		{
+			this.getModel().setPaths(null);
+			this.getModel().getBody().setLinearVelocity(new Vec2(0,0));
+			this.getView().setCurrentTypeAnimation(TYPE_ANIMATION.NON);
+			System.out.println("index out");
+			this.etape = ETAPE.NONE;
+		}
+	}
+	
+	private void moveToNextStep()
+	{
+		Vec2 diff = vecStep.sub(this.getModel().getBody().getPosition());
+		if(diff.length() < 0.2f)
+		{
+			
+			// 	si c'est le dernier node, il faut déplacer l'unité jusque sa position réel finale
+			if(this.getModel().getPaths().getLength() == this.getModel().getIndicePaths())
+			{
+				vecStep = this.getModel().getPositionlFinal();
+				Vec2 dir = vecStep.sub(this.getModel().getBody().getPosition());
+				dir.normalize();
+				
+				// déplacement 
+				this.getModel().getBody().setLinearVelocity(dir.mul(this.getModel().getSpeed()));
+				this.getModel().getIndicePathsAndIncrement();
+
+			}
+			else
+			{
+				// l'unité est arrivé sur une étape (step)
+				step = null;
+				this.getModel().getBody().setLinearVelocity(new Vec2(0f,0f));
+				this.etape = ETAPE.GETSTEP;
+			
+			}
+			
+		}
+		else
+		{
+			// l'unité n'est pas encore arrivée sur une étape (step)
+			dir = vecStep.sub(this.getModel().getBody().getPosition());
+												
+			dir.normalize();
+			
+			this.computeRotation(dir); // calcul de la rotation
+			
+			this.getModel().getBody().setLinearVelocity(this.dir.mul(this.getModel().getSpeed()));
+			
+		}
+	}
+	
+	
 
 	@Override
 	public void update(Time deltaTime) 
 	{
-	
 		// incrémentation du temps écoulé pour les animations
 		this.getView().elapsedAnimationTime += deltaTime.asSeconds();
-		// calcul du déplacement
-		if(this.getModel().getPaths() != null && step == null)
-		{
-			try
-			{
-				step = this.getModel().getPaths().getStep(this.getModel().getIndicePathsAndIncrement());
-				// calcul du vecteur de direction
-				vecStep = new Vec2(step.getX(),step.getY());
-				// ajout du 0.5 pour placer l'unité au centre du node
-				vecStep = vecStep.add(new Vec2(.5f,.5f));
-				// soustraction pour déterminer le vecteur de direction + normalisation
-				Vec2 dir = vecStep.sub(this.getModel().getBody().getPosition());
-				dir.normalize();
-				// déplacement 
-				this.getModel().getBody().setLinearVelocity(dir.mul(this.getModel().getSpeed()));
-				// modification de l'animation
-				this.getView().setCurrentTypeAnimation(TYPE_ANIMATION.WALK);
-			}
-			catch(IndexOutOfBoundsException iooe)
-			{
-				this.getModel().getBody().setLinearVelocity(new Vec2(0,0));
-				this.getView().setCurrentTypeAnimation(TYPE_ANIMATION.NON);
-			}
-		}
-		else
-		{
-			if(step != null && vecStep != null)
-			{
-				// l'unité arrive à destination du step, on place le step à null
-				// on vérifie la distance entre le step et la position de l'unité
-				Vec2 diff = vecStep.sub(this.getModel().getBody().getPosition());
-				if(diff.length() < 0.2f)
-				{
-					
-					// 	si c'est le dernier node, il faut déplacer l'unité jusque sa position réel finale
-					if(this.getModel().getPaths().getLength() == this.getModel().getIndicePaths())
-					{
-						vecStep = this.getModel().getPositionlFinal();
-						Vec2 dir = vecStep.sub(this.getModel().getBody().getPosition());
-						dir.normalize();
-						// déplacement 
-						this.getModel().getBody().setLinearVelocity(dir.mul(this.getModel().getSpeed()));
-						this.getModel().getIndicePathsAndIncrement();
-						
-						
-					}
-					else
-					{
-						step = null;
-						this.getModel().getBody().setLinearVelocity(new Vec2(0f,0f));
-					}
-					
-				}
-			}
-		}
-		
-		
 	
-		
+		synchronized(lock)
+		{
+	
+			// switch pour les mouvements
+			switch(etape)
+			{
+				case NONE:  	this.computeRotation(this.getModel().dirFormation); // retourne l'unité en formation
+								break;
+			
+				case GETSTEP : 	if(this.getModel().getPaths() != null)  			// récupère une étape de chemin
+									this.computeNextStep();
+									break;
+					
+				case MOVE: 		this.moveToNextStep();
+								break; 												// déplacement l'unité
 				
+				default : 		this.moveToNextStep();
+								break;
+	
+			}
+		}
+		
+	}
+	
+	protected float lerp(float value, float start, float end)
+	{
+	    return start + (end - start) * value;
+	}
+	
+	protected void computeRotation(Vec2 vec)
+	{
+		if(vec != null)
+		{
+			// on crée la class de rotation
+			Rot r = new Rot();
+			r.s = vec.y;
+			r.c = vec.x;
+			// receptin de l'angle de rotation
+			//float angle = r.getAngle(); 
+			// assouplissement en utilisant un lerp
+			float angle = lerp(0.2f,this.getModel().getBody().getAngle(), r.getAngle() ); // angle de la tourelle déterminé
+			
+			this.getModel().getBody().setTransform(this.getModel().getBody().getPosition(), angle);
+		}
 	}
 
 	
@@ -133,9 +201,15 @@ public  class UnityBaseController implements IBaseRavage,ICallBackAStar,IEventCa
 	public void onCallsearchPath(Path finalPath) 
 	{
 		// réception du chemin calculé
-		this.getModel().setPaths(finalPath);
-		this.getModel().setIndicePaths(0);
-		step = null;
+		synchronized(lock)
+		{
+			this.getModel().setIndicePaths(0);
+			step = null;
+			vecStep = null;
+			this.getModel().setPaths(finalPath);
+			this.etape = ETAPE.GETSTEP;
+		}
+		
 		
 	}
 

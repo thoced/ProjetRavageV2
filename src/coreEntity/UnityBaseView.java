@@ -10,11 +10,10 @@ import org.jsfml.system.Vector2f;
 
 import corePhysic.PhysicWorldManager;
 
-public abstract class UnityBaseView implements Drawable
+public  class UnityBaseView implements Drawable
 {
 	protected Sprite sprite;
 	
-	protected UnityBaseModel model;
 	
 	protected UnityBaseController controller;
 	
@@ -24,8 +23,7 @@ public abstract class UnityBaseView implements Drawable
 	
 	protected TYPE_ANIMATION currentTypeAnimation;				// animation en cours
 
-	protected Animations animations;
-	
+		
 	protected  int NB_FRAME_BY_SECOND = 15;
 	protected  int NB_TOTAL_FRAME = 27;
 	protected  int MIN_IND_FOR_WALK = 0;
@@ -38,22 +36,24 @@ public abstract class UnityBaseView implements Drawable
 	
 	public UnityBaseView(UnityBaseModel model, UnityBaseController controller) {
 		super();
-		this.model = model;
 		this.controller = controller;
 		
 		// appel à la méthode prépare animation pour instancier le rectAnimations
-		animations = new Animations();
-		this.prepareAnimations(animations);
+		//this.getModel().setAnimations(new Animations());
+		this.prepareAnimations(this.getController().getModel().getAnimations());
 	}
 	
-	public abstract void prepareAnimations(Animations animations);
+	public  void prepareAnimations(Animations animations)
+	{
+		
+	}
 	
 	public void draw(RenderTarget arg0, RenderStates arg1)
 	{
 		// on modifie le sprite grace au model
-		Vec2 pos = this.getModel().getPosition();
+		Vec2 pos = this.getController().getModel().getPosition();
 		this.sprite.setPosition(this.toPixelVector2f(pos));
-		this.sprite.setRotation((float)((this.getModel().getBody().getAngle() * 180f) / Math.PI) % 360f);
+		this.sprite.setRotation((float)((this.getController().getModel().getBody().getAngle() * 180f) / Math.PI) % 360f);
 		
 		// animation
 		switch(this.currentTypeAnimation)
@@ -78,7 +78,7 @@ public abstract class UnityBaseView implements Drawable
 			ind = MIN_IND_FOR_WALK;
 			this.elapsedAnimationTime = 0f;
 		}
-		this.sprite.setTextureRect(animations.getInd(ind));
+		this.sprite.setTextureRect(this.getController().getModel().getAnimations().getInd(ind));
 	}
 	
 	private void strikeAnimation()
@@ -88,20 +88,17 @@ public abstract class UnityBaseView implements Drawable
 		if(ind > MAX_IND_FOR_STRIKE)
 		{
 			ind = MIN_IND_FOR_STRIKE;
-			this.elapsedAnimationTime = 0f;
+			this.playAnimation(TYPE_ANIMATION.NON);
 		}
-		this.sprite.setTextureRect(animations.getInd(ind));
+		this.sprite.setTextureRect(this.getController().getModel().getAnimations().getInd(ind));
 	}
 	
 	private void noneAnimation()
 	{
-		this.sprite.setTextureRect(animations.getInd(0));
+		this.sprite.setTextureRect(this.getController().getModel().getAnimations().getInd(0));
 	}
 
-	public UnityBaseModel getModel() {
-		return model;
-	}
-
+	
 	public UnityBaseController getController() {
 		return controller;
 	}
@@ -120,8 +117,12 @@ public abstract class UnityBaseView implements Drawable
 		return currentTypeAnimation;
 	}
 
-	public void setCurrentTypeAnimation(TYPE_ANIMATION currentTypeAnimation) {
-		this.currentTypeAnimation = currentTypeAnimation;
+	public void playAnimation(TYPE_ANIMATION currentTypeAnimation) 
+	{
+		this.currentTypeAnimation = currentTypeAnimation; // spécifie le type d'animation.
+		
+		if(this.currentTypeAnimation != TYPE_ANIMATION.WALK) // si l'animation est de marcher, on ne place pas le temps à 0 car l'animation se joue en boucle
+			this.elapsedAnimationTime = 0f;
 	}
 
 	protected Vec2 toMeterVec2(Vector2f v)

@@ -24,10 +24,10 @@ import coreEntity.Unity.TYPEUNITY;
 import coreEntity.UnityBaseView.TYPE_ANIMATION;
 import coreEntityManager.EntityManager.CAMP;
 import coreEvent.EventManager;
+import coreNet.NetDataUnity;
 import coreNet.NetHeader;
 import coreNet.NetHeader.TYPE;
 import coreNet.NetManager;
-import coreNet.NetNewUnity;
 import corePhysic.PhysicWorldManager;
 
 public class KnighController extends UnityBaseController {
@@ -37,6 +37,7 @@ public class KnighController extends UnityBaseController {
 	public KnighController() {
 		super();
 		// instance de la vue et du model
+		
 		this.setModel(new KnightModel());
 		this.setView(new KnightView(this.getModel(),this));
 	}
@@ -46,14 +47,16 @@ public class KnighController extends UnityBaseController {
 	{
 		// initialisation de la vue avec un sprite
 		if(this.getModel().getMyCamp() == CAMP.YELLOW)
-			this.getView().setSprite(TexturesManager.GetSpriteByName("ANIM_KNIGHT_YELLOW.png"));
+			this.getView().setSprite(TexturesManager.GetSpriteByName("ANIM_Piquiers_Jaunes.png"));
 		if(this.getModel().getMyCamp() == CAMP.BLUE)
 			this.getView().setSprite(TexturesManager.GetSpriteByName("ANIM_Piquiers_Bleus.png"));
 		
-
-		this.getView().getSprite().setOrigin(new Vector2f(40f,40f));
 		
-		this.getView().setCurrentTypeAnimation(TYPE_ANIMATION.NON);
+		
+		// initialisa la vue avec l'origine du sprite
+		this.getView().getSprite().setOrigin(new Vector2f(40f,40f));
+		// spécifie à la vue l'animation à joué par défaut
+		this.getView().playAnimation(TYPE_ANIMATION.NON);
 		
 		// ajout au event manager
 		EventManager.addCallBack(this);
@@ -78,21 +81,21 @@ public class KnighController extends UnityBaseController {
 		
 		if(keyboardEvent.key == Key.W)
 		{
-			this.getView().setCurrentTypeAnimation(TYPE_ANIMATION.WALK);
+			this.getView().playAnimation(TYPE_ANIMATION.WALK);
 		}
 		
 		if(keyboardEvent.key == Key.S)
 		{
-			this.getView().setCurrentTypeAnimation(TYPE_ANIMATION.STRIKE);
+			this.getView().playAnimation(TYPE_ANIMATION.STRIKE);
 		}
 		
 		if(keyboardEvent.key == Key.N)
 		{
 			NetHeader header = new NetHeader();
-			NetNewUnity nu = new NetNewUnity();
+			NetDataUnity nu = new NetDataUnity();
 			nu.setModel(this.getModel());
 			header.setMessage(nu);
-			header.setTypeMessage(TYPE.ADD);
+			header.setTypeMessage(TYPE.CREATE);
 			try 
 			{
 				NetManager.PackMessage(header);

@@ -12,37 +12,11 @@ import corePhysic.PhysicWorldManager;
 public class KnightModel extends UnityBaseModel
 {
 
-	public KnightModel() 
-	{
+	public KnightModel() {
 		super();
-		// création du body
-		// initialisation du body
-		BodyDef bdef = new BodyDef();
-		bdef.active = true;
-		bdef.bullet = false;
-		bdef.type = BodyType.KINEMATIC;
-		bdef.fixedRotation = false;
-		bdef.userData = this;
-	
-		//bdef.gravityScale = 0.0f;
-		
-		// creation du body
-		this.setBody(PhysicWorldManager.getWorld().createBody(bdef));
-		
-		Shape shape = new CircleShape();
-		shape.m_radius = 0.55f;
-		
-		FixtureDef fDef = new FixtureDef();
-		fDef.shape = shape;
-		fDef.density = 1.0f;
-		
-		fDef.friction = 0.0f;
-		fDef.restitution = 0.0f;
-	
-		Fixture fix = this.getBody().createFixture(fDef);
-		
-		// initialisation de la vitesse
-		this.speed = 6f;
+		// TODO Auto-generated constructor stub
 	}
+
+	
 	
 }

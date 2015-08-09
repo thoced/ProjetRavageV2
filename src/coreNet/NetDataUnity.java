@@ -2,7 +2,7 @@ package coreNet;
 
 import coreEntity.UnityBaseModel;
 
-public class NetCreateUnity extends NetBase 
+public class NetDataUnity extends NetBase 
 {
 	private UnityBaseModel model;
 
@@ -12,6 +12,12 @@ public class NetCreateUnity extends NetBase
 
 	public void setModel(UnityBaseModel model) {
 		this.model = model;
+	}
+
+	@Override
+	public String toString() {
+		// TODO Auto-generated method stub
+		return model.toString();
 	}
 	
 	

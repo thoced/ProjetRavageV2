@@ -30,13 +30,14 @@ import coreAI.AstarManager;
 import coreAI.Node;
 import coreEntity.KnighController;
 import coreEntity.Knight;
-import coreEntity.KnightNet;
 import coreEntity.Unity;
 import coreEntity.Unity.ANIMATE;
-import coreEntity.Unity.TYPEUNITY;
 import coreEntity.UnityBaseController;
+import coreEntity.UnityBaseController.ETAPE;
+import coreEntity.UnityBaseController.TYPEUNITY;
 import coreEntity.UnityBaseModel;
-import coreEntity.UnityNet;
+import coreEntity.UnityBaseView;
+import coreEntity.UnityNetController;
 import coreEvent.IEventCallBack;
 import coreGUI.IRegionSelectedCallBack;
 import coreGUIInterface.GuiManager;
@@ -44,6 +45,7 @@ import coreGUIInterface.panelFormation;
 import coreLevel.LevelManager;
 import coreNet.INetManagerCallBack;
 import coreNet.NetAddUnity;
+import coreNet.NetDataUnity;
 import coreNet.NetHeader;
 import coreNet.NetHeader.TYPE;
 import coreNet.NetHello;
@@ -70,11 +72,11 @@ public class EntityManager implements IBaseRavage,IEventCallBack,IRegionSelected
 	// vecteur de killed
 	private static List<UnityBaseController> vectorUnityKilled;
 	// vecteur des unity du joueur adverse (réseau)
-	//private static List<UnityNet> vectorUnityNet;
+	//private static List<UnityNetController> vectorUnityNet;
 	
-	//private static Hashtable<Integer,UnityNet> vectorUnityNet;
+	private static Hashtable<Integer,UnityNetController> vectorUnityNet;
 	// vecteur net killed
-//	private static List<Unity> vectorUnityNetKilled;
+	private static List<UnityNetController> vectorUnityNetKilled;
 	
 	// test clock
 	private Clock clock;
@@ -111,8 +113,8 @@ public class EntityManager implements IBaseRavage,IEventCallBack,IRegionSelected
 		listUnitySelected = new ArrayList<UnityBaseController>();
 		// instance vectorunitynet
 		//vectorUnityNet = new ArrayList<UnityNet>();
-	//	vectorUnityNet = new Hashtable<Integer,UnityNet>();
-		//vectorUnityNetKilled = new ArrayList<Unity>();
+		vectorUnityNet = new Hashtable<Integer,UnityNetController>();
+		vectorUnityNetKilled = new ArrayList<UnityNetController>();
 		
 		clock = new Clock();
 		delta = Time.ZERO;
@@ -134,11 +136,11 @@ public class EntityManager implements IBaseRavage,IEventCallBack,IRegionSelected
 			
 		}
 		// on parse les unités adverses (réseau)
-	/*	for(Unity unity :vectorUnityNet.values())
+		for(UnityNetController unity :vectorUnityNet.values())
 		{
 			unity.update(deltaTime);
 		}
-		*/
+		
 		
 		
 		
@@ -154,14 +156,14 @@ public class EntityManager implements IBaseRavage,IEventCallBack,IRegionSelected
 			if(unity.getModel().getEnemy() == null) // si aucun enemy n'est encore attribué.
 			{
 				// on lance la recherche
-				List<UnityBaseController> listEnemy = this.searchEnemyZone(unity);
+				List<UnityNetController> listEnemy = this.searchEnemyZone(unity);
 				if(listEnemy != null && listEnemy.size() > 0)
 				{
 					// on selectionne au hazard
 					Random rand = new Random();
 					int ind = rand.nextInt(listEnemy.size());
 					// on récupère l'enemy
-					UnityBaseController enemy = listEnemy.get(ind);
+					UnityNetController enemy = listEnemy.get(ind);
 					// on attribue l'enemy
 					
 					unity.getModel().setEnemy(enemy);
@@ -182,14 +184,14 @@ public class EntityManager implements IBaseRavage,IEventCallBack,IRegionSelected
 		this.vectorUnityKilled.clear();
 		
 		// on regarde si il n'existe pas d'unité à supprimer dans le vecteur unitykilled Net
-		/*	if(this.vectorUnityNetKilled.size() > 0)
+			if(this.vectorUnityNetKilled.size() > 0)
 			{
-				for(Unity u : this.vectorUnityNetKilled)
+				for(UnityNetController u : this.vectorUnityNetKilled)
 				{
-					this.vectorUnityNet.remove(u.getId());
+					this.vectorUnityNet.remove(u.getModel().getId());
 				}
 			}
-		this.vectorUnityNetKilled.clear();*/
+		this.vectorUnityNetKilled.clear();
 		
 	
 	}
@@ -220,13 +222,25 @@ public class EntityManager implements IBaseRavage,IEventCallBack,IRegionSelected
 		EntityManager.vectorUnity = vectorUnity;
 	}
 
-	/*public static Hashtable<Integer, UnityNet> getVectorUnityNet() {
+	
+
+	public static Hashtable<Integer, UnityNetController> getVectorUnityNet() {
 		return vectorUnityNet;
 	}
 
-	public static void setVectorUnityNet(Hashtable<Integer, UnityNet> vectorUnityNet) {
+	public static List<UnityNetController> getVectorUnityNetKilled() {
+		return vectorUnityNetKilled;
+	}
+
+	public static void setVectorUnityNet(
+			Hashtable<Integer, UnityNetController> vectorUnityNet) {
 		EntityManager.vectorUnityNet = vectorUnityNet;
-	}*/
+	}
+
+	public static void setVectorUnityNetKilled(
+			List<UnityNetController> vectorUnityNetKilled) {
+		EntityManager.vectorUnityNetKilled = vectorUnityNetKilled;
+	}
 
 	@Override
 	public void onMousePressed(MouseButtonEvent mouseEvent) 
@@ -262,7 +276,7 @@ public class EntityManager implements IBaseRavage,IEventCallBack,IRegionSelected
 		{
 			Vector2f p = Vector2f.div(posMouseWorld, PhysicWorldManager.getRatioPixelMeter());
 			// on teste si on ne clic pas sur un ennimi, si non en rentre dans le code de formation et de destination
-			UnityBaseController unityPicked = this.getUnityPicked(p.x,p.y);
+			UnityNetController unityPicked = this.getUnityPicked(p.x,p.y);
 			if(unityPicked != null)
 			{
 			
@@ -294,12 +308,28 @@ public class EntityManager implements IBaseRavage,IEventCallBack,IRegionSelected
 		{
 			KnighController knight = new KnighController();
 			knight.getModel().setPosition(new Vec2(NetManager.getPosxStartFlag(),NetManager.getPosyStartFlag()));
+			knight.getModel().setSpeed(6f);
 			knight.getModel().setId((EntityManager.getNewIdUnity()));
 			knight.getModel().setMyCamp(EntityManager.getCampSelected());
 			knight.getModel().setIdType(TYPEUNITY.KNIGHT);
+			knight.getModel().initModel();
 			knight.init();
-			knight.createBody();
 			EntityManager.getVectorUnity().put(knight.getModel().getId(), knight);
+			// emission sur le réseau de l'unité
+			NetHeader header = new NetHeader();
+			NetDataUnity create = new NetDataUnity();
+			knight.prepareModelToNet();
+			create.setModel(knight.getModel());
+			header.setMessage(create);
+			header.setTypeMessage(TYPE.CREATE);
+			System.out.println("envoie du header : " );
+			try
+			{
+				NetManager.PackMessage(header);
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		
 			
 			
@@ -332,21 +362,7 @@ public class EntityManager implements IBaseRavage,IEventCallBack,IRegionSelected
 			}*/
 		}
 		
-		if(keyboardEvent.key == Keyboard.Key.B )
-		{	
-			// ajout d'un ennemi pour les test
-			NetAddUnity unity = new NetAddUnity();
-			unity.setIdUnity(idTestUnity);
-			unity.setTypeUnity(TYPEUNITY.KNIGHT);
-			unity.setPosx(48);
-			unity.setPosy(28);
-			unity.setRotation(0f);
-			unity.setCampUnity(CAMP.BLUE);
-			idTestUnity++;
-			this.onAddUnity(unity);
-			
-			
-		}
+		 
 		
 	}
 
@@ -412,84 +428,7 @@ public class EntityManager implements IBaseRavage,IEventCallBack,IRegionSelected
 		
 	}
 
-	@Override
-	public void onAddUnity(NetAddUnity unity)
-	{
-	/*	switch(unity.getTypeUnity())
-		{
-		case KNIGHT: KnightNet u = new KnightNet();
-					u.init();
-					u.setPosition(unity.getPosx(), unity.getPosy());;
-					u.setId(unity.getIdUnity());
-					u.setMyCamp(unity.getCampUnity());
-					vectorUnityNet.put(u.getId(), u);
-					break;
-		}*/
-		
-		
-	}
 	
-	@Override
-	public void onMoveUnity(NetMoveUnity unity)
-	{
-		// réception du unity move réseau	
-		// on récupère le bon unity
-				
-		/*UnityNet un = vectorUnityNet.get(unity.getId());
-		if(un != null)
-		{
-			// l'unité est trouvée
-			Node n = new Node(unity.getNextPosx(),unity.getNextPosy(),true);
-			un.setPosXYMeter(unity.getPosx(),unity.getPosy());
-			un.setNext(n);
-			un.setVecDirFormation(unity.getVecDirFormation());
-			un.setAnimate(ANIMATE.WALK); // on active l'animation de mouvement
-					
-		}
-		else
-		{
-			// l'unité n'est pas trouvé suite à un probleme réseau, il faut donc l'ajouter
-			// création d'une unité venant du réseau
-			UnityNet u= new UnityNet();
-			u.init();
-			u.setPosition(unity.getPosx(), unity.getPosy());;
-			u.setId(unity.getId());
-			// ajout dans le vecteur unity réseau
-			//vectorUnityNet.add(u);
-			vectorUnityNet.put(u.getId(), u);
-		}
-		*/
-	
-	}
-	
-	@Override
-	public void onStrike(NetStrike strike)
-	{
-		/*
-		// on réceptionne un message de frappe sur notre unité.
-		// on va récupéré l'unité en question
-		Unity unity = this.vectorUnity.get(strike.getIdTarget());
-		// on va la frapper
-		if(unity != null)
-			unity.setDamage(strike.getForce());
-		
-		// il faut récupérer l'unité réseau qui frappe pour lui jouer l'animation
-		Unity unityNet = this.vectorUnityNet.get(strike.getIdStriker());
-		if(unityNet != null)
-			unityNet.setAnimate(ANIMATE.STRIKE);*/
-	}
-	
-	@Override
-	public void onKill(NetKill kill)
-	{
-		/*
-		// on recoit le message de mort d'une unité adverse
-		Unity unity = this.vectorUnityNet.get(kill.getId());
-		if(unity != null)
-			unity.setKill();
-			*/
-		
-	}
 
 	public static int getNewIdUnity()
 	{
@@ -498,19 +437,7 @@ public class EntityManager implements IBaseRavage,IEventCallBack,IRegionSelected
 		return EntityManager.cptIdUnity;
 	}
 
-	@Override
-	public void onSynchronize(NetSynchronize sync) 
-	{/*
-		UnityNet un = vectorUnityNet.get(sync.getIdUnity());
-		if(un != null)
-		{
-			
-			un.setPosXYMeter(sync.getPosx(),sync.getPosy());
-			
-		//	un.getBody().setTransform(un.getBody().getPosition(),sync.getRotation());
-					
-		}*/
-	}
+	
 
 	@Override
 	public void onMouse(MouseEvent buttonEvent) {
@@ -733,7 +660,7 @@ public class EntityManager implements IBaseRavage,IEventCallBack,IRegionSelected
 
 	}
 	
-	public UnityBaseController getUnityPicked(float x,float y)
+	public UnityNetController getUnityPicked(float x,float y)
 	{
 		   AABB tree = new AABB();
 		   tree.lowerBound.set(new Vec2(x - 2f,y - 2f));
@@ -742,10 +669,10 @@ public class EntityManager implements IBaseRavage,IEventCallBack,IRegionSelected
 		   PhysicWorldManager.getWorld().queryAABB(listRegion, tree);
 
 		   // on récupère la liste des bodys dans la région
-		   List<UnityBaseController> list = listRegion.getListEnemy();
+		   List<UnityNetController> list = listRegion.getListEnemy();
 		   if(list != null)
 		   {
-			   for(UnityBaseController unity : list) // on liste et on récupère l'objet picked
+			   for(UnityNetController unity : list) // on liste et on récupère l'objet picked
 			   {
 	
 				   Vec2 diff = new Vec2(x,y).sub(unity.getModel().getPosition());
@@ -776,7 +703,7 @@ public class EntityManager implements IBaseRavage,IEventCallBack,IRegionSelected
 	}
 
 	// methode qui recherche les enemys à proximité
-	public List<UnityBaseController> searchEnemyZone(UnityBaseController unity)
+	public List<UnityNetController> searchEnemyZone(UnityBaseController unity)
 	{
 		// créatin du AABB
 		AABB region = new AABB();
@@ -791,7 +718,7 @@ public class EntityManager implements IBaseRavage,IEventCallBack,IRegionSelected
 		
 	}
 	
-	public static UnityBaseController searchEnemyZoneNear(Unity unity)
+	public static UnityNetController searchEnemyZoneNear(Unity unity)
 	{
 		// créatin du AABB
 		AABB region = new AABB();
@@ -802,12 +729,12 @@ public class EntityManager implements IBaseRavage,IEventCallBack,IRegionSelected
 		ListBodyEnemyForOneRegion queryCallBack = new ListBodyEnemyForOneRegion();
 		PhysicWorldManager.getWorld().queryAABB(queryCallBack, region);
 		
-		List<UnityBaseController> list = queryCallBack.getListEnemy();
+		List<UnityNetController> list = queryCallBack.getListEnemy();
 		// on regarde l'enemy le plus proche
 		if(list.size() > 0)
 		{
-			UnityBaseController best = list.get(0); // on prend le premier
-			for(UnityBaseController u : list)
+			UnityNetController best = list.get(0); // on prend le premier
+			for(UnityNetController u : list)
 			{
 				if((best.getModel().getPosition().sub(unity.getBody().getPosition()).length() > (u.getModel().getBody().getPosition().sub(u.getModel().getBody().getPosition()).length())))
 					{
@@ -878,6 +805,45 @@ public class EntityManager implements IBaseRavage,IEventCallBack,IRegionSelected
 		}
 		return false;
 	}
+
+	@Override
+	public void onCreateUnity(NetDataUnity unity) 
+	{
+		// création d'une unité enemy réseau
+		UnityNetController controller = new UnityNetController(); // creation du controller pour l'enemy
+		controller.setModel(unity.getModel());					  // placement du model obtenu par le réseau
+		controller.getModel().initModel();						  // initialisation du model
+		
+		UnityBaseView view = new UnityBaseView(controller.getModel(),controller); // création de la vue pour l'enemy
+		controller.setView(view);								  // on spécifie la vue au controller
+		controller.init();										  // initilisation du controller
+		this.vectorUnityNet.put(controller.getModel().getId(), controller); // ajout du controller dans le vecteur
+		System.out.println(controller.getModel().getId());
+		
+	}
+
+	@Override
+	public void onUpdateUnity(NetDataUnity unity)
+	{
+		// réception d'une update sur un enemy
+		// on récupère le controller dans le vecteur enemy
+		UnityNetController controller = this.vectorUnityNet.get(unity.getModel().getId());
+		if(controller != null)
+		{
+			// on remplace le model par le nouveau model arrivé
+			controller.setModel(unity.getModel());
+			// on initialise le model
+			controller.getModel().initModel();
+			controller.setSequencePath(ETAPE.GETSTEP); // on spécifie au controller la sequence à adopter pourl a recheche de chemin
+		}
+		else
+		{
+			this.onCreateUnity(unity); // si l'unité n'avait pas été créer (suite probleme réseau), alors on crée l'unité enemy
+		}
+			
+		
+	}
+
 
 	
 

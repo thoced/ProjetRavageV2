@@ -1,5 +1,6 @@
 package coreEntity;
 
+import java.io.IOException;
 import java.util.List;
 
 import org.jbox2d.common.Rot;
@@ -18,6 +19,10 @@ import coreAI.Node;
 import coreEntity.Unity.ANIMATE;
 import coreEntity.UnityBaseView.TYPE_ANIMATION;
 import coreEvent.IEventCallBack;
+import coreNet.NetDataUnity;
+import coreNet.NetHeader;
+import coreNet.NetHeader.TYPE;
+import coreNet.NetManager;
 import ravage.IBaseRavage;
 
 public  class UnityBaseController implements IBaseRavage,ICallBackAStar,IEventCallBack
@@ -34,9 +39,11 @@ public  class UnityBaseController implements IBaseRavage,ICallBackAStar,IEventCa
 	
 	protected Object lock;
 	
-	protected ETAPE etape = ETAPE.NONE;
+	protected ETAPE sequencePath = ETAPE.NONE;
 	
-	protected enum ETAPE {GETSTEP,MOVE,NONE};
+	public enum ETAPE {GETSTEP,MOVE,NONE};
+	
+	public  enum TYPEUNITY {KNIGHT};
 	
 
 	public UnityBaseController() {
@@ -46,10 +53,18 @@ public  class UnityBaseController implements IBaseRavage,ICallBackAStar,IEventCa
 		
 	}
 	
-	public  void createBody()
+	public void prepareModelToNet()
 	{
+		// prépare le model pour être envoyé au réseau car body et enemy ne sont pas sérialisés
+	//	this.getModel().setPosition(this.getModel().getBody().getPosition());
+	//	this.getModel().setRotation(this.getModel().getBody().getAngle());
+		if(this.getModel().getEnemy() != null)
+			this.getModel().setIdEnemy(this.getModel().getEnemy().getModel().getId());
+		this.getModel().setOrigineSprite(this.getView().getSprite().getOrigin());
+	
 		
 	}
+	
 
 	public UnityBaseView getView() {
 		return view;
@@ -86,17 +101,18 @@ public  class UnityBaseController implements IBaseRavage,ICallBackAStar,IEventCa
 			this.getModel().getBody().setLinearVelocity(dir.mul(this.getModel().getSpeed()));
 			System.out.println(dir);
 			// modification de l'animation 
-			this.getView().setCurrentTypeAnimation(TYPE_ANIMATION.WALK);
+			this.getView().playAnimation(TYPE_ANIMATION.WALK);
 			// modifiation de l'etape en move
-			this.etape = ETAPE.MOVE;
+			this.sequencePath = ETAPE.MOVE;
+			
 		}
 		catch(IndexOutOfBoundsException iooe)
 		{
 			this.getModel().setPaths(null);
 			this.getModel().getBody().setLinearVelocity(new Vec2(0,0));
-			this.getView().setCurrentTypeAnimation(TYPE_ANIMATION.NON);
+			this.getView().playAnimation(TYPE_ANIMATION.NON);
 			System.out.println("index out");
-			this.etape = ETAPE.NONE;
+			this.sequencePath = ETAPE.NONE;
 		}
 	}
 	
@@ -123,7 +139,7 @@ public  class UnityBaseController implements IBaseRavage,ICallBackAStar,IEventCa
 				// l'unité est arrivé sur une étape (step)
 				step = null;
 				this.getModel().getBody().setLinearVelocity(new Vec2(0f,0f));
-				this.etape = ETAPE.GETSTEP;
+				this.sequencePath = ETAPE.GETSTEP;
 			
 			}
 			
@@ -154,7 +170,7 @@ public  class UnityBaseController implements IBaseRavage,ICallBackAStar,IEventCa
 		{
 	
 			// switch pour les mouvements
-			switch(etape)
+			switch(sequencePath)
 			{
 				case NONE:  	this.computeRotation(this.getModel().dirFormation); // retourne l'unité en formation
 								break;
@@ -207,10 +223,35 @@ public  class UnityBaseController implements IBaseRavage,ICallBackAStar,IEventCa
 			step = null;
 			vecStep = null;
 			this.getModel().setPaths(finalPath);
-			this.etape = ETAPE.GETSTEP;
+			this.sequencePath = ETAPE.GETSTEP;
+			
+			// emission sur le réseau
+			NetHeader header = new NetHeader();
+			NetDataUnity data = new NetDataUnity();
+			this.prepareModelToNet();
+			data.setModel(this.getModel());
+			header.setMessage(data);
+			header.setTypeMessage(TYPE.UPDATE);
+			try 
+			{
+				NetManager.PackMessage(header);
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		}
 		
 		
+	}
+	
+	
+
+	public ETAPE getSequencePath() {
+		return sequencePath;
+	}
+
+	public void setSequencePath(ETAPE sequencePath) {
+		this.sequencePath = sequencePath;
 	}
 
 	@Override

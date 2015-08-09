@@ -259,7 +259,7 @@ public abstract class Unity implements IBaseRavage,ICallBackAStar
 	protected void NetKill(int id)
 	{
 		// emission sur le réseau que je suis mort
-		NetHeader header = new NetHeader();
+		/*NetHeader header = new NetHeader();
 		header.setTypeMessage(TYPE.KILL);
 		NetKill kill = new NetKill();
 		kill.setId(id);
@@ -273,7 +273,7 @@ public abstract class Unity implements IBaseRavage,ICallBackAStar
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-		}
+		}*/
 	}
 	
 	protected void NetStrike(int idTarget, int force)
@@ -281,7 +281,7 @@ public abstract class Unity implements IBaseRavage,ICallBackAStar
 		// test de sang
 				//BloodManager.addBlood(this.getPosx(), this.getPosy());
 		// emission d'une frappe sur le reseau
-		NetHeader header = new NetHeader();
+	/*	NetHeader header = new NetHeader();
 		header.setTypeMessage(TYPE.STRIKE);
 		NetStrike strike = new NetStrike();
 		strike.setIdStriker(this.getId());
@@ -298,12 +298,12 @@ public abstract class Unity implements IBaseRavage,ICallBackAStar
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
+		*/
 	}
 	
 	protected void NetSend(float x,float y,float dx,float dy,Vec2 vecDir)
 	{
-		    NetHeader header = new NetHeader();
+		 /*   NetHeader header = new NetHeader();
 			header.setTypeMessage(TYPE.MOVE);
 			NetMoveUnity move = new NetMoveUnity();
 			move.setId(this.getId());
@@ -323,13 +323,13 @@ public abstract class Unity implements IBaseRavage,ICallBackAStar
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-		 
+		 */
 	}
 	
 	
 	protected void NetSendSynchronise()
 	{
-		NetHeader header = new NetHeader();
+		/*NetHeader header = new NetHeader();
 		header.setTypeMessage(TYPE.SYNC);
 		NetSynchronize sync = new NetSynchronize();
 		sync.setIdUnity(this.getId());
@@ -347,7 +347,7 @@ public abstract class Unity implements IBaseRavage,ICallBackAStar
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-		}
+		}*/
 	}
 	
 	protected float lerp(float value, float start, float end)

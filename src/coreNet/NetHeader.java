@@ -27,6 +27,12 @@ public class NetHeader implements Serializable
 	public void setTypeMessage(TYPE typeMessage) {
 		this.typeMessage = typeMessage;
 	}
+
+	@Override
+	public String toString() {
+		// TODO Auto-generated method stub
+		return typeMessage.toString();
+	}
 	
 	
 }

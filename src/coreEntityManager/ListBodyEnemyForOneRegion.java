@@ -8,18 +8,18 @@ import org.jbox2d.dynamics.Body;
 import org.jbox2d.dynamics.Fixture;
 
 import coreEntity.UnityBaseController;
-import coreEntity.UnityNet;
+import coreEntity.UnityNetController;
 
 public class ListBodyEnemyForOneRegion implements QueryCallback {
 
 	
 	// list des body dans la région
-	private List<UnityBaseController> listUnityEnemy;
+	private List<UnityNetController> listUnityEnemy;
 	
 	public ListBodyEnemyForOneRegion()
 	{
 		// instance de listbody
-		this.listUnityEnemy = new ArrayList<UnityBaseController>();
+		this.listUnityEnemy = new ArrayList<UnityNetController>();
 	}
 	
 	@Override
@@ -28,11 +28,11 @@ public class ListBodyEnemyForOneRegion implements QueryCallback {
 		//on récupère le body
 		Body b = arg0.getBody();
 		// si le userdate provient de la class unity on incrément le nb
-		if(b.getUserData() != null && b.getUserData().getClass() != String.class && b.getUserData().getClass().getSuperclass() == UnityNet.class)
+		/*if(b.getUserData() != null && b.getUserData().getClass() != String.class && b.getUserData().getClass().getSuperclass() == UnityNet.class)
 		{
 			// ajout dans la liste body
 			this.listUnityEnemy.add((UnityBaseController)b.getUserData());
-		}
+		}*/
 		
 		return true;
 	}
@@ -43,7 +43,7 @@ public class ListBodyEnemyForOneRegion implements QueryCallback {
 		return this.listUnityEnemy.size();
 	}
 
-	public List<UnityBaseController> getListEnemy() {
+	public List<UnityNetController> getListEnemy() {
 		return listUnityEnemy;
 	}
 

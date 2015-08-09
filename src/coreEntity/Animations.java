@@ -1,8 +1,10 @@
 package coreEntity;
 
+import java.io.Serializable;
+
 import org.jsfml.graphics.IntRect;
 
-public class Animations 
+public class Animations implements Serializable
 {
 	private IntRect[] animations;
 

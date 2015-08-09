@@ -23,6 +23,7 @@ import coreEntityManager.EntityManager;
 import coreEntityManager.EntityManager.CAMP;
 import coreNet.INetManagerCallBack;
 import coreNet.NetAddUnity;
+import coreNet.NetDataUnity;
 import coreNet.NetHeader;
 import coreNet.NetHeader.TYPE;
 import coreNet.NetHello;
@@ -68,6 +69,7 @@ public class menuDialogRavage extends JDialog implements ActionListener, INetMan
 	private JRadioButton rOui;
 	private JComboBox comboResolution;
 	private JComboBox cCamp;
+	private JComboBox cConfigPort;
 	
 	
 	
@@ -188,6 +190,15 @@ public class menuDialogRavage extends JDialog implements ActionListener, INetMan
 		cCamp.setBounds(404, 85, 168, 20);
 		getContentPane().add(cCamp);
 		
+		JLabel lblNewLabel_7 = new JLabel("Config test Port:\r\n");
+		lblNewLabel_7.setBounds(10, 104, 153, 14);
+		getContentPane().add(lblNewLabel_7);
+		
+		cConfigPort = new JComboBox();
+		cConfigPort.setModel(new DefaultComboBoxModel(new String[] {"Config 1 : App (1234) -> App (4321)", "Config 2 : App (4321) -> App (1234)"}));
+		cConfigPort.setBounds(126, 101, 228, 20);
+		getContentPane().add(cConfigPort);
+		
 		builderString = new StringBuilder();
 		
 		 mt = new menuThread(netManager);
@@ -195,6 +206,11 @@ public class menuDialogRavage extends JDialog implements ActionListener, INetMan
 		 
 		
 
+	}
+	
+	public String getConfig()
+	{
+		return this.cConfigPort.getSelectedItem().toString();
 	}
 	
 	public boolean isFullScreen()
@@ -234,6 +250,7 @@ public class menuDialogRavage extends JDialog implements ActionListener, INetMan
 	public void actionPerformed(ActionEvent e) 
 	{
 		// TODO Auto-generated method stub
+		
 		
 		
 		if(e.getActionCommand().equals("LAUNCH"))
@@ -306,30 +323,15 @@ public class menuDialogRavage extends JDialog implements ActionListener, INetMan
 		editorConsole.setText(builderString.toString() + System.getProperty("line.separator"));
 		
 	}
+
 	@Override
-	public void onAddUnity(NetAddUnity unity) {
-		// TODO Auto-generated method stub
-		
-	}
-	@Override
-	public void onMoveUnity(NetMoveUnity unity) {
-		// TODO Auto-generated method stub
-		
-	}
-	@Override
-	public void onSynchronize(NetSynchronize sync) {
+	public void onCreateUnity(NetDataUnity unity) {
 		// TODO Auto-generated method stub
 		
 	}
 
 	@Override
-	public void onStrike(NetStrike strike) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void onKill(NetKill kill) {
+	public void onUpdateUnity(NetDataUnity unity) {
 		// TODO Auto-generated method stub
 		
 	}

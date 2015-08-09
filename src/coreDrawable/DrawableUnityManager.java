@@ -20,6 +20,7 @@ import CoreTexturesManager.TexturesManager;
 import coreEntity.Knight;
 import coreEntity.Unity;
 import coreEntity.UnityBaseController;
+import coreEntity.UnityNetController;
 import coreEntityManager.EntityManager;
 import coreEntityManager.EntityManager.CAMP;
 import ravage.IBaseRavage;
@@ -104,10 +105,18 @@ public class DrawableUnityManager implements IBaseRavage, Drawable
 		// on appel le BACK draw
 		this.CallBackDrawableBACK(arg0, arg1);
 		
+		// affichage des unités
 		for(UnityBaseController unity : EntityManager.getVectorUnity().values() )
 		{
 			unity.getView().draw(arg0, arg1);
 		}
+		
+		// affichage des unités enemy
+		for(UnityNetController unity : EntityManager.getVectorUnityNet().values() )
+		{
+			unity.getView().draw(arg0, arg1);
+		}
+		
 		/*
 		for(UnityBaseController unity : EntityManager.getVectorUnity().values() )
 		{

@@ -2,7 +2,7 @@ package coreNet;
 
 import coreEntity.UnityBaseModel;
 
-public class NetNewUnity extends NetBase 
+public class NetCreateUnity extends NetBase 
 {
 	private UnityBaseModel model;
 

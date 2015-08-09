@@ -133,22 +133,22 @@ public class NetManager implements IBaseRavage
 	
 	public static void PackMessage(NetHeader header) throws IOException
 	{
-		if(netDatagram == null)
+		if(netDatagram == null) // si le netDatagram est null, on le crée sinon on utilise celui déja existant
 			createNetDatagram();
 		
-		if(netDatagram.getListHeader().size() < MAX_INFO_IN_DATAGRAM)
+		if(netDatagram.getListHeader().size() < MAX_INFO_IN_DATAGRAM) // si le netDatagram contient moin de max_info_in_datagram, on ajoute le header
 		{
 			netDatagram.getListHeader().add(header);
 		}
 		else
 		{
-			netDatagram.getListHeader().add(header);
+			netDatagram.getListHeader().add(header); // sinon on ajoute le header et on envoie le message sur le réseau
 			// emission
 			SendDatagram();
 			// clear du netdatagram
-			netDatagram.clear();
+			netDatagram.clear();					// vidage du netdatagram
 			// création d'un nouveau datagram
-			createNetDatagram();
+			createNetDatagram();					// création d'un nouveau net datagram
 		}
 		/*
 		 * 
@@ -192,12 +192,12 @@ public class NetManager implements IBaseRavage
 				try 
 				{
 					// envoie
-					if(netDatagram.getListHeader().size() > 0)
+					if(netDatagram.getListHeader().size() > 0) // si il y a au moins 1 message dans le netDatagram, on envoie sur le réseau
 					{
-						SendDatagram();
+						SendDatagram(); 			// envoie sur le réseau
 						// suppression
-						netDatagram.clear();
-						createNetDatagram();
+						netDatagram.clear(); 		// vidage du netDatagram
+						createNetDatagram(); 		// création d'un nouveau NetDatagram
 					}
 					
 				} catch (IOException e) {
@@ -207,26 +207,11 @@ public class NetManager implements IBaseRavage
 		
 		
 		// on vérifie si il n'y a pas qlq chose dans le listnetmessage
-		lock.lock();
-		
-	/*	while(listNetMessage.size() > 0)
-		{
-			// on récupère le premier placé
-			header = listNetMessage.get(0);
-			// on supprime le premier placé
-			listNetMessage.remove(0);
-			
-			if(header != null)	// appel au dispatcher
-				dispatcher(header);
-
-		}*/
-		
-	
-		
+		lock.lock();	// lock du semaphore
 		
 		
 		// code de réception de données par le réseau
-		while(listNetDatagram.size() > 0)
+		while(listNetDatagram.size() > 0) // si il y a au moins 1 nouveau message arrivé
 		{
 			// on récupère le Netdatagram
 			NetDatagram datagram = listNetDatagram.get(0);
@@ -254,7 +239,7 @@ public class NetManager implements IBaseRavage
 			listNetDatagram.clear();
 			listNetDatagram = new ArrayList<NetDatagram>();
 		
-		lock.unlock();
+		lock.unlock(); // unlock du semaphore
 	
 
 	}
@@ -266,29 +251,9 @@ public class NetManager implements IBaseRavage
 			case HELLO: NetHello hello = (NetHello)header.getMessage();
 						callBackHello(hello);
 						break;
-			
-			case ADD: 	NetAddUnity unity = (NetAddUnity)header.getMessage();
-					  	callBackAdd(unity);
-					  	break;
-			
-			case MOVE: 	NetMoveUnity munity = (NetMoveUnity)header.getMessage();
-					   	callBackMove(munity);
-					   	break;
-					   	
-			case SYNC: 	NetSynchronize sync = (NetSynchronize)header.getMessage();
-						callBackSync(sync);
-						break;
 						
-			case STRIKE: NetStrike strike = (NetStrike)header.getMessage();
-						callBackStrike(strike);
-						break;
-						
-			case KILL: NetKill kill = (NetKill)header.getMessage();
-						callBackKill(kill);
-						break;
-			
-	
-								   	
+			case CREATE:
+										   	
 			default: break;
 		}
 	}

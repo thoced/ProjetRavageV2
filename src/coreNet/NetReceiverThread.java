@@ -44,7 +44,8 @@ public class NetReceiverThread extends Thread
 				ByteArrayInputStream bais = new ByteArrayInputStream(b);
 				ObjectInputStream ois = new ObjectInputStream(bais);
 				//NetHeader header = (NetHeader) ois.readObject();
-				NetDatagram data = (NetDatagram) ois.readObject();
+				//NetDatagram data = (NetDatagram) ois.readObject();
+				NetBase data = (NetBase) ois.readObject();
 				// push dans le netmanager
 				//NetManager.pushNetMessage(header);
 				

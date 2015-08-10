@@ -1,11 +1,14 @@
 package coreNet;
 
-import coreEntity.UnityBaseModel;
+import java.io.Serializable;
 
-public class NetDataUnity extends NetBase 
+import coreEntity.UnityBaseModel;
+import coreNet.NetHeader.TYPE;
+
+public class NetDataUnity extends NetBase implements Serializable
 {
 	private UnityBaseModel model;
-
+	
 	public UnityBaseModel getModel() {
 		return model;
 	}
@@ -19,6 +22,6 @@ public class NetDataUnity extends NetBase
 		// TODO Auto-generated method stub
 		return model.toString();
 	}
-	
+
 	
 }

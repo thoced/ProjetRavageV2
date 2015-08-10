@@ -19,10 +19,10 @@ import coreAI.Node;
 import coreEntity.Unity.ANIMATE;
 import coreEntity.UnityBaseView.TYPE_ANIMATION;
 import coreEvent.IEventCallBack;
+import coreNet.NetBase.TYPE;
 import coreNet.NetDataUnity;
-import coreNet.NetHeader;
-import coreNet.NetHeader.TYPE;
 import coreNet.NetManager;
+import coreNet.NetSendThread;
 import ravage.IBaseRavage;
 
 public  class UnityBaseController implements IBaseRavage,ICallBackAStar,IEventCallBack
@@ -226,19 +226,11 @@ public  class UnityBaseController implements IBaseRavage,ICallBackAStar,IEventCa
 			this.sequencePath = ETAPE.GETSTEP;
 			
 			// emission sur le réseau
-			NetHeader header = new NetHeader();
 			NetDataUnity data = new NetDataUnity();
 			this.prepareModelToNet();
 			data.setModel(this.getModel());
-			header.setMessage(data);
-			header.setTypeMessage(TYPE.UPDATE);
-			try 
-			{
-				NetManager.PackMessage(header);
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+			data.setTypeMessage(TYPE.UPDATE);
+			NetSendThread.push(data);
 		}
 		
 		

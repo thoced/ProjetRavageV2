@@ -23,13 +23,13 @@ import coreEntityManager.EntityManager;
 import coreEntityManager.EntityManager.CAMP;
 import coreNet.INetManagerCallBack;
 import coreNet.NetAddUnity;
+import coreNet.NetBase.TYPE;
 import coreNet.NetDataUnity;
-import coreNet.NetHeader;
-import coreNet.NetHeader.TYPE;
 import coreNet.NetHello;
 import coreNet.NetKill;
 import coreNet.NetManager;
 import coreNet.NetMoveUnity;
+import coreNet.NetSendThread;
 import coreNet.NetStrike;
 import coreNet.NetSynchronize;
 
@@ -293,16 +293,13 @@ public class menuDialogRavage extends JDialog implements ActionListener, INetMan
 			try
 			{
 				// on configure l'adresse ip du joueur aProjetRdverse
-				NetManager.configureIp(tIp.getText());
+				NetSendThread.configureIp(tIp.getText());
 				// création du message Hello
 				NetHello hello = new NetHello();
 				hello.setMessage("Bien le bonjour, je serai positionné en " + cFlags.getSelectedItem().toString() );
-				hello.setNickName(tNickName.getText());
-				NetHeader header = new NetHeader();
-				header.setMessage(hello);
-				header.setTypeMessage(TYPE.HELLO);
+				hello.setTypeMessage(TYPE.HELLO);
 				// emission
-				NetManager.PackMessage(header);
+				NetSendThread.push(hello);
 				//NetManager.SendMessage(header);
 					
 			} catch (IOException e1) 

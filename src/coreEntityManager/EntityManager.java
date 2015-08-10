@@ -45,13 +45,13 @@ import coreGUIInterface.panelFormation;
 import coreLevel.LevelManager;
 import coreNet.INetManagerCallBack;
 import coreNet.NetAddUnity;
+import coreNet.NetBase.TYPE;
 import coreNet.NetDataUnity;
-import coreNet.NetHeader;
-import coreNet.NetHeader.TYPE;
 import coreNet.NetHello;
 import coreNet.NetKill;
 import coreNet.NetManager;
 import coreNet.NetMoveUnity;
+import coreNet.NetSendThread;
 import coreNet.NetStrike;
 import coreNet.NetSynchronize;
 import corePhysic.PhysicWorldManager;
@@ -316,20 +316,12 @@ public class EntityManager implements IBaseRavage,IEventCallBack,IRegionSelected
 			knight.init();
 			EntityManager.getVectorUnity().put(knight.getModel().getId(), knight);
 			// emission sur le réseau de l'unité
-			NetHeader header = new NetHeader();
 			NetDataUnity create = new NetDataUnity();
 			knight.prepareModelToNet();
 			create.setModel(knight.getModel());
-			header.setMessage(create);
-			header.setTypeMessage(TYPE.CREATE);
+			create.setTypeMessage(TYPE.CREATE);
 			System.out.println("envoie du header : " );
-			try
-			{
-				NetManager.PackMessage(header);
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+			NetSendThread.push(create);
 		
 			
 			

@@ -31,13 +31,16 @@ public class NetManager implements IBaseRavage
 	
 	private static List<NetHeader> listNetMessage;
 	
-	private static List<NetDatagram> listNetDatagram;
+	//private static List<NetDatagram> listNetDatagram;
+	private static List<NetBase> listNetDatagram;
 	
 	// list des callback attachés au netmanager
 	private static  List<INetManagerCallBack> listCallBack;
 	
 	// NetReceiverThread
 	private NetReceiverThread netReceiver;
+	// NetSendThread
+	private NetSendThread netSend;
 	// Datagramsocket emission
 	private static DatagramSocket socketEmission;
 	// Inetadress
@@ -60,7 +63,7 @@ public class NetManager implements IBaseRavage
 		listCallBack = new ArrayList<INetManagerCallBack>();
 		// instance de listNetMessage
 		listNetMessage = new ArrayList<NetHeader>();
-		listNetDatagram = new ArrayList<NetDatagram>();
+		listNetDatagram = new ArrayList<NetBase>();
 		// instance du lock
 		lock = new ReentrantLock();
 		lockSend = new ReentrantLock();
@@ -100,7 +103,7 @@ public class NetManager implements IBaseRavage
 		lock.unlock();
 	}
 	
-	public static void pushNetDatagram(NetDatagram data)
+	public static void pushNetDatagram(NetBase data)
 	{
 		lock.lock();
 		
@@ -116,15 +119,19 @@ public class NetManager implements IBaseRavage
 		// lancement du NetReceiverThread
 		netReceiver = new NetReceiverThread();
 		netReceiver.start();
+		netSend = new NetSendThread();
+		netSend.start();
 		
 	}
 	
 	public static void configureIp(String ip) throws UnknownHostException, SocketException
 	{
 		// configure l'inetadress du joueur adverse
-		inet = InetAddress.getByName(ip);
+		//inet = InetAddress.getByName(ip);
 		// configure la socket
-		socketEmission = new DatagramSocket();
+		//socketEmission = new DatagramSocket();
+		
+		NetSendThread.configureIp(ip);
 	}
 	
 	/*public static void SendMessage(NetHeader header) throws IOException
@@ -147,85 +154,15 @@ public class NetManager implements IBaseRavage
 		
 	}*/
 	
-	public static void PackMessage(NetHeader header) throws IOException
-	{
-		if(netDatagram == null) // si le netDatagram est null, on le crée sinon on utilise celui déja existant
-			createNetDatagram();
-		
-		/*if(netDatagram.getListHeader().size() < MAX_INFO_IN_DATAGRAM) // si le netDatagram contient moin de max_info_in_datagram, on ajoute le header
-		{
-			netDatagram.getListHeader().add(header);
-		}
-		else
-		{
-			netDatagram.getListHeader().add(header); // sinon on ajoute le header et on envoie le message sur le réseau
-			// emission
-			SendDatagram();
-			// clear du netdatagram
-			netDatagram.clear();					// vidage du netdatagram
-			// création d'un nouveau datagram
-			//createNetDatagram();					// création d'un nouveau net datagram
-		}*/
-		
-		lockSend.lock();
-		netDatagram.getListHeader().add(header);
-			SendDatagram();
-		netDatagram.clear();
-		lockSend.unlock();
-	}
 	
-	public static void SendDatagram() throws IOException
-	{
-		// création du message en buffer
-		
-		
-		
-				ByteArrayOutputStream baos = new ByteArrayOutputStream();
-				ObjectOutputStream oos = new ObjectOutputStream(baos);
-				oos.writeObject(netDatagram);
-				// on récupère le buffer array
-				byte[] buffer = new byte[baos.size()];
-				buffer = baos.toByteArray();
-				// création d'un datagramudp
-				DatagramPacket datagram = new DatagramPacket(buffer,buffer.length);
-				System.out.println("taille paquet : " + buffer.length);
-				datagram.setPort(1234);
-				datagram.setAddress(inet);
-				// emission
-				if(socketEmission != null)
-				socketEmission.send(datagram);
-				
-				oos.close();
-				baos.close();
-		
-				
-			//	System.out.println("Buffer Size : " + String.valueOf(buffer.length));
-	}
-
+	
+	
 	
 	
 	@Override
 	public void update(Time deltaTime) 
 	{
-		//NetHeader header = null; 
-		
-		// code d'envoie du netDatagram
-				/*try 
-				{
-					// envoie
-					if(netDatagram.getListHeader().size() > 0) // si il y a au moins 1 message dans le netDatagram, on envoie sur le réseau
-					{
-						SendDatagram(); 			// envoie sur le réseau
-						// suppression
-						netDatagram.clear(); 		// vidage du netDatagram
-						//createNetDatagram(); 		// création d'un nouveau NetDatagram
-					}
-					
-				} catch (IOException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-		*/
+			
 		
 		// on vérifie si il n'y a pas qlq chose dans le listnetmessage
 		lock.lock();	// lock du semaphore
@@ -235,49 +172,39 @@ public class NetManager implements IBaseRavage
 		while(listNetDatagram.size() > 0) // si il y a au moins 1 nouveau message arrivé
 		{
 			// on récupère le Netdatagram
-			NetDatagram datagram = listNetDatagram.get(0);
+			NetBase data = listNetDatagram.get(0);
 			// on supprime le premier de la liste
 			listNetDatagram.remove(0);
 			
 			// on décapsule l'ensemble des NetHeader présent dans le datagram
-			while(datagram.getListHeader().size() > 0)
-			{
-				for(NetHeader header : datagram.getListHeader())
-				{
-					// on appel le dispatcher
-					if(header != null)
-						dispatcher(header);
-				}
+			
+					if(data != null)
+						dispatcher(data);
 				
-				// on supprime l'ensemble du datagram
-				datagram.getListHeader().clear();
-			}
-			
-			
 		}
 		
 		// clear du listnetdatagram
 			listNetDatagram.clear();
-			listNetDatagram = new ArrayList<NetDatagram>();
+			listNetDatagram = new ArrayList<NetBase>();
 		
 		lock.unlock(); // unlock du semaphore
-	
+
 
 	}
 	
-	private void dispatcher(NetHeader header)
+	private void dispatcher(NetBase data)
 	{
-		switch(header.getTypeMessage())
+		switch(data.getTypeMessage())
 		{
-			case HELLO: NetHello hello = (NetHello)header.getMessage();
+			case HELLO:  NetHello hello = (NetHello)data;
 						callBackHello(hello);
 						break;
 						
-			case CREATE: NetDataUnity create = (NetDataUnity)header.getMessage();
+			case CREATE: NetDataUnity create = (NetDataUnity)data;
 						 callBackCreate(create);
 						 break;
 						 
-			case UPDATE: NetDataUnity update = (NetDataUnity)header.getMessage();
+			case UPDATE: NetDataUnity update = (NetDataUnity)data;
 						 callBackUpdate(update);
 						 break;
 					
@@ -346,6 +273,7 @@ public class NetManager implements IBaseRavage
 	{
 		// fermeture de la connection et arret du thread
 		netReceiver.closeConnection();
+		netSend.closeThread();
 	}
 
 	@Override

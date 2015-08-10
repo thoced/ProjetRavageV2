@@ -89,23 +89,7 @@ public class KnighController extends UnityBaseController {
 			this.getView().playAnimation(TYPE_ANIMATION.STRIKE);
 		}
 		
-		if(keyboardEvent.key == Key.N)
-		{
-			NetHeader header = new NetHeader();
-			NetDataUnity nu = new NetDataUnity();
-			nu.setModel(this.getModel());
-			header.setMessage(nu);
-			header.setTypeMessage(TYPE.CREATE);
-			try 
-			{
-				NetManager.PackMessage(header);
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			
-			
-		}
+		
 	}
 
 	

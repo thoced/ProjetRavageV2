@@ -2,11 +2,16 @@ package coreDrawable;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
+import javafx.scene.Camera;
+
+import org.jbox2d.collision.AABB;
 import org.jbox2d.common.Rot;
 import org.jbox2d.common.Vec2;
 import org.jsfml.graphics.Drawable;
+import org.jsfml.graphics.FloatRect;
 import org.jsfml.graphics.PrimitiveType;
 import org.jsfml.graphics.RenderStates;
 import org.jsfml.graphics.RenderTarget;
@@ -17,12 +22,14 @@ import org.jsfml.system.Time;
 import org.jsfml.system.Vector2f;
 
 import CoreTexturesManager.TexturesManager;
+import coreCamera.CameraManager;
 import coreEntity.Knight;
 import coreEntity.Unity;
 import coreEntity.UnityBaseController;
 import coreEntity.UnityNetController;
 import coreEntityManager.EntityManager;
 import coreEntityManager.EntityManager.CAMP;
+import corePhysic.PhysicWorldManager;
 import ravage.IBaseRavage;
 
 public class DrawableUnityManager implements IBaseRavage, Drawable
@@ -56,6 +63,8 @@ public class DrawableUnityManager implements IBaseRavage, Drawable
 	private Sprite SpriteCurrent;
 	private Sprite SpriteCurrentNet;
 	
+	// Query de recherche d'affichage
+	private TreeSearchDraw treeSearch;
 
 	@Override
 	public void init() 
@@ -63,6 +72,9 @@ public class DrawableUnityManager implements IBaseRavage, Drawable
 		// TODO Auto-generated method stub
 		// crÃ©ation du VertexBuffer
 	 buffer = new VertexArray(PrimitiveType.QUADS);
+	 
+	 // instance de treeSearchDraw
+	 treeSearch = new TreeSearchDraw();
 	 
 	 // instance du listCallBackDrawable
 	 listCallBackDrawableBACK = new ArrayList<Drawable>();
@@ -105,8 +117,24 @@ public class DrawableUnityManager implements IBaseRavage, Drawable
 		// on appel le BACK draw
 		this.CallBackDrawableBACK(arg0, arg1);
 		
+		// appel à l'abre
+		AABB aabb = new AABB();
+		FloatRect fc = CameraManager.getCameraBounds();
+		aabb.lowerBound.set(new Vec2(fc.left / PhysicWorldManager.getRatioPixelMeter(), fc.top / PhysicWorldManager.getRatioPixelMeter()));
+		aabb.upperBound.set(new Vec2((fc.left + fc.width) / PhysicWorldManager.getRatioPixelMeter(), (fc.top + fc.height) / PhysicWorldManager.getRatioPixelMeter()));
+		treeSearch.clear();
+		PhysicWorldManager.getWorld().queryAABB(treeSearch, aabb);
+		
+		Iterator<UnityBaseController> i = treeSearch.getIterator();
+			while(i.hasNext())
+			{
+				UnityBaseController u = i.next();
+				u.getView().draw(arg0, arg1);
+			}
+		
+		
 		// affichage des unités
-		for(UnityBaseController unity : EntityManager.getVectorUnity().values() )
+		/*for(UnityBaseController unity : EntityManager.getVectorUnity().values() )
 		{
 			unity.getView().draw(arg0, arg1);
 		}
@@ -115,7 +143,7 @@ public class DrawableUnityManager implements IBaseRavage, Drawable
 		for(UnityNetController unity : EntityManager.getVectorUnityNet().values() )
 		{
 			unity.getView().draw(arg0, arg1);
-		}
+		}*/
 		
 		/*
 		for(UnityBaseController unity : EntityManager.getVectorUnity().values() )

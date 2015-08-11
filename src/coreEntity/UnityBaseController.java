@@ -23,6 +23,7 @@ import coreNet.NetBase.TYPE;
 import coreNet.NetDataUnity;
 import coreNet.NetManager;
 import coreNet.NetSendThread;
+import corePhysic.PhysicWorldManager;
 import ravage.IBaseRavage;
 
 public  class UnityBaseController implements IBaseRavage,ICallBackAStar,IEventCallBack
@@ -79,7 +80,12 @@ public  class UnityBaseController implements IBaseRavage,ICallBackAStar,IEventCa
 		this.view = view;
 	}
 
-	public void setModel(UnityBaseModel model) {
+	public void setModel(UnityBaseModel model) 
+	{
+		if(this.model != null) // si il existe déja un model, il faut supprimer le body
+		{
+			PhysicWorldManager.getWorld().destroyBody(this.model.getBody());
+		}
 		this.model = model;
 	}
 	
@@ -95,11 +101,9 @@ public  class UnityBaseController implements IBaseRavage,ICallBackAStar,IEventCa
 			
 			// soustraction pour déterminer le vecteur de direction + normalisation
 			dir = vecStep.sub(this.getModel().getBody().getPosition());
-			System.out.println("dir " + dir);
 			dir.normalize();
 			// déplacement 
 			this.getModel().getBody().setLinearVelocity(dir.mul(this.getModel().getSpeed()));
-			System.out.println(dir);
 			// modification de l'animation 
 			this.getView().playAnimation(TYPE_ANIMATION.WALK);
 			// modifiation de l'etape en move
@@ -111,7 +115,6 @@ public  class UnityBaseController implements IBaseRavage,ICallBackAStar,IEventCa
 			this.getModel().setPaths(null);
 			this.getModel().getBody().setLinearVelocity(new Vec2(0,0));
 			this.getView().playAnimation(TYPE_ANIMATION.NON);
-			System.out.println("index out");
 			this.sequencePath = ETAPE.NONE;
 		}
 	}

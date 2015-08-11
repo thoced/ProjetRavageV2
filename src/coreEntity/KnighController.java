@@ -38,7 +38,7 @@ public class KnighController extends UnityBaseController {
 		super();
 		// instance de la vue et du model
 		
-		this.setModel(new KnightModel());
+		this.setModel(new KnightModel(this));
 		this.setView(new KnightView(this.getModel(),this));
 	}
 

@@ -312,7 +312,7 @@ public class EntityManager implements IBaseRavage,IEventCallBack,IRegionSelected
 			knight.getModel().setId((EntityManager.getNewIdUnity()));
 			knight.getModel().setMyCamp(EntityManager.getCampSelected());
 			knight.getModel().setIdType(TYPEUNITY.KNIGHT);
-			knight.getModel().initModel();
+			knight.getModel().initModel(knight);
 			knight.init();
 			EntityManager.getVectorUnity().put(knight.getModel().getId(), knight);
 			// emission sur le réseau de l'unité
@@ -804,13 +804,12 @@ public class EntityManager implements IBaseRavage,IEventCallBack,IRegionSelected
 		// création d'une unité enemy réseau
 		UnityNetController controller = new UnityNetController(); // creation du controller pour l'enemy
 		controller.setModel(unity.getModel());					  // placement du model obtenu par le réseau
-		controller.getModel().initModel();						  // initialisation du model
+		controller.getModel().initModel(controller);						  // initialisation du model
 		
 		UnityBaseView view = new UnityBaseView(controller.getModel(),controller); // création de la vue pour l'enemy
 		controller.setView(view);								  // on spécifie la vue au controller
 		controller.init();										  // initilisation du controller
 		this.vectorUnityNet.put(controller.getModel().getId(), controller); // ajout du controller dans le vecteur
-		System.out.println(controller.getModel().getId());
 		
 	}
 
@@ -825,7 +824,7 @@ public class EntityManager implements IBaseRavage,IEventCallBack,IRegionSelected
 			// on remplace le model par le nouveau model arrivé
 			controller.setModel(unity.getModel());
 			// on initialise le model
-			controller.getModel().initModel();
+			controller.getModel().initModel(controller);
 			controller.setSequencePath(ETAPE.GETSTEP); // on spécifie au controller la sequence à adopter pourl a recheche de chemin
 		}
 		else

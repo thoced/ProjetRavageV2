@@ -30,6 +30,7 @@ public class CameraManager implements IBaseRavage, IEventCallBack
 	// Center
 	private Vector2f center;
 	
+	
 	public CameraManager(ConstView v)
 	{
 		// initialisation de la view
@@ -112,10 +113,12 @@ public class CameraManager implements IBaseRavage, IEventCallBack
 	
 	public static FloatRect getCameraBounds()
 	{
+		
 		Vector2f  size = CameraManager.view.getSize();
-		Vector2f centre = CameraManager.view.getCenter();
-		Vector2f source = Vector2f.sub(centre, Vector2f.div(size,2));
-		return  new FloatRect(source,size);
+		/*Vector2f centre = CameraManager.view.getCenter();
+		Vector2f source = Vector2f.sub(CameraManager.view.getCenter(), Vector2f.div(size,2));*/
+		return  new FloatRect(Vector2f.sub(CameraManager.view.getCenter(), Vector2f.div(size,2)),size);
+		
 
 	}
 

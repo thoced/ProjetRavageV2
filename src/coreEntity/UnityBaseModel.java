@@ -21,7 +21,7 @@ import corePhysic.PhysicWorldManager;
 
 public class UnityBaseModel implements Serializable
 {
-
+	protected transient UnityBaseController controller;
 	// appartenance à un camp
 	protected EntityManager.CAMP myCamp = EntityManager.CAMP.YELLOW;
 	//protected type d'unité
@@ -67,9 +67,10 @@ public class UnityBaseModel implements Serializable
 	protected Vector2f origineSprite;
 	
 	
-	public UnityBaseModel() {
+	public UnityBaseModel(UnityBaseController controller) {
 		super();
 		
+		this.controller = controller;
 		lock = new Object();
 		animations = new Animations(); // instance de l'objet animations
 		
@@ -77,8 +78,9 @@ public class UnityBaseModel implements Serializable
 	
 	
 	
-	public void initModel()
+	public void initModel(UnityBaseController controller)
 	{
+		this.controller = controller;
 		// création du body
 				// initialisation du body
 				BodyDef bdef = new BodyDef();
@@ -86,7 +88,7 @@ public class UnityBaseModel implements Serializable
 				bdef.bullet = false;
 				bdef.type = BodyType.KINEMATIC;
 				bdef.fixedRotation = false;
-				bdef.userData = this;
+				bdef.userData = controller;
 			
 				//bdef.gravityScale = 0.0f;
 				

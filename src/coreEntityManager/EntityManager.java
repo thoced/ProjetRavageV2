@@ -318,7 +318,12 @@ public class EntityManager implements IBaseRavage,IEventCallBack,IRegionSelected
 			// emission sur le réseau de l'unité
 			NetDataUnity create = new NetDataUnity();
 			knight.prepareModelToNet();
-			create.setModel(knight.getModel());
+			try {
+				create.setModel(knight.getModel().clone());
+			} catch (CloneNotSupportedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 			create.setTypeMessage(TYPE.CREATE);
 			System.out.println("envoie du header : " );
 			NetSendThread.push(create);

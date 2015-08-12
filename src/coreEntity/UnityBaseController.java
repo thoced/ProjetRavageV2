@@ -231,7 +231,12 @@ public  class UnityBaseController implements IBaseRavage,ICallBackAStar,IEventCa
 			// emission sur le réseau
 			NetDataUnity data = new NetDataUnity();
 			this.prepareModelToNet();
-			data.setModel(this.getModel());
+			try {
+				data.setModel(this.getModel().clone());
+			} catch (CloneNotSupportedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 			data.setTypeMessage(TYPE.UPDATE);
 			NetSendThread.push(data);
 		}

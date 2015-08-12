@@ -78,6 +78,39 @@ public class UnityBaseModel implements Serializable
 	
 	
 	
+	
+	
+	@Override
+	public UnityBaseModel clone() throws CloneNotSupportedException {
+		// TODO Auto-generated method stub
+		UnityBaseModel clone = new UnityBaseModel(this.controller);
+		clone.setMyCamp(this.getMyCamp());
+		clone.setIdType(this.getIdType());
+		clone.setId(this.getId());
+		clone.setPosition(this.getPosition());
+		clone.setPositionNode(this.getPositionNode());
+		clone.setPositionlFinal(this.getPositionlFinal());
+		clone.setRotation(this.getRotation());
+		clone.setSpeed(this.getSpeed());
+		clone.setSelected(this.isSelected());
+		clone.setDirFormation(this.getDirFormation());
+		clone.setIdEnemy(this.getIdEnemy());
+		clone.setKnocking(this.isKnocking());
+		clone.setPaths(this.getPaths());
+		clone.setIndicePaths(this.getIndicePaths());
+		clone.setKilled(this.isKilled());
+		clone.setAnimations(this.getAnimations());
+		clone.setOrigineSprite(this.getOrigineSprite());
+		
+		
+
+		return clone;
+	}
+
+
+
+
+
 	public void initModel(UnityBaseController controller)
 	{
 		this.controller = controller;
@@ -111,6 +144,10 @@ public class UnityBaseModel implements Serializable
 				this.body.setTransform(this.position, this.rotation);
 				// création du lock
 				lock = new Object();
+				
+				// on replace le path et l'indice du path à 0 pour éviter les téléportation réseau
+				this.setIndicePaths(0); // positionnement à 0 
+				this.setPosition(new Vec2(this.getPaths().getStep(0).getX(),this.getPaths().getStep(0).getY())); // positionnement de la position à 0
 				
 	}
 	

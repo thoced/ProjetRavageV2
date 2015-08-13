@@ -1,5 +1,9 @@
 package coreEntity;
 
+import java.io.Externalizable;
+import java.io.IOException;
+import java.io.ObjectInput;
+import java.io.ObjectOutput;
 import java.io.Serializable;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
@@ -12,11 +16,13 @@ import org.jbox2d.dynamics.BodyDef;
 import org.jbox2d.dynamics.BodyType;
 import org.jbox2d.dynamics.Fixture;
 import org.jbox2d.dynamics.FixtureDef;
+import org.jsfml.graphics.IntRect;
 import org.jsfml.system.Vector2f;
 import org.newdawn.slick.util.pathfinding.Path;
 
 import coreEntity.UnityBaseController.TYPEUNITY;
 import coreEntityManager.EntityManager;
+import coreEntityManager.EntityManager.CAMP;
 import corePhysic.PhysicWorldManager;
 
 public class UnityBaseModel implements Serializable
@@ -27,13 +33,13 @@ public class UnityBaseModel implements Serializable
 	//protected type d'unité
 	protected TYPEUNITY idType;
 	
-	protected Vec2 position; // en mètre - est utilisé car pas de sérialisation de l'objet Body
+	protected Vec2 position ; // en mètre - est utilisé car pas de sérialisation de l'objet Body
 	
-	protected Vec2 positionNode; // position en node;
+	protected Vec2 positionNode ; // position en node;
 	
-	protected Vec2 positionlFinal; // position final de l'unité
+	protected Vec2 positionlFinal ; // position final de l'unité
 	
-	protected Vec2 positionNodeFinal; // coordonnée de position node
+	protected Vec2 positionNodeFinal ; // coordonnée de position node
 	
 	protected float rotation;
 	
@@ -41,7 +47,7 @@ public class UnityBaseModel implements Serializable
 	
 	protected boolean isSelected;
 	
-	protected Vec2 dirFormation; // direction de formation que doit prendre l'unité
+	protected Vec2 dirFormation ; // direction de formation que doit prendre l'unité
 	
 	protected int id;
 	
@@ -55,7 +61,7 @@ public class UnityBaseModel implements Serializable
 	
 	protected transient  Object lock;
 	
-	protected Path paths;
+	protected Path paths ;
 	protected  int  indicePaths = 0;
 
 	//est on mort ?
@@ -146,8 +152,8 @@ public class UnityBaseModel implements Serializable
 				lock = new Object();
 				
 				// on replace le path et l'indice du path à 0 pour éviter les téléportation réseau
-				this.setIndicePaths(0); // positionnement à 0 
-				this.setPosition(new Vec2(this.getPaths().getStep(0).getX(),this.getPaths().getStep(0).getY())); // positionnement de la position à 0
+				//this.setIndicePaths(0); // positionnement à 0 
+				//this.setPosition(new Vec2(this.getPaths().getStep(0).getX(),this.getPaths().getStep(0).getY())); // positionnement de la position à 0
 				
 	}
 	
@@ -376,6 +382,133 @@ public class UnityBaseModel implements Serializable
 		return "id : " + this.getId() + " position : " + this.getPosition();
 	}
 
-	
+
+
+
+/*
+	@Override
+	public void readExternal(ObjectInput arg0) throws IOException,
+			ClassNotFoundException 
+	{
+		// Camp et Id Type
+		this.myCamp = CAMP.values()[arg0.readInt()];
+		this.idType = TYPEUNITY.values()[arg0.readInt()];
+		// Position
+		this.position = new Vec2(arg0.readFloat(),arg0.readFloat());
+		// Position Node
+		this.positionNode = new Vec2(arg0.readFloat(),arg0.readFloat());
+		// Position Final
+		this.positionlFinal = new Vec2(arg0.readFloat(),arg0.readFloat());
+		// Position Node Final
+		this.positionNodeFinal = new Vec2(arg0.readFloat(),arg0.readFloat());
+		// Rotaton
+		this.rotation = arg0.readFloat();
+		// Speed
+		this.speed = arg0.readFloat();
+		// Is Selected
+		this.isSelected = arg0.readBoolean();
+		// Dir Formation
+		this.dirFormation  = new Vec2(arg0.readFloat(),arg0.readFloat());
+		// id
+		this.id = arg0.readInt();
+		// Id Ennemy
+		this.idEnemy = arg0.readInt();
+		// Knocking
+		this.isKnocking = arg0.readBoolean();
+		// Paths
+		int l = arg0.readInt();
+		this.paths = new Path();
+		for(int i=0;i<l;i++)
+			this.paths.appendStep(arg0.readInt(), arg0.readInt());
+				
+		// Indice path
+		this.indicePaths = arg0.readInt();
+		// Is Killed
+		this.isKilled = arg0.readBoolean();
+		// animation
+	//	this.animations = (Animations)arg0.readObject();
+		
+		int size = arg0.readInt();
+		this.animations = new Animations();
+		for(int j=0;j<size;j++)
+		{
+			IntRect r = new IntRect(arg0.readInt(),arg0.readInt(),arg0.readInt(),arg0.readInt());
+			this.animations.append(j, r);
+		}
+		
+		// Position
+		this.origineSprite = new Vector2f(arg0.readFloat(),arg0.readFloat());
+		
+	}
+
+
+
+
+
+	@Override
+	public void writeExternal(ObjectOutput out) throws IOException 
+	{
+		// Camp et Id Type
+		out.writeInt(this.myCamp.ordinal());
+		out.writeInt(this.idType.ordinal());
+		// Position
+		out.writeFloat(this.position.x);
+		out.writeFloat(this.position.y);
+		// Position Node
+		out.writeFloat(this.positionNode.x);
+		out.writeFloat(this.positionNode.y);
+		// Position Final
+		out.writeFloat(this.positionlFinal.x);
+		out.writeFloat(this.positionlFinal.y);
+		// Position Node Final
+		out.writeFloat(this.positionNodeFinal.x);
+		out.writeFloat(this.positionNodeFinal.y);
+		// Rotaton
+		out.writeFloat(this.rotation);
+		// Speed
+		out.writeFloat(this.speed);
+		// Is Selected
+		out.writeBoolean(this.isSelected);
+		// Dir Formation
+		out.writeFloat(this.dirFormation.x);
+		out.writeFloat(this.dirFormation.y);
+		// id
+		out.writeInt(this.id);
+		// Id Ennemy
+		out.writeInt(this.idEnemy);
+		// Knocking
+		out.writeBoolean(this.isKnocking);
+		// Paths
+		out.writeInt(this.paths.getLength());
+		for(int i=0;i<this.paths.getLength();i++)
+		{
+			out.writeInt(this.paths.getX(i));
+			out.writeInt(this.paths.getY(i));
+		}
+		// Indice path
+		out.writeInt(this.indicePaths);
+		// Is Killed
+		out.writeBoolean(this.isKilled);
+		// animation
+		//out.writeObject(this.animations);
+		
+		int size = this.animations.getAnimations().length;
+		out.writeInt(size);
+		for(int j=0;j<size;j++)
+		{
+			IntRect r = this.animations.getAnimations()[j];
+			out.writeInt(r.left);
+			out.writeInt(r.top);
+			out.writeInt(r.width);
+			out.writeInt(r.height);
+		}
+		
+		// Position
+		out.writeFloat(this.origineSprite.x);
+		out.writeFloat(this.origineSprite.y);
+		
+	}
+
+	*/
 	
 }

@@ -41,7 +41,7 @@ public class TreeSearchDraw implements QueryCallback
 	
 	public Iterator<UnityBaseController> getIterator()
 	{
-		System.out.println("Unite Affichée: " + listDraw.size());
+	//	System.out.println("Unite Affichée: " + listDraw.size());
 		return listDraw.iterator();
 	}
 

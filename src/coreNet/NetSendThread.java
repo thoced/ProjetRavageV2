@@ -15,7 +15,7 @@ import java.util.concurrent.locks.ReentrantLock;
 
 public class NetSendThread extends Thread 
 {
-	private final int TIME_TO_SLEEP = 25;
+	private final int TIME_TO_SLEEP = 10;
 	
 	// list linked FIFO
 	private static LinkedList<NetBase> ListSend = new LinkedList<NetBase>();

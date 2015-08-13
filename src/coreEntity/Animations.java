@@ -23,5 +23,10 @@ public class Animations implements Serializable
 		return animations[i];
 	}
 	
+	public void append(int ind,IntRect r)
+	{
+		animations[ind] = r;
+	}
+	
 	
 }

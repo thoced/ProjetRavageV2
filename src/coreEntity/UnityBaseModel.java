@@ -25,7 +25,7 @@ import coreEntityManager.EntityManager;
 import coreEntityManager.EntityManager.CAMP;
 import corePhysic.PhysicWorldManager;
 
-public class UnityBaseModel implements Serializable
+public class UnityBaseModel implements Externalizable
 {
 	protected transient UnityBaseController controller;
 	// appartenance à un camp
@@ -73,6 +73,12 @@ public class UnityBaseModel implements Serializable
 	protected Vector2f origineSprite;
 	
 	
+	public UnityBaseModel() {
+		super();
+		// TODO Auto-generated constructor stub
+	}
+
+
 	public UnityBaseModel(UnityBaseController controller) {
 		super();
 		
@@ -385,7 +391,7 @@ public class UnityBaseModel implements Serializable
 
 
 
-/*
+
 	@Override
 	public void readExternal(ObjectInput arg0) throws IOException,
 			ClassNotFoundException 
@@ -430,6 +436,8 @@ public class UnityBaseModel implements Serializable
 		
 		int size = arg0.readInt();
 		this.animations = new Animations();
+		this.animations.makeAnimation(size); // création de l'animation
+		
 		for(int j=0;j<size;j++)
 		{
 			IntRect r = new IntRect(arg0.readInt(),arg0.readInt(),arg0.readInt(),arg0.readInt());
@@ -449,20 +457,59 @@ public class UnityBaseModel implements Serializable
 	public void writeExternal(ObjectOutput out) throws IOException 
 	{
 		// Camp et Id Type
+		if(this.myCamp != null)
 		out.writeInt(this.myCamp.ordinal());
+		else
+			out.writeInt(0);
+		
+		if(this.idType != null)
 		out.writeInt(this.idType.ordinal());
+		else
+			out.writeInt(0);
 		// Position
+		if(this.position != null)
+		{
 		out.writeFloat(this.position.x);
 		out.writeFloat(this.position.y);
+		}
+		else
+		{
+			out.writeFloat(0f);
+			out.writeFloat(0f);
+		}
 		// Position Node
+		if(this.positionNode != null)
+		{
 		out.writeFloat(this.positionNode.x);
 		out.writeFloat(this.positionNode.y);
+		}
+		else
+		{
+			out.writeFloat(0f);
+			out.writeFloat(0f);
+		}
 		// Position Final
+		if(this.positionlFinal != null)
+		{
 		out.writeFloat(this.positionlFinal.x);
 		out.writeFloat(this.positionlFinal.y);
+		}
+		else
+		{
+			out.writeFloat(0f);
+			out.writeFloat(0f);
+		}
 		// Position Node Final
+		if(this.positionNodeFinal != null)
+		{
 		out.writeFloat(this.positionNodeFinal.x);
 		out.writeFloat(this.positionNodeFinal.y);
+		}
+		else
+		{
+			out.writeFloat(0f);
+			out.writeFloat(0f);
+		}
 		// Rotaton
 		out.writeFloat(this.rotation);
 		// Speed
@@ -470,8 +517,16 @@ public class UnityBaseModel implements Serializable
 		// Is Selected
 		out.writeBoolean(this.isSelected);
 		// Dir Formation
+		if(this.dirFormation != null)
+		{
 		out.writeFloat(this.dirFormation.x);
 		out.writeFloat(this.dirFormation.y);
+		}
+		else
+		{
+			out.writeFloat(0f);
+			out.writeFloat(0f);
+		}
 		// id
 		out.writeInt(this.id);
 		// Id Ennemy
@@ -479,11 +534,18 @@ public class UnityBaseModel implements Serializable
 		// Knocking
 		out.writeBoolean(this.isKnocking);
 		// Paths
-		out.writeInt(this.paths.getLength());
-		for(int i=0;i<this.paths.getLength();i++)
+		if(this.paths != null)
 		{
-			out.writeInt(this.paths.getX(i));
-			out.writeInt(this.paths.getY(i));
+			out.writeInt(this.paths.getLength());
+			for(int i=0;i<this.paths.getLength();i++)
+			{
+				out.writeInt(this.paths.getX(i));
+				out.writeInt(this.paths.getY(i));
+			}
+		}
+		else
+		{
+			out.writeInt(0);
 		}
 		// Indice path
 		out.writeInt(this.indicePaths);
@@ -492,23 +554,38 @@ public class UnityBaseModel implements Serializable
 		// animation
 		//out.writeObject(this.animations);
 		
-		int size = this.animations.getAnimations().length;
-		out.writeInt(size);
-		for(int j=0;j<size;j++)
+		if(this.animations != null)
 		{
-			IntRect r = this.animations.getAnimations()[j];
-			out.writeInt(r.left);
-			out.writeInt(r.top);
-			out.writeInt(r.width);
-			out.writeInt(r.height);
+			int size = this.animations.getAnimations().length;
+			out.writeInt(size);
+			for(int j=0;j<size;j++)
+			{
+				IntRect r = this.animations.getAnimations()[j];
+				out.writeInt(r.left);
+				out.writeInt(r.top);
+				out.writeInt(r.width);
+				out.writeInt(r.height);
+			}
+		}
+		else
+		{
+			out.writeInt(0);
 		}
 		
 		// Position
+		if(this.origineSprite != null)
+		{
 		out.writeFloat(this.origineSprite.x);
 		out.writeFloat(this.origineSprite.y);
+		}
+		else
+		{
+			out.writeFloat(0f);
+			out.writeFloat(0f);
+		}
 		
 	}
 
-	*/
+	
 	
 }

@@ -58,15 +58,15 @@ public class NetReceiverThread extends Thread
 		catch (SocketException e) 
 		{
 			// TODO Auto-generated catch block
-			System.out.println("SOCKET FAILED " + e.getMessage());
+			System.out.println("SOCKET FAILED 1" + e.getMessage());
 		} catch (IOException e) 
 		{
 			// TODO Auto-generated catch block
-			System.out.println("SOCKET FAILED " + e.getMessage());
+			System.out.println("SOCKET FAILED 2" + e.getMessage());
 		} catch (ClassNotFoundException e) 
 		{
 			// TODO Auto-generated catch block
-			System.out.println("SOCKET FAILED " + e.getMessage());
+			System.out.println("SOCKET FAILED 3" + e.getMessage());
 		} 
 		
 		

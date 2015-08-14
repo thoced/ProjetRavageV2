@@ -119,7 +119,7 @@ public  class UnityBaseController implements IBaseRavage,ICallBackAStar,IEventCa
 		}
 	}
 	
-	private void moveToNextStep()
+	private void moveToNextStep() // déplacement jusqu'a la prochaine étape
 	{
 		Vec2 diff = vecStep.sub(this.getModel().getBody().getPosition());
 		if(diff.length() < 0.2f)
@@ -198,7 +198,7 @@ public  class UnityBaseController implements IBaseRavage,ICallBackAStar,IEventCa
 	    return start + (end - start) * value;
 	}
 	
-	protected void computeRotation(Vec2 vec)
+	protected void computeRotation(Vec2 vec) // calcul la rotation de l'unité
 	{
 		if(vec != null)
 		{

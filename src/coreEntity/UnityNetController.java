@@ -8,7 +8,6 @@ import coreEntityManager.EntityManager.CAMP;
 
 public class UnityNetController extends UnityBaseController
 {
-	
 
 	public UnityNetController() 
 	{

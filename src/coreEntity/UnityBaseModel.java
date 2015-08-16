@@ -57,6 +57,8 @@ public class UnityBaseModel implements Externalizable
 	
 	protected boolean isKnocking = false; // variable passé à true quand l'unité frappe.
 	
+	protected int streightStrike;
+	
 	protected transient  Body body; // le body n'est pas sérializable -> transient
 	
 	protected transient  Object lock;
@@ -66,6 +68,8 @@ public class UnityBaseModel implements Externalizable
 
 	//est on mort ?
 	protected boolean isKilled = false;
+	// energie
+	protected int energy;
 	
 	// information concernant l'origine du sprite
 	protected Animations animations;
@@ -113,6 +117,8 @@ public class UnityBaseModel implements Externalizable
 		clone.setKilled(this.isKilled());
 		clone.setAnimations(this.getAnimations());
 		clone.setOrigineSprite(this.getOrigineSprite());
+		clone.setEnergy(this.getEnergy());
+		clone.setStreightStrike(this.getStreightStrike());
 		
 		
 
@@ -310,12 +316,18 @@ public class UnityBaseModel implements Externalizable
 		this.isKilled = isKilled;
 	}
 
-	public UnityNetController getEnemy() {
+	public UnityNetController getEnemy() 
+	{
+		// recherche de l'enemy
+		enemy = EntityManager.getVectorUnityNet().get(this.getIdEnemy());
 		return enemy;
 	}
 
-	public void setEnemy(UnityNetController enemy) {
+	public void setEnemy(UnityNetController enemy) 
+	{
 		this.enemy = enemy;
+		// récupération de l'id enemy
+		this.setIdEnemy(this.enemy.getModel().getId());
 	}
 
 	public boolean isSelected() {
@@ -327,6 +339,16 @@ public class UnityBaseModel implements Externalizable
 	}
 	
 	
+
+	public int getStreightStrike() {
+		return streightStrike;
+	}
+
+
+	public void setStreightStrike(int streightStrike) {
+		this.streightStrike = streightStrike;
+	}
+
 
 	public boolean isKnocking() {
 		return isKnocking;
@@ -364,6 +386,15 @@ public class UnityBaseModel implements Externalizable
 		}
 	
 	}
+	
+	public void DecrementIndice()
+	{
+		synchronized(lock)
+		{
+			if(indicePaths > 0)
+			 indicePaths--; // incrémente autamatiquement l'indice de chemin et commence par le 0
+		}
+	}
 
 	public void setIndicePaths(int indicePaths)
 	{
@@ -390,6 +421,16 @@ public class UnityBaseModel implements Externalizable
 
 
 
+
+
+	public int getEnergy() {
+		return energy;
+	}
+
+
+	public void setEnergy(int energy) {
+		this.energy = energy;
+	}
 
 
 	@Override
@@ -421,6 +462,9 @@ public class UnityBaseModel implements Externalizable
 		this.idEnemy = arg0.readInt();
 		// Knocking
 		this.isKnocking = arg0.readBoolean();
+		// StreightStrike (force de frappe)
+		this.streightStrike = arg0.readInt();
+		
 		// Paths
 		int l = arg0.readInt();
 		this.paths = new Path();
@@ -431,6 +475,8 @@ public class UnityBaseModel implements Externalizable
 		this.indicePaths = arg0.readInt();
 		// Is Killed
 		this.isKilled = arg0.readBoolean();
+		// Energy
+		this.energy = arg0.readInt();
 		// animation
 	//	this.animations = (Animations)arg0.readObject();
 		
@@ -533,6 +579,8 @@ public class UnityBaseModel implements Externalizable
 		out.writeInt(this.idEnemy);
 		// Knocking
 		out.writeBoolean(this.isKnocking);
+		// StreightStrike
+		out.writeInt(this.streightStrike);
 		// Paths
 		if(this.paths != null)
 		{
@@ -551,6 +599,8 @@ public class UnityBaseModel implements Externalizable
 		out.writeInt(this.indicePaths);
 		// Is Killed
 		out.writeBoolean(this.isKilled);
+		// Energy
+		out.writeInt(this.energy);
 		// animation
 		//out.writeObject(this.animations);
 		

@@ -28,11 +28,14 @@ public class ListBodyEnemyForOneRegion implements QueryCallback {
 		//on récupère le body
 		Body b = arg0.getBody();
 		// si le userdate provient de la class unity on incrément le nb
-		/*if(b.getUserData() != null && b.getUserData().getClass() != String.class && b.getUserData().getClass().getSuperclass() == UnityNet.class)
-		{
-			// ajout dans la liste body
-			this.listUnityEnemy.add((UnityBaseController)b.getUserData());
-		}*/
+		if(b.getUserData() != null && b.getUserData().getClass() != String.class)
+			{
+				if(b.getUserData().getClass() == UnityNetController.class)
+					{
+						// ajout dans la liste body
+						this.listUnityEnemy.add((UnityNetController)b.getUserData());
+					}
+			}
 		
 		return true;
 	}

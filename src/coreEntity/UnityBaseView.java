@@ -19,7 +19,7 @@ public  class UnityBaseView implements Drawable
 	
 	protected  float elapsedAnimationTime; 				// temps écoulé pour les animations
 	
-	protected enum TYPE_ANIMATION  {NON,WALK,STRIKE};	// type d'animatino possible
+	public enum TYPE_ANIMATION  {NON,WALK,STRIKE};	// type d'animatino possible
 	
 	protected TYPE_ANIMATION currentTypeAnimation;				// animation en cours
 
@@ -84,11 +84,12 @@ public  class UnityBaseView implements Drawable
 	private void strikeAnimation()
 	{
 		// on calcul l'animation
-		int ind = (int) (NB_FRAME_BY_SECOND * this.elapsedAnimationTime) + MAX_IND_FOR_WALK + 1; // 5 étant l'offset
+		int ind = (int) (NB_FRAME_BY_SECOND * this.elapsedAnimationTime) + MIN_IND_FOR_STRIKE; // 5 étant l'offset
 		if(ind > MAX_IND_FOR_STRIKE)
 		{
 			ind = MIN_IND_FOR_STRIKE;
 			this.playAnimation(TYPE_ANIMATION.NON);
+			
 		}
 		this.sprite.setTextureRect(this.getController().getModel().getAnimations().getInd(ind));
 	}
@@ -120,7 +121,7 @@ public  class UnityBaseView implements Drawable
 	public void playAnimation(TYPE_ANIMATION currentTypeAnimation) 
 	{
 		this.currentTypeAnimation = currentTypeAnimation; // spécifie le type d'animation.
-		
+						
 		if(this.currentTypeAnimation != TYPE_ANIMATION.WALK) // si l'animation est de marcher, on ne place pas le temps à 0 car l'animation se joue en boucle
 			this.elapsedAnimationTime = 0f;
 	}

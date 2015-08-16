@@ -3,6 +3,8 @@ package coreAI;
 import org.jbox2d.common.Vec2;
 
 import coreEntity.Unity;
+import coreEntity.UnityBaseController;
+import coreEntity.UnityNetController;
 
 public class Node 
 {
@@ -12,7 +14,7 @@ public class Node
 	
 	private float x,y;
 	
-	private Unity unityBusy;
+	private UnityBaseController unityBusy;
 	
 	public Node(float x,float y,boolean isdiagonal)
 	{
@@ -40,22 +42,28 @@ public class Node
 		return type;
 	}
 
-	public Unity takeNode(Unity u)
+	public boolean isNodeFree(UnityBaseController u)
 	{
-		if(unityBusy == null)
-		{
-			return unityBusy = u;
-			
-		}
-		else
-			return unityBusy; 
+		if(unityBusy == null || unityBusy.getClass() == u.getClass()) // si null ou est de la meme class alors le node est libre pour passer
+			return true;
+						
+		return false;
+	}
+	
+	public void takeNode(UnityBaseController u)
+	{
+		unityBusy = u;
+		
 			
 	}
 	
-	public void leaveNode()
+	public void releaseNode(UnityBaseController u)
 	{
-		unityBusy = null;
+		if(unityBusy == u)
+			unityBusy = null;
 	}
+	
+
 	
 	
 	

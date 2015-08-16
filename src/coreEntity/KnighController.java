@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.jbox2d.collision.shapes.CircleShape;
 import org.jbox2d.collision.shapes.Shape;
+import org.jbox2d.common.Vec2;
 import org.jbox2d.dynamics.BodyDef;
 import org.jbox2d.dynamics.BodyType;
 import org.jbox2d.dynamics.Fixture;
@@ -22,16 +23,21 @@ import CoreTexturesManager.TexturesManager;
 import coreAI.Node;
 import coreEntity.Unity.TYPEUNITY;
 import coreEntity.UnityBaseView.TYPE_ANIMATION;
+import coreEntityManager.EntityManager;
 import coreEntityManager.EntityManager.CAMP;
 import coreEvent.EventManager;
+import coreNet.NetBase;
 import coreNet.NetDataUnity;
 import coreNet.NetHeader;
+import coreNet.NetSendThread;
 import coreNet.NetHeader.TYPE;
 import coreNet.NetManager;
+import coreNet.NetStrike;
 import corePhysic.PhysicWorldManager;
 
-public class KnighController extends UnityBaseController {
-
+public class KnighController extends UnityBaseController 
+{
+	private float elapsedTimeAttack = 0f;
 	
 	
 	public KnighController() {
@@ -40,6 +46,9 @@ public class KnighController extends UnityBaseController {
 		
 		this.setModel(new KnightModel(this));
 		this.setView(new KnightView(this.getModel(),this));
+		
+		// energy
+		this.getModel().setEnergy(50);
 	}
 
 	@Override
@@ -66,11 +75,65 @@ public class KnighController extends UnityBaseController {
 	
 
 	@Override
-	public void update(Time deltaTime) {
+	public void update(Time deltaTime) 
+	{
 		// TODO Auto-generated method stub
 		super.update(deltaTime);
 		
-	
+		// mise à jour du temps écoulé pour l'attaque
+		elapsedTimeAttack += deltaTime.asSeconds();
+		
+		// attaque enemy
+		if(this.getModel().getEnemy() != null  && elapsedTimeAttack > 3f )
+		{
+			
+			if(this.getModel().getEnemy().getModel().getPosition().sub(this.getModel().getPosition()).length() > 2f )  // si l'enemy est plus loin que 2
+			{
+				// on recherche un emplacement à coté
+				// on cherche un position à côté de l'enemy
+				Vec2 positionNearEnemy = EntityManager.searchPosition(this, this.getModel().getEnemy());
+				// on recherche le chemin
+				Vec2 positionNode = positionNearEnemy;
+				positionNode.x = (int)positionNearEnemy.x;
+				positionNode.y = (int)positionNearEnemy.y;
+				// calcul du vecteur direction
+				Vec2 dir = this.getModel().getEnemy().getModel().getPosition().sub(positionNearEnemy);
+				dir.normalize();
+				EntityManager.computeDestination(this, positionNearEnemy, positionNode, dir);
+				
+			}
+			else
+			{
+			
+				System.out.println("KnightController : Hit");
+				// emission sur le réseau
+				this.getModel().setKnocking(true);	
+				// on place la force de frappe
+				this.getModel().setStreightStrike(10);
+				// emission réseau
+				NetDataUnity data = new NetDataUnity();
+				data.setTypeMessage(NetBase.TYPE.UPDATE);
+				this.prepareModelToNet();
+				try
+				{
+					data.setModel(this.getModel().clone());
+				} catch (CloneNotSupportedException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				NetSendThread.push(data);
+				// on joue l'animation de frappe
+				System.out.println("KnightController : PlayAnimation");
+				this.getView().playAnimation(TYPE_ANIMATION.STRIKE);
+				
+			}
+			
+			// remise à zero du compteur temps
+			elapsedTimeAttack = 0f;
+			
+		}
+		
+		
 		
 	}
 

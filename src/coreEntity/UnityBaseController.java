@@ -18,7 +18,9 @@ import coreAI.ICallBackAStar;
 import coreAI.Node;
 import coreEntity.Unity.ANIMATE;
 import coreEntity.UnityBaseView.TYPE_ANIMATION;
+import coreEntityManager.EntityManager;
 import coreEvent.IEventCallBack;
+import coreLevel.LevelManager;
 import coreNet.NetBase.TYPE;
 import coreNet.NetDataUnity;
 import coreNet.NetManager;
@@ -41,6 +43,8 @@ public  class UnityBaseController implements IBaseRavage,ICallBackAStar,IEventCa
 	protected Object lock;
 	
 	protected ETAPE sequencePath = ETAPE.NONE;
+	
+	protected Node nodeTake = null;
 	
 	public enum ETAPE {GETSTEP,MOVE,NONE};
 	
@@ -89,11 +93,33 @@ public  class UnityBaseController implements IBaseRavage,ICallBackAStar,IEventCa
 		this.model = model;
 	}
 	
+	private boolean checkNodeFree()
+	{
+		if(LevelManager.getLevel().getModel().isNodeFree(step.getX(), step.getY(),this) != true)
+		{
+			this.getModel().DecrementIndice();
+			this.getModel().getBody().setLinearVelocity(new Vec2(0,0));
+			this.getView().playAnimation(TYPE_ANIMATION.NON);
+			return false;  // retourne false car le node est occupé, il faut stopper la progression
+		}
+		// on libère sur celui où l'on se trouve
+		if(nodeTake != null)
+			nodeTake.releaseNode(this);
+		// on take le node
+		nodeTake = LevelManager.getLevel().getModel().takeNode(step.getX(), step.getY(), this);
+		
+		return true; // pas de node occupé
+	}
+	
 	private void computeNextStep()  // on récupère une étape de chemion
 	{
 		try
 		{
 			step = this.getModel().getPaths().getStep(this.getModel().getIndicePathsAndIncrement());
+			// on vérifie si le node n'est pas occupé
+			if(this.checkNodeFree() != true)
+				return;
+			
 			// calcul du vecteur de direction
 			vecStep = new Vec2(step.getX(),step.getY());
 			// ajout du 0.5 pour placer l'unité au centre du node
@@ -116,6 +142,7 @@ public  class UnityBaseController implements IBaseRavage,ICallBackAStar,IEventCa
 			this.getModel().getBody().setLinearVelocity(new Vec2(0,0));
 			this.getView().playAnimation(TYPE_ANIMATION.NON);
 			this.sequencePath = ETAPE.NONE;
+			nodeTake = LevelManager.getLevel().getModel().takeNode((int)this.getModel().getPositionNode().x, (int)this.getModel().getPositionNode().y, this);
 		}
 	}
 	
@@ -168,7 +195,7 @@ public  class UnityBaseController implements IBaseRavage,ICallBackAStar,IEventCa
 	{
 		// incrémentation du temps écoulé pour les animations
 		this.getView().elapsedAnimationTime += deltaTime.asSeconds();
-	
+			
 		synchronized(lock)
 		{
 	
@@ -190,6 +217,8 @@ public  class UnityBaseController implements IBaseRavage,ICallBackAStar,IEventCa
 	
 			}
 		}
+		
+		
 		
 	}
 	
@@ -240,11 +269,39 @@ public  class UnityBaseController implements IBaseRavage,ICallBackAStar,IEventCa
 			data.setTypeMessage(TYPE.UPDATE);
 			NetSendThread.push(data);
 		}
-		
+
 		
 	}
 	
+	public void hit(int hitStrenght)
+	{
+		// on est frappé, diminution de l'energie
+		this.getModel().setEnergy(this.getModel().getEnergy() - hitStrenght);
+		// si l'energie est égale à 0 ou inférieur, on meurt
+		if(this.getModel().getEnergy() <= 0)
+		{
+			// ensutie il faut le code réseau
+						this.getModel().setKilled(true);
+						NetDataUnity data = new NetDataUnity();
+						data.setTypeMessage(TYPE.UPDATE);
+						this.prepareModelToNet();
+						try
+						{
+							data.setModel(this.getModel().clone());
+							NetSendThread.push(data);
+						} catch (CloneNotSupportedException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
+			
+			EntityManager.getVectorUnityKilled().add(this);
+			
+			// ensutie il faut jouer la mort en view
+		}
+	}
 	
+	
+
 
 	public ETAPE getSequencePath() {
 		return sequencePath;
@@ -261,8 +318,15 @@ public  class UnityBaseController implements IBaseRavage,ICallBackAStar,IEventCa
 	}
 
 	@Override
-	public void destroy() {
-		// TODO Auto-generated method stub
+	public void destroy() 
+	{
+		
+		// libération du node take
+		if(this.nodeTake != null)
+			this.nodeTake.releaseNode(this);
+		// destruction du body
+		if(this.getModel().getBody() != null)
+			PhysicWorldManager.getWorld().destroyBody(this.getModel().getBody());
 		
 	}
 

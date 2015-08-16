@@ -37,6 +37,7 @@ import coreEntity.UnityBaseController.ETAPE;
 import coreEntity.UnityBaseController.TYPEUNITY;
 import coreEntity.UnityBaseModel;
 import coreEntity.UnityBaseView;
+import coreEntity.UnityBaseView.TYPE_ANIMATION;
 import coreEntity.UnityNetController;
 import coreEvent.IEventCallBack;
 import coreGUI.IRegionSelectedCallBack;
@@ -44,16 +45,12 @@ import coreGUIInterface.GuiManager;
 import coreGUIInterface.panelFormation;
 import coreLevel.LevelManager;
 import coreNet.INetManagerCallBack;
-import coreNet.NetAddUnity;
 import coreNet.NetBase.TYPE;
 import coreNet.NetDataUnity;
 import coreNet.NetHello;
-import coreNet.NetKill;
 import coreNet.NetManager;
-import coreNet.NetMoveUnity;
 import coreNet.NetSendThread;
 import coreNet.NetStrike;
-import coreNet.NetSynchronize;
 import corePhysic.PhysicWorldManager;
 import ravage.FrameWork;
 import ravage.IBaseRavage;
@@ -141,9 +138,6 @@ public class EntityManager implements IBaseRavage,IEventCallBack,IRegionSelected
 			unity.update(deltaTime);
 		}
 		
-		
-		
-		
 		if(arrow!=null)
 			arrow.update(deltaTime);
 		
@@ -165,12 +159,15 @@ public class EntityManager implements IBaseRavage,IEventCallBack,IRegionSelected
 					// on récupère l'enemy
 					UnityNetController enemy = listEnemy.get(ind);
 					// on attribue l'enemy
-					
 					unity.getModel().setEnemy(enemy);
 					
+						
 				}
+					
+					
 			}
 		}
+		
 		
 		
 		// on regarde si il n'existe pas d'unité à supprimer dans le vecteur unitykilled
@@ -178,6 +175,9 @@ public class EntityManager implements IBaseRavage,IEventCallBack,IRegionSelected
 		{
 			for(UnityBaseController u : this.vectorUnityKilled)
 			{
+				// destruction propre de l'objet
+				u.destroy();
+				// enlevement du vecteur
 				this.vectorUnity.remove(u.getModel().getId());
 			}
 		}
@@ -188,6 +188,9 @@ public class EntityManager implements IBaseRavage,IEventCallBack,IRegionSelected
 			{
 				for(UnityNetController u : this.vectorUnityNetKilled)
 				{
+					// destruction propre de l'objet
+					u.destroy();
+					// enlevement du vecteur
 					this.vectorUnityNet.remove(u.getModel().getId());
 				}
 			}
@@ -213,6 +216,15 @@ public class EntityManager implements IBaseRavage,IEventCallBack,IRegionSelected
 	public static void setVectorUnityNet(List<UnityNet> vectorUnityNet) {
 		EntityManager.vectorUnityNet = vectorUnityNet;
 	}*/
+
+	public static List<UnityBaseController> getVectorUnityKilled() {
+		return vectorUnityKilled;
+	}
+
+	public static void setVectorUnityKilled(
+			List<UnityBaseController> vectorUnityKilled) {
+		EntityManager.vectorUnityKilled = vectorUnityKilled;
+	}
 
 	public static Hashtable<Integer, UnityBaseController> getVectorUnity() {
 		return vectorUnity;
@@ -325,6 +337,7 @@ public class EntityManager implements IBaseRavage,IEventCallBack,IRegionSelected
 				e.printStackTrace();
 			}
 			create.setTypeMessage(TYPE.CREATE);
+			
 			System.out.println("envoie du header : " );
 			NetSendThread.push(create);
 		
@@ -442,7 +455,7 @@ public class EntityManager implements IBaseRavage,IEventCallBack,IRegionSelected
 		
 	}
 	
-	public float getRadian(float degre)
+	public static float getRadian(float degre)
 	{
 		float radian = (float) (degre * (Math.PI / 180));
 		return radian;
@@ -450,7 +463,7 @@ public class EntityManager implements IBaseRavage,IEventCallBack,IRegionSelected
 	
 	
 	
-	public void computeFormationStrike(UnityBaseController enemy,List<UnityBaseController> listUnity, Vec2 dir)
+	public static void computeFormationStrike(UnityBaseController enemy,List<UnityBaseController> listUnity, Vec2 dir)
 	{
 		// en partant du centre (enemy), par couche, on fait un tour en utilisant l'objet Rot
 		int couche = 0;
@@ -469,14 +482,14 @@ public class EntityManager implements IBaseRavage,IEventCallBack,IRegionSelected
 		while(indListUnity < listUnity.size() && maxboucle < 32)
 		{
 			UnityBaseController unity = listUnity.get(indListUnity);
-			rot.set(this.getRadian(pasDegre));
+			rot.set(getRadian(pasDegre));
 			vector = new Vec2(rot.s,rot.c);
 			
 			// on recheche les emplacements
 			Vec2 centre = enemy.getModel().getPosition();
 			Vec2 pos = centre.add(vector.mul(distance));
 			
-			boolean obstacle = LevelManager.getLevel().isNodeObstacle((int)pos.x, (int)pos.y);
+			boolean obstacle = LevelManager.getLevel().getModel().isNodeObstacle((int)pos.x, (int)pos.y);
 			if(!obstacle)
 			{
 				// on détermine la rotation finale
@@ -745,19 +758,17 @@ public class EntityManager implements IBaseRavage,IEventCallBack,IRegionSelected
 		return null;
 	}
 	
-	public static Vec2 searchPosition(Unity unity,Unity enemy) // recherche d'une place à coté d'un enemy
+	public static Vec2 searchPosition(UnityBaseController owner,UnityNetController enemy) // recherche d'une place à coté d'un enemy
 	{
 		// on trace un vecteur
-		Vec2 diff = enemy.getBody().getPosition().sub(unity.getBody().getPosition());
+		Vec2 diff = enemy.getModel().getPosition().sub(owner.getModel().getPosition());
 		diff.normalize();
 		// on multiplie par 1 pour obtenir la distance 
-		Vec2 pos = enemy.getBody().getPosition().add(diff.mul(1f).negate());
-		
-		return pos;
-		
+		return  enemy.getModel().getPosition().add(diff.mul(1f).negate());
+			
 	}
 	
-	public boolean computeDestination(UnityBaseController unity,Vec2 posFinal,Vec2 posNodeFinal,Vec2 dir)
+	public static boolean computeDestination(UnityBaseController unity,Vec2 posFinal,Vec2 posNodeFinal,Vec2 dir)
 	{
 		// instance de vecteur de formation finale
 		unity.getModel().setDirFormation(dir);
@@ -779,7 +790,7 @@ public class EntityManager implements IBaseRavage,IEventCallBack,IRegionSelected
 			if(posNodeFinal.x < 0  || posNodeFinal.x > 374 || posNodeFinal.y < 0 || posNodeFinal.y > 250)
 				return false;
 				
-			if(LevelManager.getLevel().getNodes()[(int) ((posNodeFinal.y * 375) + posNodeFinal.x)].getType() == 0)
+			if(LevelManager.getLevel().getModel().getNodes()[(int) ((posNodeFinal.y * 375) + posNodeFinal.x)].getType() == 0)
 			{
 				// Lancement recherche
 				AstarManager.askPath(unity, unity.getModel().getPositionNode(), unity.getModel().getPositionNodeFinal()); // classic
@@ -809,7 +820,7 @@ public class EntityManager implements IBaseRavage,IEventCallBack,IRegionSelected
 		// création d'une unité enemy réseau
 		UnityNetController controller = new UnityNetController(); // creation du controller pour l'enemy
 		controller.setModel(unity.getModel());					  // placement du model obtenu par le réseau
-		controller.getModel().initModel(controller);						  // initialisation du model
+		controller.getModel().initModel(controller);			  // initialisation du model
 		
 		UnityBaseView view = new UnityBaseView(controller.getModel(),controller); // création de la vue pour l'enemy
 		controller.setView(view);								  // on spécifie la vue au controller
@@ -828,9 +839,18 @@ public class EntityManager implements IBaseRavage,IEventCallBack,IRegionSelected
 		{
 			// on remplace le model par le nouveau model arrivé
 			controller.setModel(unity.getModel());
+			System.out.println("STREI " + unity.getModel().getStreightStrike());
 			// on initialise le model
 			controller.getModel().initModel(controller);
 			controller.setSequencePath(ETAPE.GETSTEP); // on spécifie au controller la sequence à adopter pourl a recheche de chemin
+			
+			
+			
+				
+			
+			// ----------------------------------------------------------------------------------------
+			// vérification de la mort
+			
 		}
 		else
 		{
@@ -840,6 +860,9 @@ public class EntityManager implements IBaseRavage,IEventCallBack,IRegionSelected
 		
 	}
 
+	
+
+	
 
 	
 

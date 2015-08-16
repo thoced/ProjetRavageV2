@@ -22,16 +22,14 @@ import javax.swing.border.EmptyBorder;
 import coreEntityManager.EntityManager;
 import coreEntityManager.EntityManager.CAMP;
 import coreNet.INetManagerCallBack;
-import coreNet.NetAddUnity;
 import coreNet.NetBase.TYPE;
 import coreNet.NetDataUnity;
 import coreNet.NetHello;
-import coreNet.NetKill;
 import coreNet.NetManager;
-import coreNet.NetMoveUnity;
 import coreNet.NetSendThread;
+
+
 import coreNet.NetStrike;
-import coreNet.NetSynchronize;
 
 import java.awt.Color;
 
@@ -332,4 +330,7 @@ public class menuDialogRavage extends JDialog implements ActionListener, INetMan
 		// TODO Auto-generated method stub
 		
 	}
+
+	
+
 }

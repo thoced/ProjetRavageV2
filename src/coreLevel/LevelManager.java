@@ -21,7 +21,7 @@ import ravage.IBaseRavage;
 
 public class LevelManager implements IBaseRavage
 {
-	private static Level level;
+	private static LevelController level;
 	
 	@Override
 	public void init() 
@@ -48,21 +48,22 @@ public class LevelManager implements IBaseRavage
 	/**
 	 * @return the level
 	 */
-	public static Level getLevel() {
+	public static LevelController getLevel() {
 		return level;
 	}
 
 	/**
 	 * @param level the level to set
 	 */
-	public static void setLevel(Level level) {
+	public static void setLevel(LevelController level) {
 		LevelManager.level = level;
 	}
 
-	public Level loadLevel(String nameFile)
+	public void loadLevel(LevelController level,String nameFile)
 	{
 		// créaleveltion de l'objet Level
-		level = new Level();
+		//level = new LevelController();
+		this.level = level;
 		// Chargement
 		LoaderTiled tiled = new LoaderTiled();
 		try 
@@ -85,9 +86,9 @@ public class LevelManager implements IBaseRavage
 				sprite.setPosition(new Vector2f(l.getPosx(),l.getPosy()));
 				// on ajoute dans le level
 				if(l.getName().startsWith("BG")) // si le nom du fichier commence par BG dans tiled
-					level.getBackgrounds().add(sprite);
+					level.getView().getBackgrounds().add(sprite);
 				if(l.getName().startsWith("FG"))
-					level.getForegrounds().add(sprite);
+					level.getView().getForegrounds().add(sprite);
 				
 			}
 			
@@ -101,7 +102,7 @@ public class LevelManager implements IBaseRavage
 					if(base.getTypeObjects() == TiledObjectBase.Type.POLYLINE)
 					{
 						TiledObjectPolyline poly = (TiledObjectPolyline) base;
-						level.InsertObstacle(poly.getListPoint(), poly.getX(), poly.getY(), poly.getType());
+						level.getModel().InsertObstacle(poly.getListPoint(), poly.getX(), poly.getY(), poly.getType());
 					}
 				}
 				
@@ -114,7 +115,7 @@ public class LevelManager implements IBaseRavage
 			{
 				List<Integer> nodes = node.getDataMap();
 				
-				Node[] n = level.getNodes();
+				Node[] n = level.getModel().getNodes();
 				int x=0;
 				int y=0;
 				int ind=0;
@@ -136,7 +137,7 @@ public class LevelManager implements IBaseRavage
 			
 				}
 				
-				level.setNodes(n);
+				level.getModel().setNodes(n);
 				
 			}
 					
@@ -146,7 +147,7 @@ public class LevelManager implements IBaseRavage
 		}
 		
 		// retour du level
-		return level;
+		//return level;
 	}
 
 	

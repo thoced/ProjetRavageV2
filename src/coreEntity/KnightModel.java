@@ -11,6 +11,12 @@ import corePhysic.PhysicWorldManager;
 
 public class KnightModel extends UnityBaseModel
 {
+	
+	
+	public KnightModel() {
+		super();
+		// TODO Auto-generated constructor stub
+	}
 
 	public KnightModel(UnityBaseController controller) {
 		super(controller);

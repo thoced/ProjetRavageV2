@@ -29,11 +29,9 @@ import coreEntityManager.EntityManager;
 import coreLevel.LevelManager;
 import coreNet.NetHeader;
 import coreNet.NetHeader.TYPE;
-import coreNet.NetKill;
+
 import coreNet.NetManager;
-import coreNet.NetMoveUnity;
-import coreNet.NetStrike;
-import coreNet.NetSynchronize;
+
 import corePhysic.PhysicWorldManager;
 import ravage.IBaseRavage;
 
@@ -543,11 +541,11 @@ public abstract class Unity implements IBaseRavage,ICallBackAStar
 					{
 						// on calcul la formation final de frappe
 						// on détermine la rotation finale
-						Vec2 vFinal = EntityManager.searchPosition(this,this.enemyAttribute);
+					//	Vec2 vFinal = EntityManager.searchPosition(this,this.enemyAttribute);
 						Vec2 vEnemy = this.enemyAttribute.getBody().getPosition();
 						// on détermine le vecteur de direction
-						Vec2 vDir = vEnemy.sub(vFinal);
-						vDir.normalize();
+				//		Vec2 vDir = vEnemy.sub(vFinal);
+					//	vDir.normalize();
 						
 						//this.setTargetPosition(vFinal.x * PhysicWorldManager.getRatioPixelMeter(), vFinal.y * PhysicWorldManager.getRatioPixelMeter(), (int)vFinal.x, (int)vFinal.y, vDir);
 						elapsedSearchFollowEnemy = Time.ZERO;

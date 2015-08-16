@@ -50,8 +50,7 @@ public class NetManager implements IBaseRavage
 	private static int posxStartFlag;
 	private static int posyStartFlag;
 	
-	// NetMessage
-	private static NetDatagram netDatagram;
+
 	
 	// port adress
 	private int portEcoute;
@@ -70,7 +69,7 @@ public class NetManager implements IBaseRavage
 		// instance de socket emission
 		// instance de NetDatagram
 		//netDatagram = new NetDatagram();
-		createNetDatagram();
+		
 		
 		// port
 		
@@ -89,11 +88,11 @@ public class NetManager implements IBaseRavage
 		listCallBack.add( obj);
 	}
 	
-	public static void createNetDatagram()
+	/*public static void createNetDatagram()
 	{
 		netDatagram = new NetDatagram();
 	}
-
+*/
 	public static void pushNetMessage(NetHeader header)
 	{
 		lock.lock();
@@ -204,10 +203,12 @@ public class NetManager implements IBaseRavage
 						 callBackCreate(create);
 						 break;
 						 
-			case UPDATE: NetDataUnity update = (NetDataUnity)data;
-						 callBackUpdate(update);
-						 break;
-					
+			case UPDATE: 
+						NetDataUnity update = (NetDataUnity)data;
+						callBackUpdate(update);
+						break;
+						
+				
 										   	
 			default: break;
 		}
@@ -236,6 +237,8 @@ public class NetManager implements IBaseRavage
 			i.onUpdateUnity(unity);
 		}
 	}
+	
+	
 	
 	/*private void callBackMove(NetMoveUnity unity)
 	{

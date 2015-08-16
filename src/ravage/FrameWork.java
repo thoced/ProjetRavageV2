@@ -50,7 +50,8 @@ import coreGUIInterface.ButtonRavage;
 import coreGUIInterface.GuiManager;
 import coreGUIInterface.PanelRavage;
 import coreGUISwing.menuDialogRavage;
-import coreLevel.Level;
+import coreLevel.Level01;
+import coreLevel.LevelController;
 import coreLevel.LevelManager;
 import coreNet.NetManager;
 import corePhysic.PhysicWorldManager;
@@ -59,7 +60,7 @@ public class FrameWork
 {
 	// Managers
 	private PhysicWorldManager physicWorld;
-	private LevelManager levelManager;
+	//private LevelManager levelManager;
 	private TexturesManager texturesManager;
 	private CameraManager cameraManager;
 	private EntityManager entityManager;
@@ -76,7 +77,8 @@ public class FrameWork
 	private Time fpsTime;
 	private int fps;
 	// Level
-	private Level currentLevel;
+	//private LevelController currentLevel;
+	private  Level01 currentLevel;
 	// RenderWindown
 	private static RenderWindow window;
 	// RenderTarget
@@ -122,10 +124,13 @@ public class FrameWork
 		// Instance des managers
 		physicWorld = new PhysicWorldManager();
 		physicWorld.init();
-		levelManager = new LevelManager();
-		levelManager.init();
 		texturesManager = new TexturesManager();
 		texturesManager.init();
+		//levelManager = new LevelManager();
+		//levelManager.init();
+		currentLevel = new Level01();
+		currentLevel.init();
+		
 		cameraManager = new CameraManager(window.getView());
 		cameraManager.init();
 		entityManager = new EntityManager();
@@ -149,7 +154,7 @@ public class FrameWork
 		eventManager.addCallBack(rect);
 		
 		// Chargement du niveau
-		currentLevel  = levelManager.loadLevel("testlevel01.json");
+		//currentLevel  = levelManager.loadLevel("testlevel01.json");
 		// creatin du astarmanager
 		astarManager = new AstarManager();
 		astarManager.init();
@@ -244,11 +249,11 @@ public class FrameWork
 			renderTexture.clear();
 			renderTexture.setView(cameraManager.getView());
 			// Draw du level
-			currentLevel.drawBackground(renderTexture, null); // affichage du background du level
+			currentLevel.getView().drawBackground(renderTexture, null); // affichage du background du level
 			// Draw des unity
 			drawaUnityManager.draw(renderTexture, null);
 			// draw du level foregrounds
-			currentLevel.drawForeground(renderTexture, null); // affichage du foreground du level (arbre et toi
+			currentLevel.getView().drawForeground(renderTexture, null); // affichage du foreground du level (arbre et toi
 			renderTexture.display();
 			// draw du guiManager
 			renderGui.clear(Color.TRANSPARENT);

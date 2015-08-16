@@ -4,7 +4,11 @@ import org.jsfml.system.Time;
 
 import CoreTexturesManager.TexturesManager;
 import coreEntity.UnityBaseView.TYPE_ANIMATION;
+import coreEntityManager.EntityManager;
 import coreEntityManager.EntityManager.CAMP;
+import coreNet.NetBase;
+import coreNet.NetDataUnity;
+import coreNet.NetSendThread;
 
 public class UnityNetController extends UnityBaseController
 {
@@ -26,9 +30,23 @@ public class UnityNetController extends UnityBaseController
 		// si l'unité est en train de frapper, on appel la methode play de la view
 		if(this.getModel().isKnocking())
 		{
+			// on joue l'animation
 			this.getView().playAnimation(TYPE_ANIMATION.STRIKE);
 			this.getModel().setKnocking(false);
+			// on frappe réelleemnt l'enemy
+			UnityBaseController u = EntityManager.getVectorUnity().get(this.getModel().getIdEnemy());
+			if(u!=null)
+				u.hit(this.getModel().getStreightStrike());
 		}
+		
+		if(this.getModel().isKilled)
+		{
+			// on joue la mort
+			EntityManager.getVectorUnityNetKilled().add(this);
+		}
+		
+		
+		
 	}
 
 	@Override
@@ -60,6 +78,8 @@ public class UnityNetController extends UnityBaseController
 		this.getView().playAnimation(TYPE_ANIMATION.NON);
 		
 	}
+	
+	
 	
 	
 

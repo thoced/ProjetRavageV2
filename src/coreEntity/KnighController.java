@@ -23,9 +23,11 @@ import CoreTexturesManager.TexturesManager;
 import coreAI.Node;
 import coreEntity.Unity.TYPEUNITY;
 import coreEntity.UnityBaseView.TYPE_ANIMATION;
+import coreEntityManager.ChoosePosition;
 import coreEntityManager.EntityManager;
 import coreEntityManager.EntityManager.CAMP;
 import coreEvent.EventManager;
+import coreLevel.LevelManager;
 import coreNet.NetBase;
 import coreNet.NetDataUnity;
 import coreNet.NetHeader;
@@ -38,6 +40,8 @@ import corePhysic.PhysicWorldManager;
 public class KnighController extends UnityBaseController 
 {
 	private float elapsedTimeAttack = 0f;
+	
+	private Node nodeReserved;
 	
 	
 	public KnighController() {
@@ -59,9 +63,7 @@ public class KnighController extends UnityBaseController
 			this.getView().setSprite(TexturesManager.GetSpriteByName("ANIM_Piquiers_Jaunes.png"));
 		if(this.getModel().getMyCamp() == CAMP.BLUE)
 			this.getView().setSprite(TexturesManager.GetSpriteByName("ANIM_Piquiers_Bleus.png"));
-		
-		
-		
+
 		// initialisa la vue avec l'origine du sprite
 		this.getView().getSprite().setOrigin(new Vector2f(40f,40f));
 		// spécifie à la vue l'animation à joué par défaut
@@ -83,56 +85,45 @@ public class KnighController extends UnityBaseController
 		// mise à jour du temps écoulé pour l'attaque
 		elapsedTimeAttack += deltaTime.asSeconds();
 		
-		// attaque enemy
-		if(this.getModel().getEnemy() != null  && elapsedTimeAttack > 3f )
+		// code de l'attaque
+		// 1) un ennemi est il attribué ?
+		if(elapsedTimeAttack > 2f)
 		{
+			UnityNetController enemy = this.getModel().getEnemy();
 			
-			if(this.getModel().getEnemy().getModel().getPosition().sub(this.getModel().getPosition()).length() > 2f )  // si l'enemy est plus loin que 2
+			if(enemy != null)
 			{
-				// on recherche un emplacement à coté
-				// on cherche un position à côté de l'enemy
-				Vec2 positionNearEnemy = EntityManager.searchPosition(this, this.getModel().getEnemy());
-				// on recherche le chemin
-				Vec2 positionNode = positionNearEnemy;
-				positionNode.x = (int)positionNearEnemy.x;
-				positionNode.y = (int)positionNearEnemy.y;
-				// calcul du vecteur direction
-				Vec2 dir = this.getModel().getEnemy().getModel().getPosition().sub(positionNearEnemy);
-				dir.normalize();
-				EntityManager.computeDestination(this, positionNearEnemy, positionNode, dir);
-				
-			}
-			else
-			{
-			
-				System.out.println("KnightController : Hit");
-				// emission sur le réseau
-				this.getModel().setKnocking(true);	
-				// on place la force de frappe
-				this.getModel().setStreightStrike(10);
-				// emission réseau
-				NetDataUnity data = new NetDataUnity();
-				data.setTypeMessage(NetBase.TYPE.UPDATE);
-				this.prepareModelToNet();
-				try
+				if(enemy.getModel().getPosition().sub(this.getModel().getPosition()).length() > 2f)
 				{
-					data.setModel(this.getModel().clone());
-				} catch (CloneNotSupportedException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
+					// 2) recheche d'une position libre
+					Vec2 posNear = new ChoosePosition().findPositionForFight(this, this.getModel().getEnemy());
+					//Vec2 posNear = enemy.getModel().getPositionNode();
+					// 3) on libère la derniere position réserve
+					if(this.nodeReserved != null)
+						this.nodeReserved.bookNode(this);
+					// 4) on réserve la node
+					this.nodeReserved = LevelManager.getLevel().getModel().bookNode((int)posNear.x, (int)posNear.y, this);
+					// 5) on se déplace
+					Vec2 posFinal = posNear;
+					//posFinal = posFinal.add(new Vec2(.5f,.5f));
+					Vec2 posEnemy = enemy.getModel().getPosition();
+					Vec2 dir = posEnemy.sub(posFinal);
+					dir.normalize();
+					EntityManager.computeDestination(this, posFinal, posNear, dir);
 				}
-				NetSendThread.push(data);
-				// on joue l'animation de frappe
-				System.out.println("KnightController : PlayAnimation");
-				this.getView().playAnimation(TYPE_ANIMATION.STRIKE);
+				else
+				{
+					// si l'enemy est à porté
+					
+					// 1) on combat
+					this.getView().playAnimation(TYPE_ANIMATION.STRIKE);
+				}
 				
 			}
 			
-			// remise à zero du compteur temps
+			// mise à zero du compteur
 			elapsedTimeAttack = 0f;
-			
 		}
-		
 		
 		
 	}

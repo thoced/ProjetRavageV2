@@ -69,6 +69,21 @@ public class LevelModel
 	{
 		return this.nodes[(375 * y) + x].isNodeFree(u);
 	}
+	public boolean isNodeReserved(int x,int y, UnityBaseController u)
+	{
+		return this.nodes[(375 * y) + x].isNodeReserved(u);
+	}
+	
+	public Node bookNode(int x,int y,UnityBaseController u)
+	{
+		this.nodes[(375 * y) + x].bookNode(u);
+		return this.nodes[(375 * y) + x];
+	}
+	
+	public void unBookNode(int x,int y)
+	{
+		this.nodes[(375 * y) + x].unBookNode();
+	}
 	
 	public Node takeNode(int x,int y,UnityBaseController u)
 	{
@@ -79,6 +94,11 @@ public class LevelModel
 	public void releaseNode(int x,int y,UnityBaseController u)
 	{
 		this.nodes[(375 * y) + x].releaseNode(u);
+	}
+	
+	public UnityBaseController getUnityOnNode(int x,int y)
+	{
+		return this.nodes[(375 * y) + x].getUnityOnNode(x, y);
 	}
 	
 	public void InsertObstacle(List<TiledObjectPolylinePoint> listePoint,int x,int y,String typeobstacle) throws java.lang.RuntimeException

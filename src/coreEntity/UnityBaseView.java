@@ -92,6 +92,7 @@ public  class UnityBaseView implements Drawable
 			
 		}
 		this.sprite.setTextureRect(this.getController().getModel().getAnimations().getInd(ind));
+		System.out.println("ind anim :" + ind);
 	}
 	
 	private void noneAnimation()

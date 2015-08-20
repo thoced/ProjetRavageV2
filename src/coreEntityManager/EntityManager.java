@@ -89,6 +89,8 @@ public class EntityManager implements IBaseRavage,IEventCallBack,IRegionSelected
 	private Vector2f posMouseWorld;
 
 	private static int idTestUnity = 0;
+	// temps écoulé pour la recherche d'enemi
+	private float elapsedTimeForSearchNewEnemy = 0f;
 	
 	
 	
@@ -125,6 +127,9 @@ public class EntityManager implements IBaseRavage,IEventCallBack,IRegionSelected
 	@Override
 	public void update(Time deltaTime) 
 	{
+		// mise à jour du temps pour la recherche des enemy
+		elapsedTimeForSearchNewEnemy += deltaTime.asMilliseconds();
+		
 		// on parse les unitÃ©
 		for(UnityBaseController unity : vectorUnity.values())
 		{
@@ -145,27 +150,33 @@ public class EntityManager implements IBaseRavage,IEventCallBack,IRegionSelected
 		// recherche des enemy dans les zones
 		// pour chaque unity on lance la recherche
 		
-		for(UnityBaseController unity : this.vectorUnity.values())
+		if(elapsedTimeForSearchNewEnemy > 2f)
 		{
-			if(unity.getModel().getEnemy() == null) // si aucun enemy n'est encore attribué.
+			for(UnityBaseController unity : this.vectorUnity.values())
 			{
-				// on lance la recherche
-				List<UnityNetController> listEnemy = this.searchEnemyZone(unity);
-				if(listEnemy != null && listEnemy.size() > 0)
+				if(unity.getModel().getEnemy() == null) // si aucun enemy n'est encore attribué.
 				{
-					// on selectionne au hazard
-					Random rand = new Random();
-					int ind = rand.nextInt(listEnemy.size());
-					// on récupère l'enemy
-					UnityNetController enemy = listEnemy.get(ind);
-					// on attribue l'enemy
-					unity.getModel().setEnemy(enemy);
-					
+					// on lance la recherche
+					List<UnityNetController> listEnemy = this.searchEnemyZone(unity);
+					if(listEnemy != null && listEnemy.size() > 0)
+					{
+						// on selectionne au hazard
+						Random rand = new Random();
+						int ind = rand.nextInt(listEnemy.size());
+						// on récupère l'enemy
+						UnityNetController enemy = listEnemy.get(ind);
+						// on attribue l'enemy
+						unity.getModel().setEnemy(enemy);
+						
+							
+					}
+						
 						
 				}
-					
-					
 			}
+			
+			// mise à zero
+			elapsedTimeForSearchNewEnemy = 0f;
 		}
 		
 		
@@ -297,11 +308,11 @@ public class EntityManager implements IBaseRavage,IEventCallBack,IRegionSelected
 					for(UnityBaseController u : this.listUnitySelected)
 						u.getModel().setEnemy(unityPicked);
 					// pour toutes les unités, on crée leur position de formation pour attaquer
-					this.computeFormationStrike(unityPicked, listUnitySelected, new Vec2(1,0));
+					//this.computeFormationStrike(unityPicked, listUnitySelected, new Vec2(1,0));
 				
 			}
 			else
-			{
+			{	
 				// création de la fleche de selection d'angle de formation
 			    if(arrow == null)
 			    	arrow  = new ChooseAngleFormationDrawable(posMouseWorld,posMouseWorld);
@@ -393,6 +404,8 @@ public class EntityManager implements IBaseRavage,IEventCallBack,IRegionSelected
 				// on relache le clic, on récupère la dirction de formation et on lance la formation
 				if(arrow != null)
 				{
+					
+					
 					// on récupère le vecteur de direction pour la formation
 					dirFormation = arrow.getVectorDirectionFormation();
 					// on calcul la formation
@@ -532,6 +545,9 @@ public class EntityManager implements IBaseRavage,IEventCallBack,IRegionSelected
 			//Vec2 offset = dir.skew().mul(i*1.5f);
 			// on récupère une unité
 			UnityBaseController u = listUnity.get(i);
+			// on déselectionne tout enemi attribué.
+			u.getModel().setIdEnemy(-1);
+			
 			// on calcul sa destination
 			Vec2 positionFinalAdd = positionFinal.add(offset.add(dir.negate().mul(cptLine * 1.5f )));
 			Vec2 posNodeFinal = new Vec2();

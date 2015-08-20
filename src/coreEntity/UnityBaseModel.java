@@ -53,7 +53,7 @@ public class UnityBaseModel implements Externalizable
 	
 	protected transient UnityNetController enemy;
 	
-	protected int idEnemy;
+	protected int idEnemy = -1;
 	
 	protected boolean isKnocking = false; // variable passé à true quand l'unité frappe.
 	
@@ -147,7 +147,7 @@ public class UnityBaseModel implements Externalizable
 				this.setBody(PhysicWorldManager.getWorld().createBody(bdef));
 				
 				Shape shape = new CircleShape();
-				shape.m_radius = 0.55f;
+				shape.m_radius = 0.45f;
 				
 				FixtureDef fDef = new FixtureDef();
 				fDef.shape = shape;
@@ -160,6 +160,7 @@ public class UnityBaseModel implements Externalizable
 				
 				// creation du body
 				this.body.setTransform(this.position, this.rotation);
+			
 				// création du lock
 				lock = new Object();
 				

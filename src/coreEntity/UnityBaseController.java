@@ -44,7 +44,9 @@ public  class UnityBaseController implements IBaseRavage,ICallBackAStar,IEventCa
 	
 	protected ETAPE sequencePath = ETAPE.NONE;
 	
-	protected Node nodeTake = null;
+	protected Node nodeTake = null; // node pris lors d'un déplacement
+	
+	protected  Node nodeReserved = null; // node réservé par une unité alliée
 	
 	public enum ETAPE {GETSTEP,MOVE,NONE};
 	
@@ -99,7 +101,9 @@ public  class UnityBaseController implements IBaseRavage,ICallBackAStar,IEventCa
 		{
 			this.getModel().DecrementIndice();
 			this.getModel().getBody().setLinearVelocity(new Vec2(0,0));
-			this.getView().playAnimation(TYPE_ANIMATION.NON);
+			//this.getView().playAnimation(TYPE_ANIMATION.NON);
+			// on assigne le nouvelle enemy
+			//this.getModel().setEnemy(LevelManager.getLevel().getModel().getUnityOnNode(step.getX(), step.getY()));
 			return false;  // retourne false car le node est occupé, il faut stopper la progression
 		}
 		// on libère sur celui où l'on se trouve
@@ -118,7 +122,7 @@ public  class UnityBaseController implements IBaseRavage,ICallBackAStar,IEventCa
 			step = this.getModel().getPaths().getStep(this.getModel().getIndicePathsAndIncrement());
 			// on vérifie si le node n'est pas occupé
 			if(this.checkNodeFree() != true)
-				return;
+			    return;
 			
 			// calcul du vecteur de direction
 			vecStep = new Vec2(step.getX(),step.getY());
@@ -199,6 +203,7 @@ public  class UnityBaseController implements IBaseRavage,ICallBackAStar,IEventCa
 		synchronized(lock)
 		{
 	
+			
 			// switch pour les mouvements
 			switch(sequencePath)
 			{
@@ -231,6 +236,7 @@ public  class UnityBaseController implements IBaseRavage,ICallBackAStar,IEventCa
 	{
 		if(vec != null)
 		{
+			
 			// on crée la class de rotation
 			Rot r = new Rot();
 			r.s = vec.y;
@@ -249,6 +255,7 @@ public  class UnityBaseController implements IBaseRavage,ICallBackAStar,IEventCa
 	public void onCallsearchPath(Path finalPath) 
 	{
 		// réception du chemin calculé
+			
 		synchronized(lock)
 		{
 			this.getModel().setIndicePaths(0);

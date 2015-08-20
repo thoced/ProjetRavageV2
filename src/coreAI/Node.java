@@ -14,7 +14,10 @@ public class Node
 	
 	private float x,y;
 	
+	// node utilisé par une unité ennemie
 	private UnityBaseController unityBusy;
+	// node réservé par une unité alliée
+	private UnityBaseController unityReserved;
 	
 	public Node(float x,float y,boolean isdiagonal)
 	{
@@ -41,6 +44,14 @@ public class Node
 	public int getType() {
 		return type;
 	}
+	
+	public boolean isNodeReserved(UnityBaseController u)
+	{
+		if(unityReserved != null && unityReserved.getClass() == u.getClass()) // si le node est réservé par une unité alliée
+			return true;
+		else
+			return false;
+	}
 
 	public boolean isNodeFree(UnityBaseController u)
 	{
@@ -50,6 +61,11 @@ public class Node
 		return false;
 	}
 	
+	public void bookNode(UnityBaseController u)
+	{
+		unityReserved = u;
+	}
+	
 	public void takeNode(UnityBaseController u)
 	{
 		unityBusy = u;
@@ -57,10 +73,20 @@ public class Node
 			
 	}
 	
+	public UnityBaseController getUnityOnNode(int x,int y)
+	{
+		return unityBusy;
+	}
+	
 	public void releaseNode(UnityBaseController u)
 	{
 		if(unityBusy == u)
 			unityBusy = null;
+	}
+	
+	public void unBookNode()
+	{
+		unityReserved = null;
 	}
 	
 

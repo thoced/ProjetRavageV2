@@ -43,7 +43,7 @@ public class ChoosePosition
 				if(!level.getModel().isNodeFree((int)search.x, (int)search.y,owner))
 					continue;
 				// 5) on regarde si le node n'est pas réservé
-				if(level.getModel().isNodeReserved((int)search.x, (int)search.y,owner))
+				if(ReservationManager.contain(search))
 					continue;
 				
 				// 6) on calcul le cout et on crée un NearNode

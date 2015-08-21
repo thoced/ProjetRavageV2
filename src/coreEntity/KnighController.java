@@ -25,7 +25,9 @@ import coreEntity.Unity.TYPEUNITY;
 import coreEntity.UnityBaseView.TYPE_ANIMATION;
 import coreEntityManager.ChoosePosition;
 import coreEntityManager.EntityManager;
+import coreEntityManager.ReservationManager;
 import coreEntityManager.EntityManager.CAMP;
+import coreEntityManager.NodeReserved;
 import coreEvent.EventManager;
 import coreLevel.LevelManager;
 import coreNet.NetBase;
@@ -41,7 +43,7 @@ public class KnighController extends UnityBaseController
 {
 	private float elapsedTimeAttack = 0f;
 	
-	private Node nodeReserved;
+
 	
 	
 	public KnighController() {
@@ -99,17 +101,24 @@ public class KnighController extends UnityBaseController
 					Vec2 posNear = new ChoosePosition().findPositionForFight(this, this.getModel().getEnemy());
 					//Vec2 posNear = enemy.getModel().getPositionNode();
 					// 3) on libère la derniere position réserve
-					if(this.nodeReserved != null)
+					/*if(this.nodeReserved != null)
 						this.nodeReserved.bookNode(this);
 					// 4) on réserve la node
-					this.nodeReserved = LevelManager.getLevel().getModel().bookNode((int)posNear.x, (int)posNear.y, this);
+					this.nodeReserved = LevelManager.getLevel().getModel().bookNode((int)posNear.x, (int)posNear.y, this);*/
+					
+					if(this.getModel().getNodeReserved() != null)
+						ReservationManager.remove(this.getModel().getNodeReserved());
+					ReservationManager.add(posNear, this);
+					
 					// 5) on se déplace
 					Vec2 posFinal = posNear;
-					//posFinal = posFinal.add(new Vec2(.5f,.5f));
+					posFinal = posFinal.add(new Vec2(.5f,.5f));
 					Vec2 posEnemy = enemy.getModel().getPosition();
 					Vec2 dir = posEnemy.sub(posFinal);
 					dir.normalize();
 					EntityManager.computeDestination(this, posFinal, posNear, dir);
+					
+					
 				}
 				else
 				{
@@ -117,6 +126,15 @@ public class KnighController extends UnityBaseController
 					
 					// 1) on combat
 					this.getView().playAnimation(TYPE_ANIMATION.STRIKE);
+					// on envoie sur le réseau la frappe
+					NetDataUnity data = new NetDataUnity();
+					data.setTypeMessage(NetBase.TYPE.UPDATE);
+					this.getModel().setKnocking(true);
+					this.getModel().setStreightStrike(10);
+					this.prepareModelToNet();
+					data.setModel(this.getModel());
+					NetSendThread.push(data);
+					
 				}
 				
 			}

@@ -19,6 +19,8 @@ import coreAI.Node;
 import coreEntity.Unity.ANIMATE;
 import coreEntity.UnityBaseView.TYPE_ANIMATION;
 import coreEntityManager.EntityManager;
+import coreEntityManager.NodeReserved;
+import coreEntityManager.ReservationManager;
 import coreEvent.IEventCallBack;
 import coreLevel.LevelManager;
 import coreNet.NetBase.TYPE;
@@ -46,7 +48,7 @@ public  class UnityBaseController implements IBaseRavage,ICallBackAStar,IEventCa
 	
 	protected Node nodeTake = null; // node pris lors d'un déplacement
 	
-	protected  Node nodeReserved = null; // node réservé par une unité alliée
+	
 	
 	public enum ETAPE {GETSTEP,MOVE,NONE};
 	

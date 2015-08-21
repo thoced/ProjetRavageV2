@@ -44,6 +44,7 @@ import coreEntity.Unity;
 import coreEntity.UnityBaseModel;
 import coreEntityManager.BloodManager;
 import coreEntityManager.EntityManager;
+import coreEntityManager.ReservationManager;
 import coreEvent.EventManager;
 import coreGUI.RectSelected;
 import coreGUIInterface.ButtonRavage;
@@ -89,7 +90,7 @@ public class FrameWork
 	private Sprite renderGuiSprite;
 	
 	private menuDialogRavage menu;
-	
+			
 	public void init() throws TextureCreationException, InterruptedException, IOException 
 	{
 		

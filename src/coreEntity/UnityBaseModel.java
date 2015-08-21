@@ -22,6 +22,7 @@ import org.newdawn.slick.util.pathfinding.Path;
 
 import coreEntity.UnityBaseController.TYPEUNITY;
 import coreEntityManager.EntityManager;
+import coreEntityManager.NodeReserved;
 import coreEntityManager.EntityManager.CAMP;
 import corePhysic.PhysicWorldManager;
 
@@ -75,6 +76,8 @@ public class UnityBaseModel implements Externalizable
 	protected Animations animations;
 	// information sur l'origne du sprite
 	protected Vector2f origineSprite;
+	
+	protected NodeReserved nodeReserved = null; // node réservé par une unité alliée
 	
 	
 	public UnityBaseModel() {
@@ -172,6 +175,16 @@ public class UnityBaseModel implements Externalizable
 	
 	
 
+	public NodeReserved getNodeReserved() {
+		return nodeReserved;
+	}
+
+
+	public void setNodeReserved(NodeReserved nodeReserved) {
+		this.nodeReserved = nodeReserved;
+	}
+
+
 	public Vector2f getOrigineSprite() {
 		return origineSprite;
 	}
@@ -238,8 +251,11 @@ public class UnityBaseModel implements Externalizable
 		this.positionlFinal = positionlFinal;
 	}
 
-	public void setPositionNodeFinal(Vec2 positionNodeFinal) {
+	public void setPositionNodeFinal(Vec2 positionNodeFinal) 
+	{
 		this.positionNodeFinal = positionNodeFinal;
+		
+		
 	}
 	
 	public Vec2 getPositionNode() 

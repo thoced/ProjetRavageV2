@@ -808,6 +808,11 @@ public class EntityManager implements IBaseRavage,IEventCallBack,IRegionSelected
 				
 			if(LevelManager.getLevel().getModel().getNodes()[(int) ((posNodeFinal.y * 375) + posNodeFinal.x)].getType() == 0)
 			{
+				// enlevement de la réservation du node
+				if(unity.getModel().getNodeReserved() != null)
+					ReservationManager.remove(unity.getModel().getNodeReserved());
+				// réservation du node
+				ReservationManager.add(unity.getModel().getPositionNodeFinal(), unity);
 				// Lancement recherche
 				AstarManager.askPath(unity, unity.getModel().getPositionNode(), unity.getModel().getPositionNodeFinal()); // classic
 				
@@ -859,10 +864,6 @@ public class EntityManager implements IBaseRavage,IEventCallBack,IRegionSelected
 			// on initialise le model
 			controller.getModel().initModel(controller);
 			controller.setSequencePath(ETAPE.GETSTEP); // on spécifie au controller la sequence à adopter pourl a recheche de chemin
-			
-			
-			
-				
 			
 			// ----------------------------------------------------------------------------------------
 			// vérification de la mort

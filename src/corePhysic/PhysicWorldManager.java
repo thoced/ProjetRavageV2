@@ -20,6 +20,9 @@ public class PhysicWorldManager implements IBaseRavage
 	{
 		// instance du World Physic
 		world = new World(new Vec2(0,0));
+		
+		ContactManager m = new ContactManager();
+		world.setContactListener(m);
 	
 	}
 
@@ -28,6 +31,7 @@ public class PhysicWorldManager implements IBaseRavage
 	{
 		// TODO Auto-generated method stub
 		world.step(deltaTime.asSeconds(), 2, 1);
+		world.clearForces();
 	}
 
 	@Override

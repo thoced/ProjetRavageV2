@@ -4,6 +4,7 @@ import org.jsfml.system.Time;
 
 import CoreTexturesManager.TexturesManager;
 import coreEntity.UnityBaseView.TYPE_ANIMATION;
+import coreEntityManager.BloodManager;
 import coreEntityManager.EntityManager;
 import coreEntityManager.EntityManager.CAMP;
 import coreNet.NetBase;
@@ -44,6 +45,8 @@ public class UnityNetController extends UnityBaseController
 		{
 			// on joue la mort
 			EntityManager.getVectorUnityNetKilled().add(this);
+			// on ajoute un cadavre
+			BloodManager.addUnityKilled(this.getModel().getPosition(), this.getModel().getMyCamp());
 		}
 		
 		

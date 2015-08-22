@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
+import org.jbox2d.common.Vec2;
 import org.jsfml.graphics.Drawable;
 import org.jsfml.graphics.IntRect;
 import org.jsfml.graphics.RenderStates;
@@ -16,6 +17,7 @@ import org.jsfml.system.Vector2f;
 import CoreTexturesManager.TexturesManager;
 import coreDrawable.DrawableUnityManager;
 import coreDrawable.DrawableUnityManager.LAYERS;
+import corePhysic.PhysicWorldManager;
 import ravage.IBaseRavage;
 
 public class BloodManager implements IBaseRavage,Drawable 
@@ -98,11 +100,11 @@ public class BloodManager implements IBaseRavage,Drawable
 
 	}
 	
-	public static void addBlood(float posx,float posy)
+	public static void addBlood(Vec2 posBlood)
 	{
 		
 		Sprite sprite = new Sprite(textureBlood);
-		sprite.setPosition(new Vector2f(posx,posy));
+		sprite.setPosition(new Vector2f(posBlood.x * PhysicWorldManager.getRatioPixelMeter(),posBlood.y * PhysicWorldManager.getRatioPixelMeter()));
 		sprite.setOrigin(new Vector2f(16f,16f));
 		// on cré un rand pour la selection aléatoire du sang
 		Random rand = new Random();
@@ -119,7 +121,7 @@ public class BloodManager implements IBaseRavage,Drawable
 		listBlood.add(blood);
 	}
 	
-	public static void addUnityKilled(float posx, float posy,EntityManager.CAMP camp)
+	public static void addUnityKilled(Vec2 posBody,EntityManager.CAMP camp)
 	{
 		int indy = 0;
 		switch(camp)
@@ -130,7 +132,7 @@ public class BloodManager implements IBaseRavage,Drawable
 		}
 	
 		Sprite sprite = new Sprite(textureCadavre);
-		sprite.setPosition(new Vector2f(posx,posy));
+		sprite.setPosition(new Vector2f(posBody.x * PhysicWorldManager.getRatioPixelMeter(),posBody.y * PhysicWorldManager.getRatioPixelMeter()));
 		sprite.setOrigin(new Vector2f(16f,16f));
 	
 		// on place l'indice 15 qui est le corp décédé

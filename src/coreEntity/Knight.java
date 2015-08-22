@@ -101,7 +101,7 @@ public class Knight extends Unity
 					this.strikeNow();
 					this.timeElapsedStrike = Time.ZERO; // on positinne à 0 le temps écouté entre deux frappes
 					// on jette un peu de sang en dessous de l'ennemy virtuel
-					BloodManager.addBlood(enemy.getPosx(), enemy.getPosy());
+					//BloodManager.addBlood(enemy.getpo);
 				}
 				
 			}
@@ -194,14 +194,14 @@ public class Knight extends Unity
 			// on est mort
 		//	EntityManager.IamKilled(this);
 			// je place le mort
-			BloodManager.addUnityKilled(this.getPosx(), this.getPosy(),this.getMyCamp());
+			//BloodManager.addUnityKilled(this.getPosx(), this.getPosy(),this.getMyCamp());
 			
 		}
 		else
 		{
 			// on indique que l'on est mort
 			this.setKill();
-			BloodManager.addBlood(this.getPosx(), this.getPosy()); // ajout du sang car je recois un damage
+			//BloodManager.addBlood(this.getPosx(), this.getPosy()); // ajout du sang car je recois un damage
 			
 		}
 		

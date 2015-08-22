@@ -18,6 +18,7 @@ import coreAI.ICallBackAStar;
 import coreAI.Node;
 import coreEntity.Unity.ANIMATE;
 import coreEntity.UnityBaseView.TYPE_ANIMATION;
+import coreEntityManager.BloodManager;
 import coreEntityManager.EntityManager;
 import coreEntityManager.NodeReserved;
 import coreEntityManager.ReservationManager;
@@ -30,50 +31,51 @@ import coreNet.NetSendThread;
 import corePhysic.PhysicWorldManager;
 import ravage.IBaseRavage;
 
-public  class UnityBaseController implements IBaseRavage,ICallBackAStar,IEventCallBack
-{
+public class UnityBaseController implements IBaseRavage, ICallBackAStar,
+		IEventCallBack {
 	protected UnityBaseView view;
-	
+
 	protected UnityBaseModel model;
-	
+
 	protected Step step = null; // step du chemin
-	
-	protected Vec2 vecStep = null;	// vecteur de déplacement step
-	
+
+	protected Vec2 vecStep = null; // vecteur de déplacement step
+
 	protected Vec2 dir = null;
-	
+
 	protected Object lock;
-	
+
 	protected ETAPE sequencePath = ETAPE.NONE;
-	
+
 	protected Node nodeTake = null; // node pris lors d'un déplacement
-	
-	
-	
-	public enum ETAPE {GETSTEP,MOVE,NONE};
-	
-	public  enum TYPEUNITY {KNIGHT};
-	
+
+	public enum ETAPE {
+		GETSTEP, MOVE, NONE
+	};
+
+	public enum TYPEUNITY {
+		KNIGHT
+	};
 
 	public UnityBaseController() {
 		super();
 		lock = new Object();
 		// instance de la vue et du model
-		
+
 	}
-	
-	public void prepareModelToNet()
-	{
-		// prépare le model pour être envoyé au réseau car body et enemy ne sont pas sérialisés
-	//	this.getModel().setPosition(this.getModel().getBody().getPosition());
-	//	this.getModel().setRotation(this.getModel().getBody().getAngle());
-		if(this.getModel().getEnemy() != null)
-			this.getModel().setIdEnemy(this.getModel().getEnemy().getModel().getId());
-		this.getModel().setOrigineSprite(this.getView().getSprite().getOrigin());
-	
-		
+
+	public void prepareModelToNet() {
+		// prépare le model pour être envoyé au réseau car body et enemy ne sont
+		// pas sérialisés
+		// this.getModel().setPosition(this.getModel().getBody().getPosition());
+		// this.getModel().setRotation(this.getModel().getBody().getAngle());
+		if (this.getModel().getEnemy() != null)
+			this.getModel().setIdEnemy(
+					this.getModel().getEnemy().getModel().getId());
+		this.getModel()
+				.setOrigineSprite(this.getView().getSprite().getOrigin());
+
 	}
-	
 
 	public UnityBaseView getView() {
 		return view;
@@ -83,189 +85,194 @@ public  class UnityBaseController implements IBaseRavage,ICallBackAStar,IEventCa
 		return model;
 	}
 
-
 	public void setView(UnityBaseView view) {
 		this.view = view;
 	}
 
-	public void setModel(UnityBaseModel model) 
-	{
-		if(this.model != null) // si il existe déja un model, il faut supprimer le body
+	public void setModel(UnityBaseModel model) {
+		if (this.model != null) // si il existe déja un model, il faut supprimer
+								// le body
 		{
 			PhysicWorldManager.getWorld().destroyBody(this.model.getBody());
 		}
 		this.model = model;
 	}
-	
-	private boolean checkNodeFree()
-	{
-		if(LevelManager.getLevel().getModel().isNodeFree(step.getX(), step.getY(),this) != true)
-		{
+
+	private boolean checkNodeFree() {
+		if (LevelManager.getLevel().getModel()
+				.isNodeFree(step.getX(), step.getY(), this) != true) {
 			this.getModel().DecrementIndice();
-			this.getModel().getBody().setLinearVelocity(new Vec2(0,0));
-			//this.getView().playAnimation(TYPE_ANIMATION.NON);
+			this.getModel().getBody().setLinearVelocity(new Vec2(0, 0));
+			// this.getView().playAnimation(TYPE_ANIMATION.NON);
 			// on assigne le nouvelle enemy
-			//this.getModel().setEnemy(LevelManager.getLevel().getModel().getUnityOnNode(step.getX(), step.getY()));
-			return false;  // retourne false car le node est occupé, il faut stopper la progression
+			// this.getModel().setEnemy(LevelManager.getLevel().getModel().getUnityOnNode(step.getX(),
+			// step.getY()));
+			return false; // retourne false car le node est occupé, il faut
+							// stopper la progression
 		}
 		// on libère sur celui où l'on se trouve
-		if(nodeTake != null)
+		if (nodeTake != null)
 			nodeTake.releaseNode(this);
 		// on take le node
-		nodeTake = LevelManager.getLevel().getModel().takeNode(step.getX(), step.getY(), this);
-		
+		nodeTake = LevelManager.getLevel().getModel()
+				.takeNode(step.getX(), step.getY(), this);
+
 		return true; // pas de node occupé
 	}
-	
-	private void computeNextStep()  // on récupère une étape de chemion
+
+	private void computeNextStep() // on récupère une étape de chemion
 	{
-		try
-		{
-			step = this.getModel().getPaths().getStep(this.getModel().getIndicePathsAndIncrement());
+		try {
+			step = this.getModel().getPaths()
+					.getStep(this.getModel().getIndicePathsAndIncrement());
 			// on vérifie si le node n'est pas occupé
-			if(this.checkNodeFree() != true)
-			    return;
-			
+			// if(this.checkNodeFree() != true)
+			// return;
+
 			// calcul du vecteur de direction
-			vecStep = new Vec2(step.getX(),step.getY());
+			vecStep = new Vec2(step.getX(), step.getY());
 			// ajout du 0.5 pour placer l'unité au centre du node
-			vecStep = vecStep.add(new Vec2(.5f,.5f));
-			
-			// soustraction pour déterminer le vecteur de direction + normalisation
+			vecStep = vecStep.add(new Vec2(.5f, .5f));
+
+			// soustraction pour déterminer le vecteur de direction +
+			// normalisation
 			dir = vecStep.sub(this.getModel().getBody().getPosition());
 			dir.normalize();
-			// déplacement 
-			this.getModel().getBody().setLinearVelocity(dir.mul(this.getModel().getSpeed()));
-			// modification de l'animation 
+			// déplacement
+			this.getModel().getBody()
+					.setLinearVelocity(dir.mul(this.getModel().getSpeed()));
+			// modification de l'animation
 			this.getView().playAnimation(TYPE_ANIMATION.WALK);
 			// modifiation de l'etape en move
 			this.sequencePath = ETAPE.MOVE;
-			
-		}
-		catch(IndexOutOfBoundsException iooe)
-		{
+
+		} catch (IndexOutOfBoundsException iooe) {
 			this.getModel().setPaths(null);
-			this.getModel().getBody().setLinearVelocity(new Vec2(0,0));
+			this.getModel().getBody().setLinearVelocity(new Vec2(0, 0));
 			this.getView().playAnimation(TYPE_ANIMATION.NON);
 			this.sequencePath = ETAPE.NONE;
-			nodeTake = LevelManager.getLevel().getModel().takeNode((int)this.getModel().getPositionNode().x, (int)this.getModel().getPositionNode().y, this);
+			nodeTake = LevelManager
+					.getLevel()
+					.getModel()
+					.takeNode((int) this.getModel().getPositionNode().x,
+							(int) this.getModel().getPositionNode().y, this);
 		}
 	}
-	
+
 	private void moveToNextStep() // déplacement jusqu'a la prochaine étape
 	{
 		Vec2 diff = vecStep.sub(this.getModel().getBody().getPosition());
-		if(diff.length() < 0.2f)
-		{
-			
-			// 	si c'est le dernier node, il faut déplacer l'unité jusque sa position réel finale
-			if(this.getModel().getPaths().getLength() == this.getModel().getIndicePaths())
-			{
+		if (diff.length() < 0.2f) {
+
+			// si c'est le dernier node, il faut déplacer l'unité jusque sa
+			// position réel finale
+			if (this.getModel().getPaths().getLength() == this.getModel()
+					.getIndicePaths()) {
 				vecStep = this.getModel().getPositionlFinal();
 				Vec2 dir = vecStep.sub(this.getModel().getBody().getPosition());
 				dir.normalize();
-				
-				// déplacement 
-				this.getModel().getBody().setLinearVelocity(dir.mul(this.getModel().getSpeed()));
+
+				// déplacement
+				this.getModel().getBody()
+						.setLinearVelocity(dir.mul(this.getModel().getSpeed()));
 				this.getModel().getIndicePathsAndIncrement();
 
-			}
-			else
-			{
+			} else {
 				// l'unité est arrivé sur une étape (step)
 				step = null;
-				this.getModel().getBody().setLinearVelocity(new Vec2(0f,0f));
+				this.getModel().getBody().setLinearVelocity(new Vec2(0f, 0f));
 				this.sequencePath = ETAPE.GETSTEP;
-			
+
 			}
-			
-		}
-		else
-		{
+
+		} else {
 			// l'unité n'est pas encore arrivée sur une étape (step)
 			dir = vecStep.sub(this.getModel().getBody().getPosition());
-												
+
 			dir.normalize();
-			
+
 			this.computeRotation(dir); // calcul de la rotation
-			
-			this.getModel().getBody().setLinearVelocity(this.dir.mul(this.getModel().getSpeed()));
-			
+
+			this.getModel()
+					.getBody()
+					.setLinearVelocity(this.dir.mul(this.getModel().getSpeed()));
+
 		}
 	}
-	
-	
 
 	@Override
-	public void update(Time deltaTime) 
-	{
+	public void update(Time deltaTime) {
 		// incrémentation du temps écoulé pour les animations
 		this.getView().elapsedAnimationTime += deltaTime.asSeconds();
-			
-		synchronized(lock)
-		{
-	
-			
+
+		synchronized (lock) {
+
+			// on stoppe le tout
+			this.getModel().getBody().setLinearVelocity(new Vec2(0f, 0f));
 			// switch pour les mouvements
-			switch(sequencePath)
-			{
-				case NONE:  	this.computeRotation(this.getModel().dirFormation); // retourne l'unité en formation
-								break;
-			
-				case GETSTEP : 	if(this.getModel().getPaths() != null)  			// récupère une étape de chemin
-									this.computeNextStep();
-									break;
-					
-				case MOVE: 		this.moveToNextStep();
-								break; 												// déplacement l'unité
-				
-				default : 		this.moveToNextStep();
-								break;
-	
+			switch (sequencePath) {
+			case NONE:
+				this.computeRotation(this.getModel().dirFormation); // retourne
+																	// l'unité
+																	// en
+																	// formation
+				break;
+
+			case GETSTEP:
+				if (this.getModel().getPaths() != null) // récupère une étape de
+														// chemin
+					this.computeNextStep();
+				break;
+
+			case MOVE:
+				this.moveToNextStep();
+				break; // déplacement l'unité
+
+			default:
+				this.moveToNextStep();
+				break;
+
 			}
 		}
-		
-		
-		
+
 	}
-	
-	protected float lerp(float value, float start, float end)
-	{
-	    return start + (end - start) * value;
+
+	protected float lerp(float value, float start, float end) {
+		return start + (end - start) * value;
 	}
-	
+
 	protected void computeRotation(Vec2 vec) // calcul la rotation de l'unité
 	{
-		if(vec != null)
-		{
-			
+		if (vec != null) {
+
 			// on crée la class de rotation
 			Rot r = new Rot();
 			r.s = vec.y;
 			r.c = vec.x;
 			// receptin de l'angle de rotation
-			//float angle = r.getAngle(); 
+			// float angle = r.getAngle();
 			// assouplissement en utilisant un lerp
-			float angle = lerp(0.2f,this.getModel().getBody().getAngle(), r.getAngle() ); // angle de la tourelle déterminé
-			
-			this.getModel().getBody().setTransform(this.getModel().getBody().getPosition(), angle);
+			float angle = lerp(0.2f, this.getModel().getBody().getAngle(),
+					r.getAngle()); // angle de la tourelle déterminé
+
+			this.getModel()
+					.getBody()
+					.setTransform(this.getModel().getBody().getPosition(),
+							angle);
 		}
 	}
 
-	
 	@Override
-	public void onCallsearchPath(Path finalPath) 
-	{
+	public void onCallsearchPath(Path finalPath) {
 		// réception du chemin calculé
-			
-		synchronized(lock)
-		{
+
+		synchronized (lock) {
 			this.getModel().setIndicePaths(0);
 			step = null;
 			vecStep = null;
 			this.getModel().setPaths(finalPath);
 			this.sequencePath = ETAPE.GETSTEP;
-			
+
 			// emission sur le réseau
 			NetDataUnity data = new NetDataUnity();
 			this.prepareModelToNet();
@@ -279,38 +286,36 @@ public  class UnityBaseController implements IBaseRavage,ICallBackAStar,IEventCa
 			NetSendThread.push(data);
 		}
 
-		
 	}
-	
-	public void hit(int hitStrenght)
-	{
+
+	public void hit(int hitStrenght) {
 		// on est frappé, diminution de l'energie
 		this.getModel().setEnergy(this.getModel().getEnergy() - hitStrenght);
+		// on joue un peud sang
+		BloodManager.addBlood(this.getModel().getPosition());
 		// si l'energie est égale à 0 ou inférieur, on meurt
-		if(this.getModel().getEnergy() <= 0)
+		if (this.getModel().getEnergy() <= 0)
 		{
 			// ensutie il faut le code réseau
-						this.getModel().setKilled(true);
-						NetDataUnity data = new NetDataUnity();
-						data.setTypeMessage(TYPE.UPDATE);
-						this.prepareModelToNet();
-						try
-						{
-							data.setModel(this.getModel().clone());
-							NetSendThread.push(data);
-						} catch (CloneNotSupportedException e) {
-							// TODO Auto-generated catch block
-							e.printStackTrace();
-						}
-			
+			this.getModel().setKilled(true);
+			NetDataUnity data = new NetDataUnity();
+			data.setTypeMessage(TYPE.UPDATE);
+			this.prepareModelToNet();
+			try {
+				data.setModel(this.getModel().clone());
+				NetSendThread.push(data);
+			} catch (CloneNotSupportedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+
 			EntityManager.getVectorUnityKilled().add(this);
+
+			// ensutie il faut jouer la mort en view, on place un cadavre
+			BloodManager.addUnityKilled(this.getModel().getPosition(), this.getModel().getMyCamp());
 			
-			// ensutie il faut jouer la mort en view
 		}
 	}
-	
-	
-
 
 	public ETAPE getSequencePath() {
 		return sequencePath;
@@ -323,52 +328,50 @@ public  class UnityBaseController implements IBaseRavage,ICallBackAStar,IEventCa
 	@Override
 	public void init() {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
-	public void destroy() 
-	{
-		
+	public void destroy() {
+
 		// libération du node take
-		if(this.nodeTake != null)
+		if (this.nodeTake != null)
 			this.nodeTake.releaseNode(this);
 		// destruction du body
-		if(this.getModel().getBody() != null)
-			PhysicWorldManager.getWorld().destroyBody(this.getModel().getBody());
-		
+		if (this.getModel().getBody() != null)
+			PhysicWorldManager.getWorld()
+					.destroyBody(this.getModel().getBody());
+
 	}
 
 	@Override
 	public void onMouse(MouseEvent buttonEvent) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public void onKeyboard(KeyEvent keyboardEvent) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public void onMouseMove(MouseEvent event) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public void onMousePressed(MouseButtonEvent event) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public void onMouseReleased(MouseButtonEvent event) {
 		// TODO Auto-generated method stub
-		
+
 	}
-	
-	
-		
+
 }

@@ -24,7 +24,7 @@ public  class UnityBaseView implements Drawable
 	protected TYPE_ANIMATION currentTypeAnimation;				// animation en cours
 
 		
-	protected  int NB_FRAME_BY_SECOND = 15;
+	protected  int NB_FRAME_BY_SECOND = 25;
 	protected  int NB_TOTAL_FRAME = 27;
 	protected  int MIN_IND_FOR_WALK = 0;
 	protected  int MAX_IND_FOR_WALK = 10;  // 4

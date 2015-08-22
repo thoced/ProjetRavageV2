@@ -140,9 +140,10 @@ public class UnityBaseModel implements Externalizable
 				BodyDef bdef = new BodyDef();
 				bdef.active = true;
 				bdef.bullet = false;
-				bdef.type = BodyType.KINEMATIC;
+				bdef.type = BodyType.DYNAMIC;
 				bdef.fixedRotation = false;
 				bdef.userData = controller;
+				bdef.linearDamping = 1.0f;
 			
 				//bdef.gravityScale = 0.0f;
 				

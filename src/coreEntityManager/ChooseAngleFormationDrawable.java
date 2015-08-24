@@ -147,44 +147,19 @@ public class ChooseAngleFormationDrawable implements IBaseRavage, Drawable, IEve
 
 
 
-	@Override
-	public void onMouse(MouseEvent buttonEvent) {
-		// TODO Auto-generated method stub
-		
-	}
-
-
 
 	@Override
-	public void onKeyboard(KeyEvent keyboardEvent) {
-		// TODO Auto-generated method stub
-		
-	}
-
-
-
-	@Override
-	public void onMouseMove(MouseEvent event) 
-	{
-		
-		
-	}
-
-	@Override
-	public void onMousePressed(MouseButtonEvent event) 
+	public boolean onMousePressed(MouseButtonEvent event) 
 	{
 		// TODO Auto-generated method stub
 		buttonPressed = event.button;
+		return true;
 		
 	}
 
 
 
-	@Override
-	public void onMouseReleased(MouseButtonEvent event)
-	{
-	//	buttonPressed = Mouse.Button.LEFT;
-	}
+
 
 	public Vec2 getVectorDirectionFormation()
 	{
@@ -196,5 +171,37 @@ public class ChooseAngleFormationDrawable implements IBaseRavage, Drawable, IEve
 		angle.normalize();
 		
 		return angle;
+	}
+
+
+
+	@Override
+	public boolean onMouse(MouseEvent buttonEvent) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+
+
+	@Override
+	public boolean onKeyboard(KeyEvent keyboardEvent) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+
+
+	@Override
+	public boolean onMouseMove(MouseEvent event) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+
+
+	@Override
+	public boolean onMouseReleased(MouseButtonEvent event) {
+		// TODO Auto-generated method stub
+		return false;
 	}
 }

@@ -26,22 +26,42 @@ public class ContactManager implements ContactListener {
 	}
 
 	@Override
-	public void endContact(Contact arg0) {
+	public void endContact(Contact l_contact) {
 		// TODO Auto-generated method stub
-
+		try
+		{
+			Body m_bodyA = l_contact.getFixtureA().getBody();
+			Body m_bodyB = l_contact.getFixtureB().getBody();
+			// réception des userData
+			Object m_userDataA = m_bodyA.getUserData();
+			Object m_userDataB = m_bodyB.getUserData();
+			
+			if(m_userDataA.getClass() == String.class  || m_userDataB.getClass() == String.class)	
+				return;
+			
+			((UnityBaseController)m_userDataA).getModel().setSpeed(6f);
+			((UnityBaseController)m_userDataB).getModel().setSpeed(6f);
+		}
+		catch(NullPointerException npe)
+		{
+			
+		}
 	}
 
 	@Override
-	public void postSolve(Contact arg0, ContactImpulse arg1) {
+	public void postSolve(Contact l_contact, ContactImpulse arg1) 
+	{
 		// TODO Auto-generated method stub
-
+		// réception du bodyA et bodyB
+		
+		
 	}
 
 	@Override
 	public void preSolve(Contact l_contact, Manifold arg1)
 	{
 		// désactiovation du contact
-		l_contact.setEnabled(false);
+	//	l_contact.setEnabled(false);
 		
 		// réception du bodyA et bodyB
 		Body m_bodyA = l_contact.getFixtureA().getBody();
@@ -51,6 +71,8 @@ public class ContactManager implements ContactListener {
 		Object m_userDataB = m_bodyB.getUserData();
 		
 		
+		
+		
 		try
 		{
 			// il s'agit d'un contact avec autre chose ques des unités, on sort
@@ -58,13 +80,13 @@ public class ContactManager implements ContactListener {
 				return;
 			
 			// si il s'agit de deux unité différente, on active le contact
-			if(m_userDataA.getClass() != m_userDataB.getClass())
-			{
+		//	if(m_userDataA.getClass() != m_userDataB.getClass())
+			//{
 				// on active le contact
 				l_contact.setEnabled(true);
 				// on arrête sur place l'unité
-				m_bodyA.setLinearVelocity(ZERO_VECTOR);
-				m_bodyB.setLinearVelocity(ZERO_VECTOR);
+			//	m_bodyA.setLinearVelocity(ZERO_VECTOR);
+			  //  m_bodyB.setLinearVelocity(ZERO_VECTOR);
 				// on attribue l'enemy
 				if(m_userDataA.getClass() == UnityNetController.class)
 				{
@@ -74,7 +96,13 @@ public class ContactManager implements ContactListener {
 				{
 					((UnityBaseController)m_userDataA).getModel().setEnemy((UnityNetController)m_userDataB);
 				}
-			}
+				
+				((UnityBaseController)m_userDataA).getModel().setSpeed(3f);
+		//	}
+		//	else
+		//	{
+		//		((UnityBaseController)m_userDataA).getModel().setSpeed(3f);
+		//	}
 		
 		}
 		catch(NullPointerException npe)

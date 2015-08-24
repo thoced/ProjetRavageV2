@@ -41,8 +41,6 @@ import coreEntity.UnityBaseView.TYPE_ANIMATION;
 import coreEntity.UnityNetController;
 import coreEvent.IEventCallBack;
 import coreGUI.IRegionSelectedCallBack;
-import coreGUIInterface.GuiManager;
-import coreGUIInterface.panelFormation;
 import coreLevel.LevelManager;
 import coreNet.INetManagerCallBack;
 import coreNet.NetBase.TYPE;
@@ -266,7 +264,7 @@ public class EntityManager implements IBaseRavage,IEventCallBack,IRegionSelected
 	}
 
 	@Override
-	public void onMousePressed(MouseButtonEvent mouseEvent) 
+	public boolean onMousePressed(MouseButtonEvent mouseEvent) 
 	{
 		
 		posMouseWorld = FrameWork.getWindow().mapPixelToCoords(mouseEvent.position);
@@ -293,7 +291,7 @@ public class EntityManager implements IBaseRavage,IEventCallBack,IRegionSelected
 				
 			}
 			
-			
+			return true;
 		}
 		else if(mouseEvent.asMouseButtonEvent().button == Mouse.Button.RIGHT)
 		{
@@ -317,13 +315,15 @@ public class EntityManager implements IBaseRavage,IEventCallBack,IRegionSelected
 			    if(arrow == null)
 			    	arrow  = new ChooseAngleFormationDrawable(posMouseWorld,posMouseWorld);
 			}
+			
+			return true;
 		}
 		
-		
+		return false;
 	}
 
 	@Override
-	public void onKeyboard(KeyEvent keyboardEvent) 
+	public boolean onKeyboard(KeyEvent keyboardEvent) 
 	{
 		
 		
@@ -352,50 +352,17 @@ public class EntityManager implements IBaseRavage,IEventCallBack,IRegionSelected
 			System.out.println("envoie du header : " );
 			NetSendThread.push(create);
 		
-			
-			
-			// on ajoute une unité
-			/*Knight knight = new Knight();
-			knight.init();
-			knight.setPosition(NetManager.getPosxStartFlag(),NetManager.getPosyStartFlag());
-			// réception de l'id unique pour l'unité
-			knight.setId(EntityManager.getNewIdUnity());
-			knight.setMyCamp(EntityManager.getCampSelected());
-			EntityManager.getVectorUnity().put(knight.getId(), knight);
-			// on envoie sur le réseau
-			NetHeader header = new NetHeader();
-			header.setTypeMessage(TYPE.ADD);
-			NetAddUnity add = new NetAddUnity();
-			add.setPosx(knight.getPositionMeterX());
-			add.setPosy(knight.getPositionMeterY());
-			add.setTypeUnity(knight.getIdType());
-			add.setIdUnity(knight.getId());
-			add.setCampUnity(knight.getMyCamp());
-			header.setMessage(add)
-			try 
-			{
-				NetManager.PackMessage(header);
-				
-				//NetManager.SendMessage(header);
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}*/
+			return true;
 		}
 		
-		 
+		 return false;
 		
 	}
 
-	@Override
-	public void onMouseMove(MouseEvent event) 
-	{
-		
-	}
 	
 	
 	@Override
-	public void onMouseReleased(MouseButtonEvent event) 
+	public boolean onMouseReleased(MouseButtonEvent event) 
 	{
 		
 		if(event.button == Button.RIGHT)
@@ -416,9 +383,15 @@ public class EntityManager implements IBaseRavage,IEventCallBack,IRegionSelected
 				    // suppression de la fleche dans les callback
 					arrow.destroy();
 					arrow = null;
+					
+					return true;
 				}
+				
+				
 			
 		}
+		
+		return false;
 
 	}
 
@@ -462,11 +435,7 @@ public class EntityManager implements IBaseRavage,IEventCallBack,IRegionSelected
 
 	
 
-	@Override
-	public void onMouse(MouseEvent buttonEvent) {
-		// TODO Auto-generated method stub
-		
-	}
+	
 	
 	public static float getRadian(float degre)
 	{
@@ -875,6 +844,18 @@ public class EntityManager implements IBaseRavage,IEventCallBack,IRegionSelected
 		}
 			
 		
+	}
+
+	@Override
+	public boolean onMouse(MouseEvent buttonEvent) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean onMouseMove(MouseEvent event) {
+		// TODO Auto-generated method stub
+		return false;
 	}
 
 	

@@ -33,6 +33,9 @@ public class TileMap implements TileBasedMap
 			return true;
 		else
 			return false;
+		
+		
+		
 	}
 
 	@Override

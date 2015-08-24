@@ -6,11 +6,10 @@ import org.jsfml.window.event.MouseEvent;
 
 public interface IEventCallBack 
 {
-	public void onMouse(MouseEvent buttonEvent);
-	public void onKeyboard(KeyEvent keyboardEvent);
-	
-	public void onMouseMove(MouseEvent event);
-	public void onMousePressed(MouseButtonEvent event);
-	public void onMouseReleased(MouseButtonEvent event);
+	public boolean onMouse(MouseEvent buttonEvent);
+	public boolean onKeyboard(KeyEvent keyboardEvent);
+	public boolean onMouseMove(MouseEvent event);
+	public boolean onMousePressed(MouseButtonEvent event);
+	public boolean onMouseReleased(MouseButtonEvent event);
 	
 }

@@ -13,6 +13,7 @@ import org.newdawn.slick.util.pathfinding.Path;
 import org.newdawn.slick.util.pathfinding.navmesh.NavMesh;
 import org.newdawn.slick.util.pathfinding.navmesh.NavMeshBuilder;
 import org.newdawn.slick.util.pathfinding.navmesh.NavPath;
+import org.newdawn.slick.util.pathfinding.navmesh.Space;
 
 import coreAINavMesh.Agent;
 import coreAINavMesh.TileMap;
@@ -43,10 +44,13 @@ public class AstarManager extends Thread implements IBaseRavage
 		agent = new Agent();
 		
 		TileMap tilemap = new TileMap(LevelManager.getLevel().getModel().getNodes());
+	
 		// instance du navmesh
 		//NavMeshBuilder build = new NavMeshBuilder();
 		//navmesh = build.build(tilemap);
 		navmesh = new AStarPathFinder(tilemap, 1024, true);
+	
+			
 		// instance du star
 		//star = new Astar();
 		// instance de la liste des demandes

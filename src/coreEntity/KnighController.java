@@ -147,20 +147,23 @@ public class KnighController extends UnityBaseController
 	}
 
 	@Override
-	public void onKeyboard(KeyEvent keyboardEvent) {
+	public boolean onKeyboard(KeyEvent keyboardEvent) {
 		// TODO Auto-generated method stub
 		super.onKeyboard(keyboardEvent);
 		
 		if(keyboardEvent.key == Key.W)
 		{
 			this.getView().playAnimation(TYPE_ANIMATION.WALK);
+			return true;
 		}
 		
 		if(keyboardEvent.key == Key.S)
 		{
 			this.getView().playAnimation(TYPE_ANIMATION.STRIKE);
+			return true;
 		}
 		
+		return false;
 		
 	}
 

@@ -100,14 +100,10 @@ public class RectSelected implements IBaseRavage, Drawable,IEventCallBack
 
 	
 
-	@Override
-	public void onKeyboard(KeyEvent keyboardEvent) {
-		// TODO Auto-generated method stub
-		
-	}
+	
 
 	@Override
-	public void onMouse(org.jsfml.window.event.MouseEvent buttonEvent)
+	public boolean onMouse(org.jsfml.window.event.MouseEvent buttonEvent)
 	{
 		// TODO Auto-generated method stub
 		Vector2f coord = FrameWork.getWindow().mapPixelToCoords(buttonEvent.position);
@@ -130,10 +126,11 @@ public class RectSelected implements IBaseRavage, Drawable,IEventCallBack
 			this.isButtonPressed = false;
 		}
 		
+		return false;
 	}
 
 	@Override
-	public void onMouseMove(org.jsfml.window.event.MouseEvent event)
+	public boolean onMouseMove(org.jsfml.window.event.MouseEvent event)
 	{
 		Vector2f coord = FrameWork.getWindow().mapPixelToCoords(event.position);
 		
@@ -141,12 +138,14 @@ public class RectSelected implements IBaseRavage, Drawable,IEventCallBack
 		{
 			width = coord.x - x;
 			height = coord.y - y;
+			return true;
 		}
 		
+		return false;
 	}
 
 	@Override
-	public void onMousePressed(MouseButtonEvent event) 
+	public boolean onMousePressed(MouseButtonEvent event) 
 	{
 		Vector2f coord = FrameWork.getWindow().mapPixelToCoords(event.position);
 		
@@ -155,12 +154,14 @@ public class RectSelected implements IBaseRavage, Drawable,IEventCallBack
 			this.x = coord.x;
 			this.y = coord.y;
 			this.isButtonPressed = true;
+			return true;
 		}
 		
+		return false;
 	}
 
 	@Override
-	public void onMouseReleased(MouseButtonEvent event) 
+	public boolean onMouseReleased(MouseButtonEvent event) 
 	{
 		// TODO Auto-generated method stub
 		if(event.button == Button.LEFT)
@@ -170,7 +171,10 @@ public class RectSelected implements IBaseRavage, Drawable,IEventCallBack
 			this.CallBack();
 			// on position le cadre en 0 pixel
 			x = y = width = height = 0;
+			return true;
 		}
+		
+		return false;
 	}
 
 
@@ -189,6 +193,12 @@ public class RectSelected implements IBaseRavage, Drawable,IEventCallBack
 			// appel aux objets attachés
 			i.onRegionSelected(region);
 		}
+	}
+
+	@Override
+	public boolean onKeyboard(KeyEvent keyboardEvent) {
+		// TODO Auto-generated method stub
+		return false;
 	}
 
 	

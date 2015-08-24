@@ -144,18 +144,19 @@ public class UnityBaseModel implements Externalizable
 				bdef.fixedRotation = false;
 				bdef.userData = controller;
 				bdef.linearDamping = 1.0f;
-			
+											
 				//bdef.gravityScale = 0.0f;
 				
 				// creation du body
 				this.setBody(PhysicWorldManager.getWorld().createBody(bdef));
 				
+							
 				Shape shape = new CircleShape();
-				shape.m_radius = 0.45f;
+				shape.m_radius = 0.30f;
 				
 				FixtureDef fDef = new FixtureDef();
 				fDef.shape = shape;
-				fDef.density = 1.0f;
+				fDef.density = 0f;
 				
 				fDef.friction = 0.0f;
 				fDef.restitution = 0.0f;

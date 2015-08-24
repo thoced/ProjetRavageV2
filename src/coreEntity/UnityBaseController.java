@@ -162,12 +162,11 @@ public class UnityBaseController implements IBaseRavage, ICallBackAStar,
 	private void moveToNextStep() // déplacement jusqu'a la prochaine étape
 	{
 		Vec2 diff = vecStep.sub(this.getModel().getBody().getPosition());
-		if (diff.length() < 0.2f) {
+		if (diff.length() < 0.5f) {
 
 			// si c'est le dernier node, il faut déplacer l'unité jusque sa
 			// position réel finale
-			if (this.getModel().getPaths().getLength() == this.getModel()
-					.getIndicePaths()) {
+			if (this.getModel().getPaths().getLength() == this.getModel().getIndicePaths()) {
 				vecStep = this.getModel().getPositionlFinal();
 				Vec2 dir = vecStep.sub(this.getModel().getBody().getPosition());
 				dir.normalize();
@@ -212,10 +211,7 @@ public class UnityBaseController implements IBaseRavage, ICallBackAStar,
 			// switch pour les mouvements
 			switch (sequencePath) {
 			case NONE:
-				this.computeRotation(this.getModel().dirFormation); // retourne
-																	// l'unité
-																	// en
-																	// formation
+				this.computeRotation(this.getModel().dirFormation); // retourne// l'unité// en// formation
 				break;
 
 			case GETSTEP:
@@ -345,33 +341,35 @@ public class UnityBaseController implements IBaseRavage, ICallBackAStar,
 	}
 
 	@Override
-	public void onMouse(MouseEvent buttonEvent) {
+	public boolean onMouse(MouseEvent buttonEvent) {
 		// TODO Auto-generated method stub
-
+		return false;
 	}
 
 	@Override
-	public void onKeyboard(KeyEvent keyboardEvent) {
+	public boolean onKeyboard(KeyEvent keyboardEvent) {
 		// TODO Auto-generated method stub
-
+		return false;
 	}
 
 	@Override
-	public void onMouseMove(MouseEvent event) {
+	public boolean onMouseMove(MouseEvent event) {
 		// TODO Auto-generated method stub
-
+		return false;
 	}
 
 	@Override
-	public void onMousePressed(MouseButtonEvent event) {
+	public boolean onMousePressed(MouseButtonEvent event) {
 		// TODO Auto-generated method stub
-
+		return false;
 	}
 
 	@Override
-	public void onMouseReleased(MouseButtonEvent event) {
+	public boolean onMouseReleased(MouseButtonEvent event) {
 		// TODO Auto-generated method stub
-
+		return false;
 	}
+
+
 
 }

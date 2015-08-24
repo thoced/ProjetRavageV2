@@ -47,9 +47,6 @@ import coreEntityManager.EntityManager;
 import coreEntityManager.ReservationManager;
 import coreEvent.EventManager;
 import coreGUI.RectSelected;
-import coreGUIInterface.ButtonRavage;
-import coreGUIInterface.GuiManager;
-import coreGUIInterface.PanelRavage;
 import coreGUISwing.menuDialogRavage;
 import coreLevel.Level01;
 import coreLevel.LevelController;
@@ -70,7 +67,6 @@ public class FrameWork
 	private RectSelected rect;
 	private NetManager netManager;
 	private EventManager eventManager;
-	private GuiManager	guiManager;
 	private BloodManager bloodManager;
 	// Clocks
 	private Clock frameClock;
@@ -142,8 +138,6 @@ public class FrameWork
 		rect.init();
 		eventManager = new EventManager();
 		eventManager.init();
-		guiManager = new GuiManager();
-		guiManager.init();
 		bloodManager = new BloodManager();
 		bloodManager.init();
 		
@@ -171,24 +165,7 @@ public class FrameWork
 		
 		// création des guis tests
 		
-		PanelRavage panel = new PanelRavage("My panel",0,window.getSize().y - 256,128,256);
-		panel.setTextureBackground(TexturesManager.GetTextureByName("panel.png"));
-		panel.setColorBackground(new Color(128,128,128));
-		panel.setColorTickness(new Color(200,200,200));
-		panel.setTickness(4f);
-		panel.Init();
-		GuiManager.addGui(panel);
-		
-		ButtonRavage button = new ButtonRavage("my button",32,32,64,32);
-		button.setColorBackground(new Color(128,32,32));
-		button.Init();
-	    panel.addGui(button);
-	    
-	    ButtonRavage button2 = new ButtonRavage("my button 2",32,72,64,32);
-		button2.setColorBackground(new Color(128,32,32));
-		button2.Init();
-	    panel.addGui(button2);
-
+	
 	 
 		
 	}
@@ -202,7 +179,7 @@ public class FrameWork
 			for(Event event : window.pollEvents())
 			{
 				// catch des events
-				if(guiManager.catchEvent(event) != true)  // si un evenement est attrapé par le guiManager, on ne passe pas l'evenement au Manager d'eventment du jeu
+			//	if(guiManager.catchEvent(event) != true)  // si un evenement est attrapé par le guiManager, on ne passe pas l'evenement au Manager d'eventment du jeu
 					eventManager.catchEvent(event);
 
 				if(event.type == Event.Type.CLOSED) 
@@ -258,7 +235,7 @@ public class FrameWork
 			renderTexture.display();
 			// draw du guiManager
 			renderGui.clear(Color.TRANSPARENT);
-			guiManager.draw(renderGui, null);
+			// PLACER ICI LE FUTUR GUI MANAGER
 			renderGui.display();
 			
 			// draw du rect

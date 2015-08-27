@@ -1,5 +1,6 @@
 package coreGuiRavage;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -35,11 +36,22 @@ import CoreTexturesManager.TexturesManager;
 		super();
 		
 		// transformation en pixels
-		Vector2f pos = new Vector2f(FrameWork.getWindow().getSize().x * x,FrameWork.getWindow().getSize().y * y);
+		Vector2f pos = new Vector2f((FrameWork.getWindow().getSize().x * x) - size.x * 0.5f,(FrameWork.getWindow().getSize().y * y) - size.y * 0.5f);
 		
 		// instance du model et de la vue
 		this.setM_model(new PanelModel(pos,size));
 		this.setM_view(new PanelView(this));
+		
+		// teste
+		try
+		{
+			Label myLabel = new Label(new Vector2f(10f,10f),null);
+			myLabel.setText("2000");
+			this.addWidget(myLabel);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 	
@@ -49,15 +61,16 @@ import CoreTexturesManager.TexturesManager;
 			Vector2f p = this.m_model.m_position;
 			Vector2f s = this.m_model.m_size;
 			FloatRect bound = new FloatRect(p,s);
-			if(bound.contains(position))
-			{
+			//if(bound.contains(position))
+			//{
 				if(this.getM_model().isPressed())
 				{
 					this.m_model.m_position = Vector2f.sub(position, this.m_diffPosClick);
+					return true;
 					
 				}
-				return true;
-			}
+				
+			//}
 		return false;
 		
 	}
@@ -91,6 +104,16 @@ import CoreTexturesManager.TexturesManager;
 	}
 
 
+	/* (non-Javadoc)
+	 * @see coreGuiRavage.Gui#addWidget(coreGuiRavage.Widget)
+	 */
+	@Override
+	public void addWidget(Widget widget)
+	{
+		
+	}
+
+	
 	
 	
 }
@@ -107,6 +130,11 @@ class PanelModel extends Model
 		// instance de la liste
 		m_guis = new ArrayList<Gui>();
 	}
+	
+	public void add(Gui g)
+	{
+		m_guis.add(g);
+	}
 
 }
 
@@ -119,6 +147,8 @@ class PanelView extends View
 	private RectangleShape m_rectangle;
 	// IntRect de la texture
 	private IntRect m_textureIntRect;
+	// couleur du contour du panel
+	private Color m_colorOutline;
 	
 	public PanelView(Panel controller) throws TextureCreationException
 	{
@@ -142,6 +172,11 @@ class PanelView extends View
 		if(m_spritePanel != null)
 			m_spritePanel.setOrigin(this.m_origin);
 		
+		// couleur contour
+		m_colorOutline = new Color(128,128,128,128);
+		// on spécifie la couleur du rectangle
+		m_rectangle.setOutlineColor(m_colorOutline);
+		
 		
 	}
 	
@@ -160,15 +195,13 @@ class PanelView extends View
 		m_rectangle.setSize(l_size);
 		m_rectangle.setPosition(new Vector2f(0f,0f));
 		m_rectangle.setOutlineThickness(-6f);
-		
-		Color c = new Color(128, 128, 128, 128);
-		
-		
-		m_rectangle.setOutlineColor(c);
-		
+				
 		// affichage de la texture du panel dans le rendertexture
 		m_render.clear();
 		m_render.draw(m_rectangle);
+		
+		
+		
 		// on renvoie le sprite du render texture dans le render appelant
 		// positionnement du m_spriteRender
 		m_spriteRender.setPosition(m_controller.m_model.m_position);

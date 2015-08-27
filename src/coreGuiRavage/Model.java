@@ -17,7 +17,6 @@ public class Model
 	public Model(Vector2f position,Vector2f size)
 	{
 		super();
-		
 		m_position = position;
 		m_size = size;
 	}

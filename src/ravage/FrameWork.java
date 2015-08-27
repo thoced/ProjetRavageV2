@@ -170,7 +170,7 @@ public class FrameWork
 		renderGuiSprite = new Sprite(renderGui.getTexture());
 		
 		// création des guis tests
-		Panel panel = new Panel(0,0.7f,new Vector2f(256,256));
+		Panel panel = new Panel(0.5f,0f,new Vector2f(512,64));
 		guiManager.addPanel(panel);
 	
 	 

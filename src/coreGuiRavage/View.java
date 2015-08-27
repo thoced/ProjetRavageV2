@@ -19,6 +19,8 @@ public abstract class View implements Drawable
 	// origin du centre de l'image
 	protected Vector2f m_origin;
 
+
+	
 	
 	/**
 	 * @return the m_render
@@ -26,8 +28,6 @@ public abstract class View implements Drawable
 	public RenderTexture getM_render() {
 		return m_render;
 	}
-
-
 
 	/**
 	 * @param m_render the m_render to set

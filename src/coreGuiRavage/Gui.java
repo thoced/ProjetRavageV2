@@ -32,6 +32,12 @@ public class Gui
 		this.m_view = m_view;
 	}
 
+	
+	public void addWidget(Widget widget)
+	{
+		
+	}
+	
 
 	public boolean onMouse(Vector2f position, Mouse.Button mouseType) {
 		// TODO Auto-generated method stub

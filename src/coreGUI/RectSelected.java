@@ -201,6 +201,7 @@ public class RectSelected implements IBaseRavage, Drawable,IEventCallBack
 		return false;
 	}
 
+
 	
 
 	

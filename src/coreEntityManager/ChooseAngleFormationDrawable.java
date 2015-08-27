@@ -204,4 +204,7 @@ public class ChooseAngleFormationDrawable implements IBaseRavage, Drawable, IEve
 		// TODO Auto-generated method stub
 		return false;
 	}
+
+
+
 }

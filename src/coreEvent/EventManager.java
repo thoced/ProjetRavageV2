@@ -17,6 +17,12 @@ public class EventManager implements IBaseRavage
 	private static List<IEventCallBack> listCallBack;
 	// list d'ibhet attacgés (temporary)
 	private static List<IEventCallBack> listCallBackTemporary;
+	
+	// list d'objets attachés pour les Intefaces (callback)
+	private static List<IEventInterfaceCallBack> listInterfaceCallBack;
+		// list d'ibhet attacgés (temporary)
+	private static List<IEventInterfaceCallBack> listInterfaceCallBackTemporary;
+	
 	// list de suppression des objet callback
 	private static List<IEventCallBack> listCallBackRemove;
 	
@@ -31,6 +37,8 @@ public class EventManager implements IBaseRavage
 		// instance du listcallback
 		listCallBack = new ArrayList<IEventCallBack>();
 		listCallBackTemporary = new ArrayList<IEventCallBack>();
+		listInterfaceCallBack = new ArrayList<IEventInterfaceCallBack>();
+		listInterfaceCallBackTemporary = new ArrayList<IEventInterfaceCallBack>();
 		listCallBackRemove = new ArrayList<IEventCallBack>();
 
 	}
@@ -44,15 +52,23 @@ public class EventManager implements IBaseRavage
 		listCallBack.addAll(listCallBackTemporary);
 		listCallBackTemporary.clear();
 		
+		// transferts des objets de la liste temporary interface vers la liste call back des interfaces
+		listInterfaceCallBack.addAll(listInterfaceCallBackTemporary);
+		listInterfaceCallBackTemporary.clear();
+		
 		// suppression des objets 
 		listCallBack.removeAll(listCallBackRemove);
+		listInterfaceCallBack.removeAll(listCallBackRemove);
 		listCallBackRemove.clear();
 	}
 	
 	public void catchEvent(Event event)
 	{
+		
 		if(event.type == Event.Type.KEY_PRESSED)
 			this.callOnKeyBoard(event);
+		
+		
 		if(!this.isMousePressed && event.type == Event.Type.MOUSE_BUTTON_PRESSED)
 		{
 			this.callOnMousePressed(event);
@@ -71,27 +87,77 @@ public class EventManager implements IBaseRavage
 	
 	public void callOnKeyBoard(Event  event)
 	{
-		for(IEventCallBack i : listCallBack)
-			i.onKeyboard(event.asKeyEvent());
+		// Appel dans un premier temps vers les interfaces du premier plan
+		int flag = 0;  // flag placé à 0 si plus grand alors une action a été capté par l'inteface
+		for(IEventInterfaceCallBack i : listInterfaceCallBack)
+		{
+			if(i.onKeyboard(event.asKeyEvent()) == true)
+				flag++;
+				
+		}
+		
+		if(flag == 0) // si aucune action sur l'interface n'a été activée.
+		{
+			for(IEventCallBack i : listCallBack)
+				i.onKeyboard(event.asKeyEvent());
+		}
 	}
 	
 	public void callOnMousePressed(Event event)
 	{
-		for(IEventCallBack i : listCallBack)
-			i.onMousePressed(event.asMouseButtonEvent());
+		// Appel dans un premier temps vers les interfaces du premier plan
+		int flag = 0;  // flag placé à 0 si plus grand alors une action a été capté par l'inteface
+		for(IEventInterfaceCallBack i : listInterfaceCallBack)
+		{
+			if(i.onMousePressed(event.asMouseButtonEvent()) == true)
+				flag++;
+						
+		}
+		
+		if(flag == 0)
+		{
+			for(IEventCallBack i : listCallBack)
+				i.onMousePressed(event.asMouseButtonEvent());
+		}
 	}	
 	
 	public void callOnMouseReleased(Event event)
 	{
-		for(IEventCallBack i : listCallBack)
-			i.onMouseReleased(event.asMouseButtonEvent());
+		// Appel dans un premier temps vers les interfaces du premier plan
+		int flag = 0;  // flag placé à 0 si plus grand alors une action a été capté par l'inteface
+		for(IEventInterfaceCallBack i : listInterfaceCallBack)
+		{
+			if(i.onMouseReleased(event.asMouseButtonEvent()) == true)
+				flag++;
+								
+		}
+		
+		if(flag == 0)
+		{
+			for(IEventCallBack i : listCallBack)
+				i.onMouseReleased(event.asMouseButtonEvent());
+		}
 	}
 	
 	public void callOnMouseMoved(Event event)
 	{
-		for(IEventCallBack i : listCallBack)
-			i.onMouseMove(event.asMouseEvent());
+		// Appel dans un premier temps vers les interfaces du premier plan
+		int flag = 0;  // flag placé à 0 si plus grand alors une action a été capté par l'inteface
+		for(IEventInterfaceCallBack i : listInterfaceCallBack)
+		{
+			if(i.onMouseMove(event.asMouseEvent()) == true)
+				flag++;
+										
+		}
+		
+		if(flag == 0)
+		{
+			for(IEventCallBack i : listCallBack)
+				i.onMouseMove(event.asMouseEvent());
+		}
 	}
+	
+	
 
 	@Override
 	public void destroy() 
@@ -100,6 +166,7 @@ public class EventManager implements IBaseRavage
 
 	}
 	
+	// ajout d'un callback
 	public static void addCallBack(IEventCallBack i)
 	{
 		// ajout dans la liste call back temporary
@@ -115,5 +182,19 @@ public class EventManager implements IBaseRavage
 	}
 	
 	
+	// ajout d'un callback pour une interface en premier plan
+	public static void addInterfaceCallBack(IEventInterfaceCallBack i)
+	{
+		// ajout dans la liste call back temporary
+		listInterfaceCallBackTemporary.add(i);
+		
+		
+	}
+	
+	public static void removeInterfaceCallBack(IEventInterfaceCallBack r)
+	{
+		// ajout dans la liste des remove
+		listCallBackRemove.add(r);
+	}
 
 }

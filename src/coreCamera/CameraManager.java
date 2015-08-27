@@ -287,6 +287,7 @@ public class CameraManager implements IBaseRavage, IEventCallBack
 		return false;
 	}
 
+
 	
 
 	

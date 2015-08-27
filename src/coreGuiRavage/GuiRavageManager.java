@@ -3,18 +3,22 @@ package coreGuiRavage;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.json.stream.JsonParser.Event;
+
 import org.jsfml.graphics.Drawable;
 import org.jsfml.graphics.RenderStates;
 import org.jsfml.graphics.RenderTarget;
 import org.jsfml.system.Time;
+import org.jsfml.system.Vector2f;
 import org.jsfml.window.event.KeyEvent;
 import org.jsfml.window.event.MouseButtonEvent;
 import org.jsfml.window.event.MouseEvent;
 
 import ravage.IBaseRavage;
 import coreEvent.IEventCallBack;
+import coreEvent.IEventInterfaceCallBack;
 
-public class GuiRavageManager implements IBaseRavage,IEventCallBack, Drawable 
+public class GuiRavageManager implements IBaseRavage,IEventInterfaceCallBack, Drawable 
 {
 
 	private List<Panel> m_panels;
@@ -51,20 +55,44 @@ public class GuiRavageManager implements IBaseRavage,IEventCallBack, Drawable
 	}
 
 	@Override
-	public boolean onMouseMove(MouseEvent event) {
-		// TODO Auto-generated method stub
-		return false;
+	public boolean onMouseMove(MouseEvent event) 
+	{
+		boolean l_ret = false;
+		
+		for(Panel p : m_panels)
+		{
+			l_ret = p.onMouseMove(new Vector2f(event.position.x,event.position.y));
+				if(l_ret)
+					return true;
+		}
+		
+		return l_ret;
+		
+		
 	}
 
 	@Override
-	public boolean onMousePressed(MouseButtonEvent event) {
-		// TODO Auto-generated method stub
-		return false;
+	public boolean onMousePressed(MouseButtonEvent event) 
+	{
+	
+		for(Panel p: m_panels)
+		{
+			if(p.onMousePressed(new Vector2f(event.position.x,event.position.y),event.button) == true) // un le click se trouve sur un panel, return true
+				return true;
+		}
+		return false; // aucun clic sur un panel
 	}
 
 	@Override
-	public boolean onMouseReleased(MouseButtonEvent event) {
-		// TODO Auto-generated method stub
+	public boolean onMouseReleased(MouseButtonEvent event) 
+	{
+	
+		for(Panel p : m_panels)
+		{
+			if(p.onMouseReleased(new Vector2f(event.position.x,event.position.y),event.button) == true)
+				return true;
+		}
+		
 		return false;
 	}
 
@@ -85,5 +113,7 @@ public class GuiRavageManager implements IBaseRavage,IEventCallBack, Drawable
 		// TODO Auto-generated method stub
 		
 	}
+
+
 
 }

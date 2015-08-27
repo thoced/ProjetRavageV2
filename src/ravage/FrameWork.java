@@ -22,6 +22,7 @@ import org.jbox2d.dynamics.BodyType;
 import org.jbox2d.dynamics.Fixture;
 import org.jbox2d.dynamics.FixtureDef;
 import org.jsfml.graphics.Color;
+import org.jsfml.graphics.IntRect;
 import org.jsfml.graphics.RectangleShape;
 import org.jsfml.graphics.RenderTexture;
 import org.jsfml.graphics.RenderWindow;
@@ -48,6 +49,7 @@ import coreEntityManager.ReservationManager;
 import coreEvent.EventManager;
 import coreGUI.RectSelected;
 import coreGUISwing.menuDialogRavage;
+import coreGuiRavage.*;
 import coreLevel.Level01;
 import coreLevel.LevelController;
 import coreLevel.LevelManager;
@@ -68,6 +70,7 @@ public class FrameWork
 	private NetManager netManager;
 	private EventManager eventManager;
 	private BloodManager bloodManager;
+	private GuiRavageManager guiManager;
 	// Clocks
 	private Clock frameClock;
 	// fps
@@ -140,6 +143,8 @@ public class FrameWork
 		eventManager.init();
 		bloodManager = new BloodManager();
 		bloodManager.init();
+		guiManager = new GuiRavageManager();
+		guiManager.init();
 		
 		
 		// attachement au call back
@@ -147,6 +152,7 @@ public class FrameWork
 		eventManager.addCallBack(cameraManager);
 		eventManager.addCallBack(entityManager);
 		eventManager.addCallBack(rect);
+		eventManager.addInterfaceCallBack(guiManager);
 		
 		// Chargement du niveau
 		//currentLevel  = levelManager.loadLevel("testlevel01.json");
@@ -164,7 +170,8 @@ public class FrameWork
 		renderGuiSprite = new Sprite(renderGui.getTexture());
 		
 		// création des guis tests
-		
+		Panel panel = new Panel(0,0.7f,new Vector2f(256,256));
+		guiManager.addPanel(panel);
 	
 	 
 		
@@ -222,6 +229,7 @@ public class FrameWork
 			eventManager.update(deltaTime);
 			netManager.update(deltaTime);
 			bloodManager.update(deltaTime);
+			guiManager.update(deltaTime);
 			
 			// Draw des composants
 			renderTexture.clear();
@@ -235,7 +243,7 @@ public class FrameWork
 			renderTexture.display();
 			// draw du guiManager
 			renderGui.clear(Color.TRANSPARENT);
-			// PLACER ICI LE FUTUR GUI MANAGER
+			guiManager.draw(renderGui, null);
 			renderGui.display();
 			
 			// draw du rect

@@ -858,6 +858,7 @@ public class EntityManager implements IBaseRavage,IEventCallBack,IRegionSelected
 		return false;
 	}
 
+
 	
 
 	

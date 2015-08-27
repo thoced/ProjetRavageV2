@@ -14,7 +14,6 @@ public  class UnityBaseView implements Drawable
 {
 	protected Sprite sprite;
 	
-	
 	protected UnityBaseController controller;
 	
 	protected  float elapsedAnimationTime; 				// temps écoulé pour les animations

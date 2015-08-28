@@ -26,6 +26,7 @@ import org.jsfml.window.event.KeyEvent;
 import org.jsfml.window.event.MouseButtonEvent;
 import org.jsfml.window.event.MouseEvent;
 
+import UI.PanelInfoGold;
 import coreAI.AstarManager;
 import coreAI.Node;
 import coreEntity.KnighController;
@@ -56,6 +57,8 @@ import ravage.IBaseRavage;
 
 public class EntityManager implements IBaseRavage,IEventCallBack,IRegionSelectedCallBack,INetManagerCallBack
 {
+	// Data GamePlay
+	private static DataGamePlay gamePlayModel;
 	// enum des camps
 	public static enum CAMP {BLUE,YELLOW};
 	// camp du joueur
@@ -99,6 +102,8 @@ public class EntityManager implements IBaseRavage,IEventCallBack,IRegionSelected
 	public static void setCampSelected(CAMP campSelected) {
 		EntityManager.campSelected = campSelected;
 	}
+	
+	
 
 	@Override
 	public void init()
@@ -118,6 +123,8 @@ public class EntityManager implements IBaseRavage,IEventCallBack,IRegionSelected
 		
 		// on s'accroche au NetManager
 		NetManager.attachCallBack(this);
+		// gamePlay
+		gamePlayModel = new DataGamePlay();
 	}
 	
 	
@@ -125,6 +132,9 @@ public class EntityManager implements IBaseRavage,IEventCallBack,IRegionSelected
 	@Override
 	public void update(Time deltaTime) 
 	{
+		// update du modelGamePlay
+		gamePlayModel.update(deltaTime);
+		
 		// mise à jour du temps pour la recherche des enemy
 		elapsedTimeForSearchNewEnemy += deltaTime.asMilliseconds();
 		
@@ -214,9 +224,6 @@ public class EntityManager implements IBaseRavage,IEventCallBack,IRegionSelected
 		
 	}
 
-	
-	
-	
 
 	/*public static List<UnityNet> getVectorUnityNet() {
 		return vectorUnityNet;
@@ -329,28 +336,37 @@ public class EntityManager implements IBaseRavage,IEventCallBack,IRegionSelected
 		
 		if(keyboardEvent.key == Keyboard.Key.A )
 		{
-			KnighController knight = new KnighController();
-			knight.getModel().setPosition(new Vec2(NetManager.getPosxStartFlag(),NetManager.getPosyStartFlag()));
-			knight.getModel().setSpeed(6f);
-			knight.getModel().setId((EntityManager.getNewIdUnity()));
-			knight.getModel().setMyCamp(EntityManager.getCampSelected());
-			knight.getModel().setIdType(TYPEUNITY.KNIGHT);
-			knight.getModel().initModel(knight);
-			knight.init();
-			EntityManager.getVectorUnity().put(knight.getModel().getId(), knight);
-			// emission sur le réseau de l'unité
-			NetDataUnity create = new NetDataUnity();
-			knight.prepareModelToNet();
-			try {
-				create.setModel(knight.getModel().clone());
-			} catch (CloneNotSupportedException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			create.setTypeMessage(TYPE.CREATE);
+			if(gamePlayModel.pay(10))
+			{
 			
-			System.out.println("envoie du header : " );
-			NetSendThread.push(create);
+				KnighController knight = new KnighController();
+				knight.getModel().setPosition(new Vec2(NetManager.getPosxStartFlag(),NetManager.getPosyStartFlag()));
+				knight.getModel().setSpeed(6f);
+				knight.getModel().setId((EntityManager.getNewIdUnity()));
+				knight.getModel().setMyCamp(EntityManager.getCampSelected());
+				knight.getModel().setIdType(TYPEUNITY.KNIGHT);
+				knight.getModel().initModel(knight);
+				knight.init();
+				EntityManager.getVectorUnity().put(knight.getModel().getId(), knight);
+				// emission sur le réseau de l'unité
+				NetDataUnity create = new NetDataUnity();
+				knight.prepareModelToNet();
+				try {
+					create.setModel(knight.getModel().clone());
+				} catch (CloneNotSupportedException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				create.setTypeMessage(TYPE.CREATE);
+				
+				System.out.println("envoie du header : " );
+				NetSendThread.push(create);
+				
+				// gamePlayModel
+				gamePlayModel.setM_nbUnity(this.getVectorUnity().size());
+			}
+			
+			
 		
 			return true;
 		}
@@ -856,13 +872,117 @@ public class EntityManager implements IBaseRavage,IEventCallBack,IRegionSelected
 	public boolean onMouseMove(MouseEvent event) {
 		// TODO Auto-generated method stub
 		return false;
+		
+		
 	}
-
-
 	
-
+	public static DataGamePlay getGamePlayModel()
+	{
+		return gamePlayModel;
+	}
 	
+	// Class contenant le model gameplay du jeu
+	class DataGamePlay implements IBaseRavage
+	{
+		private final int m_maxUnity = 128;
+		
+		private int m_nbUnity = 0;
+		
+		private int m_goldCoin = 250;
+		
+		private float elapsedTimeForGold = 0f;
+		
+		
+		
+		public DataGamePlay()
+		{
+			
+		}
 
-	
+		/**
+		 * @return the m_maxUnity
+		 */
+		public int getM_maxUnity() {
+			return m_maxUnity;
+		}
+
+		/**
+		 * @return the m_nbUnity
+		 */
+		public int getM_nbUnity() {
+			return m_nbUnity;
+		}
+
+		/**
+		 * @return the m_goldCoin
+		 */
+		public int getM_goldCoin() {
+			return m_goldCoin;
+		}
+
+
+		/**
+		 * @param m_nbUnity the m_nbUnity to set
+		 */
+		public void setM_nbUnity(int m_nbUnity) 
+		{
+			this.m_nbUnity = m_nbUnity;
+			// on modifie l'affichage du Panel
+			PanelInfoGold.setM_labelNbTroops(this.m_nbUnity);
+		}
+
+		/**
+		 * @param m_goldCoin the m_goldCoin to set
+		 */
+		public void setM_goldCoin(int m_goldCoin) {
+			this.m_goldCoin = m_goldCoin;
+		}
+		
+		public boolean pay(int goldPay)
+		{
+			this.m_goldCoin-= goldPay;
+			if(this.m_goldCoin < 0)
+			{
+				this.m_goldCoin+= goldPay;
+				return false;
+			}
+			return true;
+		}
+		
+		public boolean win(int goldWin)
+		{
+			this.m_goldCoin+= goldWin;
+			return true;
+		}
+		
+		
+
+		@Override
+		public void init() {
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		public void update(Time deltaTime) 
+		{
+			elapsedTimeForGold  += deltaTime.asSeconds();
+			if(elapsedTimeForGold > 1f)
+			{
+				elapsedTimeForGold = 0f;
+				this.win(1);
+			}
+			// update des affichages
+			PanelInfoGold.setM_labelNbTroops(this.m_nbUnity);
+			PanelInfoGold.setM_labelGoldCoin(this.m_goldCoin);
+			
+		}
+
+		@Override
+		public void destroy() {
+			// TODO Auto-generated method stub
+			
+		}
+	}
 
 }

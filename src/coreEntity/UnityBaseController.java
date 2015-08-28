@@ -287,7 +287,7 @@ public class UnityBaseController implements IBaseRavage, ICallBackAStar,
 	public void hit(int hitStrenght) {
 		// on est frappé, diminution de l'energie
 		this.getModel().setEnergy(this.getModel().getEnergy() - hitStrenght);
-		// on joue un peud sang
+		// on joue un peu de sang
 		BloodManager.addBlood(this.getModel().getPosition());
 		// si l'energie est égale à 0 ou inférieur, on meurt
 		if (this.getModel().getEnergy() <= 0)
@@ -305,6 +305,7 @@ public class UnityBaseController implements IBaseRavage, ICallBackAStar,
 				e.printStackTrace();
 			}
 
+			// suppresin de l'unité dans le vecteur
 			EntityManager.getVectorUnityKilled().add(this);
 
 			// ensutie il faut jouer la mort en view, on place un cadavre

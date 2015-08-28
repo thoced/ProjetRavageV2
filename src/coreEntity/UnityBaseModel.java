@@ -152,7 +152,7 @@ public class UnityBaseModel implements Externalizable
 				
 							
 				Shape shape = new CircleShape();
-				shape.m_radius = 0.30f;
+				shape.m_radius = 0.45f;
 				
 				FixtureDef fDef = new FixtureDef();
 				fDef.shape = shape;

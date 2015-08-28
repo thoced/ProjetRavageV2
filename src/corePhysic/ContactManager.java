@@ -6,6 +6,7 @@ import org.jbox2d.collision.Manifold;
 import org.jbox2d.common.Vec2;
 import org.jbox2d.dynamics.Body;
 import org.jbox2d.dynamics.contacts.Contact;
+import org.jbox2d.dynamics.joints.JointEdge;
 
 import coreEntity.UnityBaseController;
 import coreEntity.UnityNetController;
@@ -61,7 +62,7 @@ public class ContactManager implements ContactListener {
 	public void preSolve(Contact l_contact, Manifold arg1)
 	{
 		// désactiovation du contact
-	//	l_contact.setEnabled(false);
+		l_contact.setEnabled(false);
 		
 		// réception du bodyA et bodyB
 		Body m_bodyA = l_contact.getFixtureA().getBody();
@@ -71,22 +72,21 @@ public class ContactManager implements ContactListener {
 		Object m_userDataB = m_bodyB.getUserData();
 		
 		
-		
-		
 		try
 		{
+			
 			// il s'agit d'un contact avec autre chose ques des unités, on sort
 			if(m_userDataA.getClass() == String.class  || m_userDataB.getClass() == String.class)	
 				return;
 			
 			// si il s'agit de deux unité différente, on active le contact
-		//	if(m_userDataA.getClass() != m_userDataB.getClass())
-			//{
+			if(m_userDataA.getClass() != m_userDataB.getClass())
+			{
 				// on active le contact
 				l_contact.setEnabled(true);
 				// on arrête sur place l'unité
-			//	m_bodyA.setLinearVelocity(ZERO_VECTOR);
-			  //  m_bodyB.setLinearVelocity(ZERO_VECTOR);
+				m_bodyA.setLinearVelocity(ZERO_VECTOR);
+			    m_bodyB.setLinearVelocity(ZERO_VECTOR);
 				// on attribue l'enemy
 				if(m_userDataA.getClass() == UnityNetController.class)
 				{
@@ -97,12 +97,13 @@ public class ContactManager implements ContactListener {
 					((UnityBaseController)m_userDataA).getModel().setEnemy((UnityNetController)m_userDataB);
 				}
 				
+				
+			}
+			else
+			{
+				
 				((UnityBaseController)m_userDataA).getModel().setSpeed(3f);
-		//	}
-		//	else
-		//	{
-		//		((UnityBaseController)m_userDataA).getModel().setSpeed(3f);
-		//	}
+			}
 		
 		}
 		catch(NullPointerException npe)

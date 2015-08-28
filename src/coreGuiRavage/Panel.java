@@ -34,44 +34,36 @@ import CoreTexturesManager.TexturesManager;
 	
 	public Panel(float x,float y,Vector2f size) throws TextureCreationException {
 		super();
-		
 		// transformation en pixels
 		Vector2f pos = new Vector2f((FrameWork.getWindow().getSize().x * x) - size.x * 0.5f,(FrameWork.getWindow().getSize().y * y) - size.y * 0.5f);
-		
 		// instance du model et de la vue
 		this.setM_model(new PanelModel(pos,size));
 		this.setM_view(new PanelView(this));
 		
-		// teste
-		try
-		{
-			Label myLabel = new Label(new Vector2f(10f,10f),null);
-			myLabel.setText("2000");
-			this.addWidget(myLabel);
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-	}
+	}	
 
 	
 	public boolean onMouseMove(Vector2f position) 
 	{
-	
+			boolean ret = false;
 			Vector2f p = this.m_model.m_position;
 			Vector2f s = this.m_model.m_size;
 			FloatRect bound = new FloatRect(p,s);
 			//if(bound.contains(position))
 			//{
-				if(this.getM_model().isPressed())
-				{
-					this.m_model.m_position = Vector2f.sub(position, this.m_diffPosClick);
-					return true;
+			
+			if(bound.contains(position))
+				ret = true;
+			
+			if(this.getM_model().isPressed())
+			{
+				this.m_model.m_position = Vector2f.sub(position, this.m_diffPosClick);
+				ret = true;
 					
-				}
+			}
 				
-			//}
-		return false;
+			return ret;
+		
 		
 	}
 
@@ -110,7 +102,8 @@ import CoreTexturesManager.TexturesManager;
 	@Override
 	public void addWidget(Widget widget)
 	{
-		
+		// ajout du widget dans le panel
+		((PanelModel)this.m_model).m_guis.add(widget); 
 	}
 
 	
@@ -121,7 +114,7 @@ import CoreTexturesManager.TexturesManager;
 class PanelModel extends Model
 {
 	// list des gui contenu dans le panel
-	private List<Gui> m_guis;
+	List<Gui> m_guis;
 	
 	
 	public PanelModel(Vector2f posPanel,Vector2f size)
@@ -163,7 +156,6 @@ class PanelView extends View
 		m_spriteRender = new Sprite(m_render.getTexture());
 		
 		// chargement du sprite panelBackground.png
-		m_spritePanel = new Sprite(TexturesManager.GetTextureByName("panelBackground.png"));
 		m_rectangle = new RectangleShape();
 		m_rectangle.setTexture(TexturesManager.GetTextureByName("panelBackground.png"));
 		
@@ -186,10 +178,7 @@ class PanelView extends View
 		// affichage du panel
 		Vector2f l_size = m_controller.m_model.m_size;
 		Vector2f l_pos = m_controller.m_model.m_position;
-		m_spritePanel.setOrigin(m_origin);
-		m_textureIntRect = new IntRect(0,0,(int)l_size.x,(int)l_size.y);
-		m_spritePanel.setPosition(new Vector2f(0f,0f));
-		m_spritePanel.setTextureRect(m_textureIntRect);
+		
 		
 		// rectangle
 		m_rectangle.setSize(l_size);
@@ -200,11 +189,16 @@ class PanelView extends View
 		m_render.clear();
 		m_render.draw(m_rectangle);
 		
-		
+		// affichage des gui du panels
+		for(Gui g : ((PanelModel)m_controller.m_model).m_guis)
+		{
+			g.m_view.draw(m_render, state);
+		}
 		
 		// on renvoie le sprite du render texture dans le render appelant
 		// positionnement du m_spriteRender
 		m_spriteRender.setPosition(m_controller.m_model.m_position);
+		m_render.display();
 		render.draw(m_spriteRender);
 		
 		

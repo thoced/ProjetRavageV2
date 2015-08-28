@@ -91,7 +91,7 @@ public class KnighController extends UnityBaseController
 		// 1) un ennemi est il attribué ?
 		if(elapsedTimeAttack > 2f)
 		{
-			UnityNetController enemy = this.getModel().getEnemy();
+			UnityNetController enemy = this.getModel().getEnemy(); // réception de l'enemy
 			
 			if(enemy != null)
 			{

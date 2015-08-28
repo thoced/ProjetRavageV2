@@ -8,6 +8,7 @@ import org.jsfml.system.Vector2f;
 import org.jsfml.window.Keyboard;
 import org.jsfml.window.event.Event;
 
+import coreCamera.CameraManager;
 import ravage.IBaseRavage;
 
 public class EventManager implements IBaseRavage 
@@ -100,6 +101,13 @@ public class EventManager implements IBaseRavage
 		{
 			for(IEventCallBack i : listCallBack)
 				i.onKeyboard(event.asKeyEvent());
+			
+			CameraManager.activeCamera(true);
+		}
+		else
+		{
+			// on désactive la camera
+			CameraManager.activeCamera(false);
 		}
 	}
 	
@@ -118,6 +126,12 @@ public class EventManager implements IBaseRavage
 		{
 			for(IEventCallBack i : listCallBack)
 				i.onMousePressed(event.asMouseButtonEvent());
+			CameraManager.activeCamera(true);
+		}
+		else
+		{
+			// on désactive la camera
+			CameraManager.activeCamera(false);
 		}
 	}	
 	
@@ -136,6 +150,13 @@ public class EventManager implements IBaseRavage
 		{
 			for(IEventCallBack i : listCallBack)
 				i.onMouseReleased(event.asMouseButtonEvent());
+			
+			CameraManager.activeCamera(true);
+		}
+		else
+		{
+			// on désactive la camera
+			CameraManager.activeCamera(false);
 		}
 	}
 	
@@ -154,6 +175,13 @@ public class EventManager implements IBaseRavage
 		{
 			for(IEventCallBack i : listCallBack)
 				i.onMouseMove(event.asMouseEvent());
+			
+			CameraManager.activeCamera(true);
+		}
+		else
+		{
+			// on désactive la camera
+			CameraManager.activeCamera(false);
 		}
 	}
 	

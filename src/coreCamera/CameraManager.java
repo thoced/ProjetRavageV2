@@ -56,6 +56,8 @@ public class CameraManager implements IBaseRavage, IEventCallBack
 	
 	// active fly mode
 	private static boolean activeFlyMode = false;
+	// active camera
+	private static boolean m_active = true;
 	
 	
 	public CameraManager(ConstView v)
@@ -82,6 +84,12 @@ public class CameraManager implements IBaseRavage, IEventCallBack
 		m_cadre = new IntRect(64,64,(int)this.getView().getSize().x - 128,(int) this.getView().getSize().y - 128);
 		
 	}
+	
+	public static void activeCamera(boolean active)
+	{
+		// set active camera
+		m_active = active;
+	}
 
 	@Override
 	public void update(Time deltaTime) 
@@ -106,7 +114,7 @@ public class CameraManager implements IBaseRavage, IEventCallBack
 		
 		// SCROLLING souris avec LERP
 		
-		if(!activeFlyMode)
+		if(m_active && !activeFlyMode)
 		{
 			
 			if(m_cadre.contains(Mouse.getPosition(FrameWork.getWindow()))) // si la souris est dans le cadre intérieur

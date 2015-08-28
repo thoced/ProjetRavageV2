@@ -20,7 +20,7 @@ public class PhysicWorldManager implements IBaseRavage
 	{
 		// instance du World Physic
 		world = new World(new Vec2(0,0));
-		
+		// contact manager
 		ContactManager m = new ContactManager();
 		world.setContactListener(m);
 	

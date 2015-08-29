@@ -9,7 +9,7 @@ import org.jsfml.window.event.MouseEvent;
 import coreEvent.IEventCallBack;
 import coreEvent.IEventInterfaceCallBack;
 
-public class Gui 
+public abstract class Gui 
 {
 	protected Model m_model;
 	
@@ -39,35 +39,20 @@ public class Gui
 	}
 	
 
-	public boolean onMouse(Vector2f position, Mouse.Button mouseType) {
-		// TODO Auto-generated method stub
-		return false;
-	}
+	public abstract boolean onMouse(Vector2f position, Mouse.Button mouseType);
 
 	
-	public boolean onKeyboard(KeyEvent keyboardEvent) {
-		// TODO Auto-generated method stub
-		return false;
-	}
+	public abstract boolean onKeyboard(KeyEvent keyboardEvent);
 
 
-	public boolean onMouseMove(Vector2f position) 
-	{
-		// TODO Auto-generated method stub
-		return false;
-	}
+	public abstract boolean onMouseMove(Vector2f position); 
+	
 
 	
-	public boolean onMousePressed(Vector2f position, Mouse.Button mouseType) {
-		// TODO Auto-generated method stub
-		return false;
-	}
+	public abstract boolean onMousePressed(Vector2f position, Mouse.Button mouseType); 
 
 	
-	public boolean onMouseReleased(Vector2f position, Mouse.Button mouseType) {
-		// TODO Auto-generated method stub
-		return false;
-	}
+	public abstract boolean onMouseReleased(Vector2f position, Mouse.Button mouseType);
 
 
 }

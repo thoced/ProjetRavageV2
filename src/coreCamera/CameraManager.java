@@ -25,7 +25,7 @@ public class CameraManager implements IBaseRavage, IEventCallBack
 	// cadre 
 	private IntRect m_cadre;
 	// espaceScroll
-	private final int m_spaceScrolling = 32;
+	private final int m_spaceScrolling = 16;
 	// View
 	private static View m_view;
 	// rotation

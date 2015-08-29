@@ -42,6 +42,7 @@ import coreEntity.UnityBaseView.TYPE_ANIMATION;
 import coreEntity.UnityNetController;
 import coreEvent.IEventCallBack;
 import coreGUI.IRegionSelectedCallBack;
+import coreGuiRavage.IButtonListener;
 import coreLevel.LevelManager;
 import coreNet.INetManagerCallBack;
 import coreNet.NetBase.TYPE;
@@ -327,6 +328,40 @@ public class EntityManager implements IBaseRavage,IEventCallBack,IRegionSelected
 		}
 		
 		return false;
+	}
+	
+	public static void createPiquier()
+	{
+		if(gamePlayModel.pay(10))
+		{
+		
+			KnighController knight = new KnighController();
+			knight.getModel().setPosition(new Vec2(NetManager.getPosxStartFlag(),NetManager.getPosyStartFlag()));
+			knight.getModel().setSpeed(6f);
+			knight.getModel().setId((EntityManager.getNewIdUnity()));
+			knight.getModel().setMyCamp(EntityManager.getCampSelected());
+			knight.getModel().setIdType(TYPEUNITY.KNIGHT);
+			knight.getModel().initModel(knight);
+			knight.init();
+			EntityManager.getVectorUnity().put(knight.getModel().getId(), knight);
+			// emission sur le réseau de l'unité
+			NetDataUnity create = new NetDataUnity();
+			knight.prepareModelToNet();
+			try {
+				create.setModel(knight.getModel().clone());
+			} catch (CloneNotSupportedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			create.setTypeMessage(TYPE.CREATE);
+			
+			System.out.println("envoie du header : " );
+			NetSendThread.push(create);
+			
+			// gamePlayModel
+			gamePlayModel.setM_nbUnity(getVectorUnity().size());
+		}
+		
 	}
 
 	@Override
@@ -984,5 +1019,7 @@ public class EntityManager implements IBaseRavage,IEventCallBack,IRegionSelected
 			
 		}
 	}
+
+	
 
 }

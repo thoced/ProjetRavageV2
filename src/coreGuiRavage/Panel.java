@@ -20,6 +20,7 @@ import org.jsfml.system.Vector2f;
 import org.jsfml.window.Mouse;
 import org.jsfml.window.Mouse.Button;
 import org.jsfml.window.event.Event.Type;
+import org.jsfml.window.event.KeyEvent;
 import org.jsfml.window.event.MouseButtonEvent;
 import org.jsfml.window.event.MouseEvent;
 
@@ -84,6 +85,13 @@ import CoreTexturesManager.TexturesManager;
 		FloatRect bound = new FloatRect(p,s);
 		if(bound.contains(position))
 		{
+			// on modifie la posiiton pour la transformer en position relative
+			Vector2f posRelative = Vector2f.sub(position, p);
+			// appel au gui
+			 for(Gui gui : ((PanelModel)m_model).m_guis)
+				 gui.onMousePressed(posRelative, button);
+			
+			
 			this.getM_model().setPressed(true); // on indique au gui qu'un coli 
 			this.m_diffPosClick = Vector2f.sub(position, this.m_model.m_position);
 			return true;
@@ -104,6 +112,20 @@ import CoreTexturesManager.TexturesManager;
 	{
 		// ajout du widget dans le panel
 		((PanelModel)this.m_model).m_guis.add(widget); 
+	}
+
+
+	@Override
+	public boolean onMouse(Vector2f position, Button mouseType) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+
+	@Override
+	public boolean onKeyboard(KeyEvent keyboardEvent) {
+		// TODO Auto-generated method stub
+		return false;
 	}
 
 	

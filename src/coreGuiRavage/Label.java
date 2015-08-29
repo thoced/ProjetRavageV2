@@ -8,6 +8,8 @@ import org.jsfml.graphics.RenderStates;
 import org.jsfml.graphics.RenderTarget;
 import org.jsfml.graphics.Text;
 import org.jsfml.system.Vector2f;
+import org.jsfml.window.Mouse.Button;
+import org.jsfml.window.event.KeyEvent;
 
 public class Label extends Widget
 {
@@ -80,7 +82,7 @@ public class Label extends Widget
 			
 			// instance du Text
 			m_fontText = new Font();
-			m_fontText.loadFromStream(LabelModel.class.getResourceAsStream("/FONTS/OpenSans-Regular.ttf"));
+			m_fontText.loadFromStream(LabelModel.class.getResourceAsStream("/FONTS/Chantelli_Antiqua.ttf"));
 			m_textSprite = new Text();
 			m_textSprite.setCharacterSize(14);
 			m_textSprite.setFont(m_fontText);
@@ -114,6 +116,36 @@ public class Label extends Widget
 	
 	
 }
+
+	@Override
+	public boolean onMouse(Vector2f position, Button mouseType) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean onKeyboard(KeyEvent keyboardEvent) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean onMouseMove(Vector2f position) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean onMousePressed(Vector2f position, Button mouseType) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean onMouseReleased(Vector2f position, Button mouseType) {
+		// TODO Auto-generated method stub
+		return false;
+	}
 
 
 }

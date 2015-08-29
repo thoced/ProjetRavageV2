@@ -36,6 +36,7 @@ import org.jsfml.window.Keyboard;
 import org.jsfml.window.VideoMode;
 import org.jsfml.window.event.Event;
 
+import UI.PanelInfoBuild;
 import UI.PanelInfoGold;
 import CoreTexturesManager.TexturesManager;
 import coreAI.AstarManager;
@@ -148,8 +149,10 @@ public class FrameWork
 		guiManager.init();
 		
 		// création des guis tests
-		PanelInfoGold infoGold = new PanelInfoGold(0.5f,0.1f,new Vector2f(512f,64f));
+		PanelInfoGold infoGold = new PanelInfoGold(0.5f,0.1f,new Vector2f(256f,64f));
 		guiManager.addPanel(infoGold);
+		PanelInfoBuild infoBuild = new PanelInfoBuild(0.9f,0.5f,new Vector2f(96f,512f));
+		guiManager.addPanel(infoBuild);
 		
 		// attachement au call back
 		RectSelected.attachCallBack(entityManager);
@@ -174,6 +177,8 @@ public class FrameWork
 		renderGuiSprite = new Sprite(renderGui.getTexture());
 		
 		
+		
+	
 	}
 
 	public void run()
@@ -229,6 +234,7 @@ public class FrameWork
 			netManager.update(deltaTime);
 			bloodManager.update(deltaTime);
 			guiManager.update(deltaTime);
+			Test.getModel().update(deltaTime);
 			
 			// Draw des composants
 			renderTexture.clear();

@@ -24,6 +24,8 @@ import coreEntityManager.NodeReserved;
 import coreEntityManager.ReservationManager;
 import coreEvent.IEventCallBack;
 import coreLevel.LevelManager;
+import coreMessageManager.IPumpMessage;
+import coreMessageManager.MessageRavage;
 import coreNet.NetBase.TYPE;
 import coreNet.NetDataUnity;
 import coreNet.NetManager;
@@ -32,7 +34,7 @@ import corePhysic.PhysicWorldManager;
 import ravage.IBaseRavage;
 
 public class UnityBaseController implements IBaseRavage, ICallBackAStar,
-		IEventCallBack {
+		IEventCallBack,IPumpMessage {
 	protected UnityBaseView view;
 
 	protected UnityBaseModel model;
@@ -369,6 +371,13 @@ public class UnityBaseController implements IBaseRavage, ICallBackAStar,
 	public boolean onMouseReleased(MouseButtonEvent event) {
 		// TODO Auto-generated method stub
 		return false;
+	}
+
+	@Override
+	public void OnPumpMessage(MessageRavage message) {
+		// TODO Auto-generated method stub
+		
+		
 	}
 
 

@@ -66,10 +66,18 @@ public class LevelManager implements IBaseRavage
 		this.level = level;
 		// Chargement
 		LoaderTiled tiled = new LoaderTiled();
+		
 		try 
 		{
 			// chargement
 			tiled.Load(new FileInputStream("./bin/Maps/" + nameFile));
+			// on récupère la taille de la map
+			int mapWidth = tiled.getMapWidth();
+			int mapHeight = tiled.getMapHeight();
+			// on crée le model du level
+			LevelModel model = new LevelModel(mapWidth,mapHeight);
+			// on insère le model dans le level
+			LevelManager.getLevel().setModel(model);
 			
 			
 			// on rÃ©cupÃ¨re les images
@@ -129,7 +137,7 @@ public class LevelManager implements IBaseRavage
 					
 					x++;
 					ind++;
-					if(x > 374)
+					if(x > level.getModel().getM_sizeX() - 1)
 					{
 						x=0;
 						y++;

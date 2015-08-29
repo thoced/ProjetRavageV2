@@ -20,18 +20,41 @@ public class LevelModel
 {
 	// Tableau des valeurs Tiled (pour la recherche de chemin)
 		private Node[] nodes;
+	// size
+		private int m_sizeX,m_sizeY;
+		
 		// Obstacles box2d
 		private Body obstacles;
 		
-	public LevelModel() 
+	public LevelModel(int mapSizeX,int mapSizeY) 
 	{
 		super();
+		this.m_sizeX = mapSizeX;
+		this.m_sizeY = mapSizeY;
 		// instance des nodes
-		nodes = new Node[375*250];
+		nodes = new Node[m_sizeX * m_sizeY];
 	}
 	
 	
 	
+	/**
+	 * @return the m_sizeX
+	 */
+	public int getM_sizeX() {
+		return m_sizeX;
+	}
+
+
+
+	/**
+	 * @return the m_sizeY
+	 */
+	public int getM_sizeY() {
+		return m_sizeY;
+	}
+
+
+
 	public Node[] getNodes() {
 		return nodes;
 	}
@@ -58,7 +81,7 @@ public class LevelModel
 
 	public boolean isNodeObstacle(int x,int y)
 	{
-		Node n = this.nodes[(375 * y) + x];
+		Node n = this.nodes[(this.m_sizeX * y) + x];
 		if(n.getType() != 0)
 			return true;
 		else
@@ -67,38 +90,38 @@ public class LevelModel
 	
 	public boolean isNodeFree(int x,int y,UnityBaseController u)
 	{
-		return this.nodes[(375 * y) + x].isNodeFree(u);
+		return this.nodes[(this.m_sizeX * y) + x].isNodeFree(u);
 	}
 	public boolean isNodeReserved(int x,int y, UnityBaseController u)
 	{
-		return this.nodes[(375 * y) + x].isNodeReserved(u);
+		return this.nodes[(this.m_sizeX) + x].isNodeReserved(u);
 	}
 	
 	public Node bookNode(int x,int y,UnityBaseController u)
 	{
-		this.nodes[(375 * y) + x].bookNode(u);
-		return this.nodes[(375 * y) + x];
+		this.nodes[(this.m_sizeX * y) + x].bookNode(u);
+		return this.nodes[(this.m_sizeX * y) + x];
 	}
 	
 	public void unBookNode(int x,int y)
 	{
-		this.nodes[(375 * y) + x].unBookNode();
+		this.nodes[(this.m_sizeX * y) + x].unBookNode();
 	}
 	
 	public Node takeNode(int x,int y,UnityBaseController u)
 	{
-		this.nodes[(375 * y) + x].takeNode(u);
-		return this.nodes[(375 * y) + x];
+		this.nodes[(this.m_sizeX * y) + x].takeNode(u);
+		return this.nodes[(this.m_sizeX * y) + x];
 	}
 	
 	public void releaseNode(int x,int y,UnityBaseController u)
 	{
-		this.nodes[(375 * y) + x].releaseNode(u);
+		this.nodes[(this.m_sizeX) + x].releaseNode(u);
 	}
 	
 	public UnityBaseController getUnityOnNode(int x,int y)
 	{
-		return this.nodes[(375 * y) + x].getUnityOnNode(x, y);
+		return this.nodes[(this.m_sizeX * y) + x].getUnityOnNode(x, y);
 	}
 	
 	public void InsertObstacle(List<TiledObjectPolylinePoint> listePoint,int x,int y,String typeobstacle) throws java.lang.RuntimeException

@@ -30,7 +30,6 @@ public class LevelController implements IBaseRavage
 	
 	public LevelController()
 	{
-		model = new LevelModel();
 		view  = new LevelView();
 				
 	}
@@ -40,6 +39,13 @@ public class LevelController implements IBaseRavage
 	}
 
 
+
+	/**
+	 * @param model the model to set
+	 */
+	public void setModel(LevelModel model) {
+		this.model = model;
+	}
 
 	public LevelView getView() {
 		return view;

@@ -42,8 +42,10 @@ public class AstarManager extends Thread implements IBaseRavage
 	{
 		
 		agent = new Agent();
-		
-		TileMap tilemap = new TileMap(LevelManager.getLevel().getModel().getNodes());
+		// création du tilemap
+		TileMap tilemap = new TileMap(LevelManager.getLevel().getModel().getNodes(),
+				LevelManager.getLevel().getModel().getM_sizeX(),
+				LevelManager.getLevel().getModel().getM_sizeY());
 	
 		// instance du navmesh
 		//NavMeshBuilder build = new NavMeshBuilder();

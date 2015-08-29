@@ -24,6 +24,8 @@ public class CameraManager implements IBaseRavage, IEventCallBack
 
 	// cadre 
 	private IntRect m_cadre;
+	// espaceScroll
+	private final int m_spaceScrolling = 32;
 	// View
 	private static View m_view;
 	// rotation
@@ -81,7 +83,7 @@ public class CameraManager implements IBaseRavage, IEventCallBack
 		this.m_sizeUp = Vector2f.mul(m_sizeNormal, 1.1f);
 		
 		// cadre
-		m_cadre = new IntRect(64,64,(int)this.getView().getSize().x - 128,(int) this.getView().getSize().y - 128);
+		m_cadre = new IntRect(m_spaceScrolling,m_spaceScrolling,(int)this.getView().getSize().x - m_spaceScrolling * 2,(int) this.getView().getSize().y - m_spaceScrolling * 2);
 		
 	}
 	
@@ -120,6 +122,7 @@ public class CameraManager implements IBaseRavage, IEventCallBack
 			if(m_cadre.contains(Mouse.getPosition(FrameWork.getWindow()))) // si la souris est dans le cadre intérieur
 			{
 				this.m_sizeSought = this.m_sizeNormal;
+				
 			}
 			else
 			{

@@ -1,6 +1,8 @@
 package coreEntityManager;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.io.ObjectInputStream;
 import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.List;
@@ -44,6 +46,10 @@ import coreEvent.IEventCallBack;
 import coreGUI.IRegionSelectedCallBack;
 import coreGuiRavage.IButtonListener;
 import coreLevel.LevelManager;
+import coreMessageManager.IPumpMessage;
+import coreMessageManager.MessageManager;
+import coreMessageManager.MessageRavage;
+import coreMessageManager.RegistrationObject;
 import coreNet.INetManagerCallBack;
 import coreNet.NetBase.TYPE;
 import coreNet.NetDataUnity;
@@ -126,6 +132,7 @@ public class EntityManager implements IBaseRavage,IEventCallBack,IRegionSelected
 		NetManager.attachCallBack(this);
 		// gamePlay
 		gamePlayModel = new DataGamePlay();
+	
 	}
 	
 	
@@ -367,44 +374,6 @@ public class EntityManager implements IBaseRavage,IEventCallBack,IRegionSelected
 	@Override
 	public boolean onKeyboard(KeyEvent keyboardEvent) 
 	{
-		
-		
-		if(keyboardEvent.key == Keyboard.Key.A )
-		{
-			if(gamePlayModel.pay(10))
-			{
-			
-				KnighController knight = new KnighController();
-				knight.getModel().setPosition(new Vec2(NetManager.getPosxStartFlag(),NetManager.getPosyStartFlag()));
-				knight.getModel().setSpeed(6f);
-				knight.getModel().setId((EntityManager.getNewIdUnity()));
-				knight.getModel().setMyCamp(EntityManager.getCampSelected());
-				knight.getModel().setIdType(TYPEUNITY.KNIGHT);
-				knight.getModel().initModel(knight);
-				knight.init();
-				EntityManager.getVectorUnity().put(knight.getModel().getId(), knight);
-				// emission sur le réseau de l'unité
-				NetDataUnity create = new NetDataUnity();
-				knight.prepareModelToNet();
-				try {
-					create.setModel(knight.getModel().clone());
-				} catch (CloneNotSupportedException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-				create.setTypeMessage(TYPE.CREATE);
-				
-				System.out.println("envoie du header : " );
-				NetSendThread.push(create);
-				
-				// gamePlayModel
-				gamePlayModel.setM_nbUnity(this.getVectorUnity().size());
-			}
-			
-			
-		
-			return true;
-		}
 		
 		 return false;
 		
@@ -1019,6 +988,8 @@ public class EntityManager implements IBaseRavage,IEventCallBack,IRegionSelected
 			
 		}
 	}
+
+	
 
 	
 

@@ -1,5 +1,14 @@
 package UI;
 
+import java.io.BufferedWriter;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.ObjectInput;
+import java.io.ObjectOutput;
+import java.io.ObjectOutputStream;
+import java.io.OutputStream;
+import java.util.stream.Stream;
+
 import org.jsfml.graphics.TextureCreationException;
 import org.jsfml.system.Vector2f;
 
@@ -9,6 +18,8 @@ import coreEntityManager.EntityManager.CAMP;
 import coreGuiRavage.Button;
 import coreGuiRavage.IButtonListener;
 import coreGuiRavage.Panel;
+import coreMessageManager.MessageManager;
+import coreMessageManager.MessageRavage;
 
 public class PanelInfoBuild extends Panel implements IButtonListener
 {
@@ -35,11 +46,16 @@ public class PanelInfoBuild extends Panel implements IButtonListener
 	}
 
 	@Override
-	public void actionListener(String action, Object source) 
+	public void actionListener(String action, Object source)
 	{
 		switch(action)
 		{
-			case "CREATE_PIQUIER" : EntityManager.createPiquier();break;
+			case "CREATE_PIQUIER" :
+			{
+				EntityManager.createPiquier();break;
+				
+			}
+
 		}
 			
 		

@@ -1,6 +1,8 @@
 package coreMessageManager;
 
+import java.io.ObjectInput;
 import java.io.ObjectOutput;
+import java.util.stream.Stream;
 
 public class MessageRavage 
 {
@@ -8,8 +10,10 @@ public class MessageRavage
 	
 	public int receiver;
 	
+	public Class transmitterClass;
+	
 	public Class receiverClass;
 	
-	public ObjectOutput message;
+	public byte[] bufferMessage;
 	
 }

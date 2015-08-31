@@ -28,5 +28,25 @@ public class ListRegistration extends ArrayList<RegistrationObject>
 		return null;
 	}
 
+	/* (non-Javadoc)
+	 * @see java.util.ArrayList#remove(java.lang.Object)
+	 */
+	@Override
+	public boolean remove(Object o)
+	{
+		for(RegistrationObject obj : this)
+		{
+			if(obj.object == o)
+			{
+				super.remove(obj);
+				return true;
+			}
+				
+		}
+		return false;
+	}
+	
+	
+
 	
 }

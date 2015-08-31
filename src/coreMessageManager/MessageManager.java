@@ -13,17 +13,18 @@ import ravage.IBaseRavage;
 public class MessageManager implements IBaseRavage 
 {
 	// Model
-	private static Model m_model;
+	private static Model m_model = new Model();
+	
+	// Lock Registration Object
+	private static Lock m_lockRegistration = new ReentrantLock();
 	
 	// Lock
-	private static Lock m_lock;
+	private static Lock m_lock  = new ReentrantLock();
 	
 	public MessageManager()
 	{
-		// instance du model
-		m_model = new Model();
-		// lock
-		m_lock = new ReentrantLock();
+		
+	
 	}
 	
 	public static void sendMessage(MessageRavage message)
@@ -37,7 +38,11 @@ public class MessageManager implements IBaseRavage
 	
 	public static void registrationObject(RegistrationObject object)
 	{
+		m_lockRegistration.lock();
+		
 		m_model.m_stackObject.add(object); // enregistrement d'un objet voulant utilisé la pompe à messages
+		
+		m_lockRegistration.unlock();
 	}
 	
 	
@@ -57,8 +62,17 @@ public class MessageManager implements IBaseRavage
 		
 		for(MessageRavage message : m_model.m_stackMessage)
 		{
-			
+			// pour chaque message on regarde dans la liste des registrations
+			IPumpMessage obj = m_model.m_stackObject.getObject(message.receiverClass);
+			if(obj != null)
+			{
+				obj.OnPumpMessage(message);
+				
+			}
 		}
+		
+		// suppresion des messages
+		m_model.m_stackMessage.clear();
 		
 		m_lock.unlock();
 
@@ -70,7 +84,7 @@ public class MessageManager implements IBaseRavage
 
 	}
 	
-	class Model
+	static class Model
 	{
 		// parent controller
 		private MessageManager m_controller;
@@ -82,8 +96,7 @@ public class MessageManager implements IBaseRavage
 		
 		public Model()
 		{
-			// parent controller
-			m_controller = MessageManager.this;
+			
 			// instance de la pile de messages
 			m_stackMessage = new ArrayList<MessageRavage>();
 			// instance de la pile d'objet atatché

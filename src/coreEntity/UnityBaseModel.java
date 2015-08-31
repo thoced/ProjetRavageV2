@@ -122,9 +122,6 @@ public class UnityBaseModel implements Externalizable
 		clone.setOrigineSprite(this.getOrigineSprite());
 		clone.setEnergy(this.getEnergy());
 		clone.setStreightStrike(this.getStreightStrike());
-		
-		
-
 		return clone;
 	}
 
@@ -144,31 +141,21 @@ public class UnityBaseModel implements Externalizable
 				bdef.fixedRotation = false;
 				bdef.userData = controller;
 				bdef.linearDamping = 1.0f;
-											
-				//bdef.gravityScale = 0.0f;
-				
 				// creation du body
-				this.setBody(PhysicWorldManager.getWorld().createBody(bdef));
-				
-							
+				this.setBody(PhysicWorldManager.getWorld().createBody(bdef));	
 				Shape shape = new CircleShape();
-				shape.m_radius = 0.45f;
-				
+				shape.m_radius = 0.55f;
 				FixtureDef fDef = new FixtureDef();
 				fDef.shape = shape;
 				fDef.density = 0f;
-				
 				fDef.friction = 0.0f;
 				fDef.restitution = 0.0f;
 			
 				Fixture fix = this.getBody().createFixture(fDef);
-				
 				// creation du body
 				this.body.setTransform(this.position, this.rotation);
-			
 				// création du lock
 				lock = new Object();
-				
 				// on replace le path et l'indice du path à 0 pour éviter les téléportation réseau
 				//this.setIndicePaths(0); // positionnement à 0 
 				//this.setPosition(new Vec2(this.getPaths().getStep(0).getX(),this.getPaths().getStep(0).getY())); // positionnement de la position à 0

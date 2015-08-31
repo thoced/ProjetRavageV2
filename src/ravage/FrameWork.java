@@ -55,6 +55,7 @@ import coreGuiRavage.*;
 import coreLevel.Level01;
 import coreLevel.LevelController;
 import coreLevel.LevelManager;
+import coreMessageManager.MessageManager;
 import coreNet.NetManager;
 import corePhysic.PhysicWorldManager;
 
@@ -73,6 +74,7 @@ public class FrameWork
 	private EventManager eventManager;
 	private BloodManager bloodManager;
 	private GuiRavageManager guiManager;
+	private MessageManager messageManager;
 	// Clocks
 	private Clock frameClock;
 	// fps
@@ -122,7 +124,8 @@ public class FrameWork
 		window.setFramerateLimit(60);
 				
 		
-	
+		messageManager = new MessageManager();
+		messageManager.init();
 		// Instance des managers
 		physicWorld = new PhysicWorldManager();
 		physicWorld.init();
@@ -177,8 +180,6 @@ public class FrameWork
 		renderGuiSprite = new Sprite(renderGui.getTexture());
 		
 		
-		
-	
 	}
 
 	public void run()
@@ -234,7 +235,8 @@ public class FrameWork
 			netManager.update(deltaTime);
 			bloodManager.update(deltaTime);
 			guiManager.update(deltaTime);
-			Test.getModel().update(deltaTime);
+			messageManager.update(deltaTime);
+			
 			
 			// Draw des composants
 			renderTexture.clear();

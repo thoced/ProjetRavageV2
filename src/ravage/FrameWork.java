@@ -56,6 +56,7 @@ import coreLevel.Level01;
 import coreLevel.LevelController;
 import coreLevel.LevelManager;
 import coreMessageManager.MessageManager;
+import coreMessageManager.RegistrationObject;
 import coreNet.NetManager;
 import corePhysic.PhysicWorldManager;
 
@@ -151,6 +152,7 @@ public class FrameWork
 		guiManager = new GuiRavageManager();
 		guiManager.init();
 		
+	
 		// création des guis tests
 		PanelInfoGold infoGold = new PanelInfoGold(0.5f,0.1f,new Vector2f(256f,64f));
 		guiManager.addPanel(infoGold);

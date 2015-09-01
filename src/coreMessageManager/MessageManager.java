@@ -1,6 +1,7 @@
 package coreMessageManager;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Stack;
 import java.util.concurrent.locks.Lock;
@@ -31,16 +32,16 @@ public class MessageManager implements IBaseRavage
 	{
 		m_lock.lock();
 		
-		m_model.m_stackMessage.add(message); // push du message dans la pompe
+		m_model.m_messages.add(message); // push du message dans la pompe
 		
 		m_lock.unlock();
 	}
 	
-	public static void registrationObject(RegistrationObject object)
+	public static void registrationObject(IPumpMessage object)
 	{
 		m_lockRegistration.lock();
 		
-		m_model.m_stackObject.add(object); // enregistrement d'un objet voulant utilisé la pompe à messages
+		m_model.m_registrations.add(object); // enregistrement d'un objet voulant utilisé la pompe à messages
 		
 		m_lockRegistration.unlock();
 	}
@@ -59,20 +60,14 @@ public class MessageManager implements IBaseRavage
 	{
 		// BOUCLE DANS LA POMPE A MESSAGE
 		m_lock.lock();
-		
-		for(MessageRavage message : m_model.m_stackMessage)
+			
+		while(!m_model.m_messages.isEmpty())
 		{
-			// pour chaque message on regarde dans la liste des registrations
-			IPumpMessage obj = m_model.m_stackObject.getObject(message.receiverClass);
+			MessageRavage message = m_model.m_messages.removeFirst(); // on récupère le premier message
+			IPumpMessage obj = m_model.m_registrations.getObject(message.receiverClass); // on récupère l'objet registration
 			if(obj != null)
-			{
-				obj.OnPumpMessage(message);
-				
-			}
+				obj.OnPumpMessage(message); // on envoie le message
 		}
-		
-		// suppresion des messages
-		m_model.m_stackMessage.clear();
 		
 		m_lock.unlock();
 
@@ -89,18 +84,18 @@ public class MessageManager implements IBaseRavage
 		// parent controller
 		private MessageManager m_controller;
 		// pile de messages
-		private List<MessageRavage> m_stackMessage;
+		private LinkedList<MessageRavage> m_messages;
 		// pile d'objet attaché
-		private ListRegistration m_stackObject;
+		private ListRegistration m_registrations;
 		
 		
 		public Model()
 		{
 			
 			// instance de la pile de messages
-			m_stackMessage = new ArrayList<MessageRavage>();
+			m_messages = new LinkedList<MessageRavage>();
 			// instance de la pile d'objet atatché
-			m_stackObject = new ListRegistration();
+			m_registrations = new ListRegistration();
 		
 		}
 	}

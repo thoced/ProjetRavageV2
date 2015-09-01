@@ -31,6 +31,8 @@ public class UnityBaseModel implements Externalizable
 	protected transient UnityBaseController controller;
 	// appartenance à un camp
 	protected EntityManager.CAMP myCamp = EntityManager.CAMP.YELLOW;
+	
+	protected boolean isPlayer;  // est-on le player ?
 	//protected type d'unité
 	protected TYPEUNITY idType;
 	
@@ -46,15 +48,15 @@ public class UnityBaseModel implements Externalizable
 	
 	protected float speed; 			// vitesse;
 	
-	protected boolean isSelected;
+	protected boolean isSelected;   // est-on sélectionné
 	
 	protected Vec2 dirFormation ; // direction de formation que doit prendre l'unité
 	
-	protected int id;
+	protected int id;			  // id de l'unité
 	
 	protected transient UnityNetController enemy;
 	
-	protected int idEnemy = -1;
+	protected int idEnemy = -1;	 // ide de l'enemy
 	
 	protected boolean isKnocking = false; // variable passé à true quand l'unité frappe.
 	
@@ -104,6 +106,7 @@ public class UnityBaseModel implements Externalizable
 		// TODO Auto-generated method stub
 		UnityBaseModel clone = new UnityBaseModel(this.controller);
 		clone.setMyCamp(this.getMyCamp());
+		clone.setPlayer(this.isPlayer());
 		clone.setIdType(this.getIdType());
 		clone.setId(this.getId());
 		clone.setPosition(this.getPosition());
@@ -163,6 +166,22 @@ public class UnityBaseModel implements Externalizable
 	}
 	
 	
+
+	/**
+	 * @return the isPlayer
+	 */
+	public boolean isPlayer() {
+		return isPlayer;
+	}
+
+
+	/**
+	 * @param isPlayer the isPlayer to set
+	 */
+	public void setPlayer(boolean isPlayer) {
+		this.isPlayer = isPlayer;
+	}
+
 
 	public NodeReserved getNodeReserved() {
 		return nodeReserved;
@@ -443,8 +462,11 @@ public class UnityBaseModel implements Externalizable
 	public void readExternal(ObjectInput arg0) throws IOException,
 			ClassNotFoundException 
 	{
-		// Camp et Id Type
+		// Camp 
 		this.myCamp = CAMP.values()[arg0.readInt()];
+		// Is Player ?
+		this.isPlayer = arg0.readBoolean();
+		// id type
 		this.idType = TYPEUNITY.values()[arg0.readInt()];
 		// Position
 		this.position = new Vec2(arg0.readFloat(),arg0.readFloat());
@@ -513,6 +535,9 @@ public class UnityBaseModel implements Externalizable
 		out.writeInt(this.myCamp.ordinal());
 		else
 			out.writeInt(0);
+		
+		// is player ?
+		out.writeBoolean(this.isPlayer);
 		
 		if(this.idType != null)
 		out.writeInt(this.idType.ordinal());

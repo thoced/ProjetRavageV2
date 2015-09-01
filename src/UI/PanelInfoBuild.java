@@ -1,6 +1,7 @@
 package UI;
 
 import java.io.BufferedWriter;
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.ObjectInput;
@@ -52,13 +53,36 @@ public class PanelInfoBuild extends Panel implements IButtonListener
 		{
 			case "CREATE_PIQUIER" :
 			{
-				EntityManager.createPiquier();break;
+				/*MessageRavage message = new MessageRavage();
+				message.transmitterClass = this.getClass();
+				message.receiverClass = EntityManager.class;
+								
+				try 
+				{
+					ByteArrayOutputStream bao = new ByteArrayOutputStream();
+					ObjectOutputStream oos;
+					oos = new ObjectOutputStream(bao);
+					oos.writeUTF(action);
+					oos.close();
+					bao.flush();
+					message.bufferMessage = bao.toByteArray();
+					MessageManager.sendMessage(message);
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 				
+				
+				
+			}*/
+				
+				EntityManager.createPiquier();
 			}
 
-		}
+		
 			
 		
+		}
 	}
 
 }

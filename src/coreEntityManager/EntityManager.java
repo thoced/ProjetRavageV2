@@ -132,6 +132,7 @@ public class EntityManager implements IBaseRavage,IEventCallBack,IRegionSelected
 		NetManager.attachCallBack(this);
 		// gamePlay
 		gamePlayModel = new DataGamePlay();
+		
 	
 	}
 	
@@ -221,6 +222,7 @@ public class EntityManager implements IBaseRavage,IEventCallBack,IRegionSelected
 					this.vectorUnityNet.remove(u.getModel().getId());
 				}
 			}
+			
 		this.vectorUnityNetKilled.clear();
 		
 	
@@ -348,6 +350,7 @@ public class EntityManager implements IBaseRavage,IEventCallBack,IRegionSelected
 			knight.getModel().setId((EntityManager.getNewIdUnity()));
 			knight.getModel().setMyCamp(EntityManager.getCampSelected());
 			knight.getModel().setIdType(TYPEUNITY.KNIGHT);
+			knight.getModel().setPlayer(true); // c'est un model controllé par le joueur
 			knight.getModel().initModel(knight);
 			knight.init();
 			EntityManager.getVectorUnity().put(knight.getModel().getId(), knight);
@@ -831,6 +834,7 @@ public class EntityManager implements IBaseRavage,IEventCallBack,IRegionSelected
 		UnityNetController controller = new UnityNetController(); // creation du controller pour l'enemy
 		controller.setModel(unity.getModel());					  // placement du model obtenu par le réseau
 		controller.getModel().initModel(controller);			  // initialisation du model
+		controller.getModel().setPlayer(false);                   // c'est un model qui n'est pas controlé par le joueur
 		
 		UnityBaseView view = new UnityBaseView(controller.getModel(),controller); // création de la vue pour l'enemy
 		controller.setView(view);								  // on spécifie la vue au controller
@@ -852,6 +856,7 @@ public class EntityManager implements IBaseRavage,IEventCallBack,IRegionSelected
 			System.out.println("STREI " + unity.getModel().getStreightStrike());
 			// on initialise le model
 			controller.getModel().initModel(controller);
+			controller.getModel().setPlayer(false); // c'est un model qui n'est pas controllé par le joueur
 			controller.setSequencePath(ETAPE.GETSTEP); // on spécifie au controller la sequence à adopter pourl a recheche de chemin
 			
 			// ----------------------------------------------------------------------------------------

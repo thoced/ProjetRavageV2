@@ -35,6 +35,7 @@ public class TreeSearchDraw implements QueryCallback
 	
 	public void clear()
 	{
+		// clear de la liste
 		listDraw.clear();
 	
 	}

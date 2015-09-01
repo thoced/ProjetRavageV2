@@ -71,7 +71,7 @@ public class DrawableUnityManager implements IBaseRavage, Drawable
 	{
 		// TODO Auto-generated method stub
 		// crÃ©ation du VertexBuffer
-	 buffer = new VertexArray(PrimitiveType.QUADS);
+	
 	 
 	 // instance de treeSearchDraw
 	 treeSearch = new TreeSearchDraw();
@@ -106,103 +106,75 @@ public class DrawableUnityManager implements IBaseRavage, Drawable
 	}
 
 	@Override
-	public void draw(RenderTarget arg0, RenderStates arg1) 
+	public void draw(RenderTarget render, RenderStates state) 
 	{
 		// affichage des unity
-		buffer.clear();
-		// Vectoru direction des unités
-		//Vec2 dir = new Vec2(1,0);
-		// pour chaque unity 
-		
+	
+			
 		// on appel le BACK draw
-		this.CallBackDrawableBACK(arg0, arg1);
+		this.CallBackDrawableBACK(render, state);
 		
-		// appel à l'abre
-		AABB aabb = new AABB();
-		FloatRect fc = CameraManager.getCameraBounds();
+		// -------------------------------------------------------------------------------------------------------------------------
+		//
+		//
+		// l'algorithem recherchant dans le quadtree de Box2d, les unités présente à l'écran
+		//
+		//
+		// -------------------------------------------------------------------------------------------------------------------------
+		
+		// appel à l'abre pour l'affichage quadtree
+		AABB aabb = new AABB(); // création du AABB
+		FloatRect fc = CameraManager.getCameraBounds(); // on récupère le floatrect de la caméra
+		// on spécifie les bordures des recheches
 		aabb.lowerBound.set(new Vec2(fc.left / PhysicWorldManager.getRatioPixelMeter(), fc.top / PhysicWorldManager.getRatioPixelMeter()));
 		aabb.upperBound.set(new Vec2((fc.left + fc.width) / PhysicWorldManager.getRatioPixelMeter(), (fc.top + fc.height) / PhysicWorldManager.getRatioPixelMeter()));
+		// on remet à zero la liste des recheches
 		treeSearch.clear();
+		// on recherche les unités à afficher
 		PhysicWorldManager.getWorld().queryAABB(treeSearch, aabb);
 		
+		// -----------------------------------------------------------------------------------------------------------------------
+		//
+		//
+		// on affiche les unités
+		// ici l'algorithme déterminant les unités enemy qui sont affichés en fonction d'une distance par rapport à une unité player
+		// cette distance est établie pour les test à 10 mètre
+		// 
+		//
+		// -----------------------------------------------------------------------------------------------------------------------
+		
 		Iterator<UnityBaseController> i = treeSearch.getIterator();
-			while(i.hasNext())
+		while(i.hasNext())
+		{
+			UnityBaseController u = i.next();
+			if(u.getModel().isPlayer())  // Si l'unité est un player, on affiche
+				u.getView().draw(render, state);  
+			else
 			{
-				UnityBaseController u = i.next();
-				u.getView().draw(arg0, arg1);
-			}
-		
-		
-		// affichage des unités
-		/*for(UnityBaseController unity : EntityManager.getVectorUnity().values() )
-		{
-			unity.getView().draw(arg0, arg1);
-		}
-		
-		// affichage des unités enemy
-		for(UnityNetController unity : EntityManager.getVectorUnityNet().values() )
-		{
-			unity.getView().draw(arg0, arg1);
-		}*/
-		
-		/*
-		for(UnityBaseController unity : EntityManager.getVectorUnity().values() )
-		{
-			
-			// test affichage sprite
-			
-		
-			if(unity.getModel().getMyCamp() == CAMP.YELLOW)
-			{
-			
-				switch(unity.getClass().getSimpleName())
+				// pour chaque non player on vérifie la distance avec les autres
+				Iterator<UnityBaseController> other = treeSearch.getIterator();
+				while(other.hasNext())
 				{
-					case "Knight" :	sprite_knight_YELLOW.setPosition(new Vector2f(unity.getPosx(),unity.getPosy()));		
-									// on spécifie la roation
-									sprite_knight_YELLOW.setRotation((float)((unity.getBody().getAngle() * 180f) / Math.PI) % 360f);
-									// on spécifie l'anim a jouer
-									sprite_knight_YELLOW.setTextureRect(unity.getCurrentAnim());
-									// on affiche
-									arg0.draw(sprite_knight_YELLOW);
-					break;
+					UnityBaseController o = other.next();
+					if(o.getModel().isPlayer()) // 
+					{
+						if(u.getModel().getPosition().sub(o.getModel().getPosition()).length() < 60f) //  si la distance entre l'enemy et un player est inférieur à 10, on affiche
+						{
+							u.getView().draw(render, state);
+							break; // on break;
+						}
+					}
 				}
-			
 			}
-			else if(unity.getMyCamp() == CAMP.BLUE)
-			{
-			
-				switch(unity.getClass().getSimpleName())
-				{
-					case "Knight" :	sprite_knight_BLUE.setPosition(new Vector2f(unity.getPosx(),unity.getPosy()));		
-									// on spécifie la roation
-									sprite_knight_BLUE.setRotation((float)((unity.getBody().getAngle() * 180f) / Math.PI) % 360f);
-									// on spécifie l'anim a jouer
-									sprite_knight_BLUE.setTextureRect(unity.getCurrentAnim());
-									// on affiche
-									arg0.draw(sprite_knight_BLUE);
-					break;
-				}
-				
-			}
-				
-			
-			
-			
 		}
-		*/
-			
-		// pour chaque unity réseau
+	
 	
 		
-		
-		// affichage
-		//arg0.draw(buffer,state);
-		
 		// on appel le middle
-		this.CallBackDrawableMIDDLE(arg0, arg1);
+		this.CallBackDrawableMIDDLE(render, state);
 		
 		// on appel le front
-		this.CallBackDrawableFRONT(arg0, arg1);	
+		this.CallBackDrawableFRONT(render, state);	
 		
 		// on supprimer le list remove
 		this.listCallBackRemove.clear();

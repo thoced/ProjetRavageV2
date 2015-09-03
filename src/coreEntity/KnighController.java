@@ -95,7 +95,7 @@ public class KnighController extends UnityBaseController
 			
 			if(enemy != null)
 			{
-				if(enemy.getModel().getPosition().sub(this.getModel().getPosition()).length() > 2f)
+				if(enemy.getModel().getPosition().sub(this.getModel().getPosition()).length() > 2f)	
 				{
 					// 2) recheche d'une position libre
 					Vec2 posNear = new ChoosePosition().findPositionForFight(this, this.getModel().getEnemy());
@@ -125,6 +125,7 @@ public class KnighController extends UnityBaseController
 					// si l'enemy est à porté
 					
 					// 1) on combat
+					System.out.println("LONGUEUR : " + enemy.getModel().getPosition().sub(this.getModel().getPosition()).length() );
 					this.getView().playAnimation(TYPE_ANIMATION.STRIKE);
 					// on envoie sur le réseau la frappe
 					NetDataUnity data = new NetDataUnity();

@@ -865,7 +865,8 @@ public class EntityManager implements IBaseRavage,IEventCallBack,IRegionSelected
 		}
 		else
 		{
-			this.onCreateUnity(unity); // si l'unité n'avait pas été créer (suite probleme réseau), alors on crée l'unité enemy
+			//this.onCreateUnity(unity); // si l'unité n'avait pas été créer (suite probleme réseau), alors on crée l'unité enemy
+			System.out.println("(onUpdateUnity) vectorUnityNet ne contient pas l'id du model demandé");
 		}
 			
 		

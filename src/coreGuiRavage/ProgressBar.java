@@ -4,21 +4,78 @@ import org.jsfml.graphics.Color;
 import org.jsfml.graphics.RectangleShape;
 import org.jsfml.graphics.RenderStates;
 import org.jsfml.graphics.RenderTarget;
+import org.jsfml.system.Time;
 import org.jsfml.system.Vector2f;
 import org.jsfml.window.Mouse.Button;
 import org.jsfml.window.event.KeyEvent;
 
 public class ProgressBar extends Widget 
 {
-
+	// active bar
+	private boolean m_isActive = false;
+	// callback
+	private IProgressBarListener m_listener;
 	
-	
-	public ProgressBar(Vector2f position,Vector2f size,Vector2f minSize,Vector2f maxSize)
+	public ProgressBar(Vector2f position,Vector2f size,float timeEndProgress,IProgressBarListener listener)
 	{
 		super();
-		this.m_model = new ProgressBarModel(position,size,minSize,maxSize);
+		this.m_model = new ProgressBarModel(position,size,timeEndProgress);
 		this.m_view = new ProgressBarView();
+		m_listener = listener;
 		// TODO Auto-generated constructor stub
+	}
+	
+	@Override
+	public void init() {
+		// TODO Auto-generated method stub
+		
+	}
+	
+	
+
+	public void startProgressBar()
+	{
+		m_isActive = true;
+		((ProgressBarModel)this.m_model).m_sizeValue = new Vector2f(0f,((ProgressBarModel)this.m_model).m_sizeValue.y);
+		((ProgressBarModel)this.m_model).m_timeValue = 0f; // remise à zero du timer
+	}
+
+	
+
+	@Override
+	public void update(Time deltaTime) 
+	{
+		// mise à jour du m_timeValue
+		if(m_isActive)
+		{
+			((ProgressBarModel)this.m_model).m_timeValue += deltaTime.asSeconds();
+			
+			if(((ProgressBarModel)this.m_model).m_timeValue >= ((ProgressBarModel)this.m_model).m_timeEndProgress)
+			{
+				// appel Call Back
+				if(m_listener != null)
+					m_listener.onActionProgressBar(this);
+				// on désactive le progress bar
+				m_isActive = false;
+				((ProgressBarModel)this.m_model).m_sizeValue = new Vector2f(0f,((ProgressBarModel)this.m_model).m_sizeValue.y);
+				((ProgressBarModel)this.m_model).m_timeValue = 0; // remise à zero du timer
+				
+				
+			}
+			else
+			{
+				
+				 float x = (((ProgressBarModel)this.m_model).m_xValue / ((ProgressBarModel)this.m_model).m_timeEndProgress) * ((ProgressBarModel)this.m_model).m_timeValue;
+				 ((ProgressBarModel)this.m_model).m_sizeValue = new Vector2f(x, ((ProgressBarModel)this.m_model).m_sizeValue.y);
+			}
+		}
+		
+	}
+
+	@Override
+	public void destroy() {
+		// TODO Auto-generated method stub
+		
 	}
 
 	@Override
@@ -51,68 +108,59 @@ public class ProgressBar extends Widget
 		return false;
 	}
 	
+	
+	
 	public class ProgressBarModel extends Model
 	{
-		private Vector2f m_minSize;
-		private Vector2f m_maxSize;
-		private Vector2f m_valueSize;
+		private float m_timeEndProgress;
+		
+		private float m_timeValue;
+		
+		private Vector2f m_sizeValue;
+		
+		private float m_xValue;
 	
 		
 		public void setValue(int value)
 		{
 		
-			this.updatePas();
+			
 		}
 		
 		
-		public ProgressBarModel(Vector2f position, Vector2f size,Vector2f minSize,Vector2f maxSize) 
+		public ProgressBarModel(Vector2f position, Vector2f size,float timeEndProgress) 
 		{
 			super(position, size);
-			this.setM_minSize(minSize);
-			this.setM_maxSize(maxSize);
-			this.updatePas();
+			this.setM_timeEndProgress(timeEndProgress);
+			this.setM_timeValue(0f); // initialisation du time value à 0
+			this.m_sizeValue = new Vector2f(0f,size.y);
+			this.m_xValue = size.x;
+		
 			// TODO Auto-generated constructor stub
 		}
 		
+
+		public float getM_timeEndProgress() {
+			return m_timeEndProgress;
+		}
+
+
+		public void setM_timeEndProgress(float m_timeEndProgress) {
+			this.m_timeEndProgress = m_timeEndProgress;
+		}
+
+
+		public float getM_timeValue() {
+			return m_timeValue;
+		}
+
+
+		public void setM_timeValue(float m_timeValue) {
+			this.m_timeValue = m_timeValue;
+		}
+
+
 		
-		
-		public Vector2f getM_valueSize() {
-			return m_valueSize;
-		}
-
-
-		public void setM_valueSize(Vector2f m_valueSize) {
-			this.m_valueSize = m_valueSize;
-		}
-
-
-		public Vector2f getM_minSize() {
-			return m_minSize;
-		}
-
-
-
-		public Vector2f getM_maxSize() {
-			return m_maxSize;
-		}
-
-
-
-		public void setM_minSize(Vector2f m_minSize) {
-			this.m_minSize = m_minSize;
-		}
-
-
-
-		public void setM_maxSize(Vector2f m_maxSize) {
-			this.m_maxSize = m_maxSize;
-		}
-
-
-
-		private void updatePas()
-		{
-		}
 		
 	}
 	
@@ -122,24 +170,37 @@ public class ProgressBar extends Widget
 		
 		public RectangleShape m_shape;
 		
+	
+		
 		public ProgressBarView()
 		{
 			m_controller = ProgressBar.this;
 			m_shape = new RectangleShape();
 			m_shape.setPosition(m_controller.m_model.m_position);
 			m_shape.setFillColor(new Color(128,128,128,256));
-			m_shape.setSize(new Vector2f(0f,0f));
+			m_shape.setSize(((ProgressBarModel)m_controller.m_model).m_sizeValue);
+			
 		}
 		
 		@Override
 		public void draw(RenderTarget render, RenderStates state) 
 		{
 			// mise à jour du size
-		//	m_shape.setSize(((ProgressBarModel)this.m_controller.m_model).);			
+			m_shape.setSize(((ProgressBarModel)m_controller.m_model).m_sizeValue);
+			
 			render.draw(m_shape);
 			
 		}
 		
 	}
+	
+	public interface IProgressBarListener
+	{
+		public void onActionProgressBar(ProgressBar owner);
+	}
+
+	
 
 }
+
+

@@ -6,10 +6,11 @@ import org.jsfml.window.event.KeyEvent;
 import org.jsfml.window.event.MouseButtonEvent;
 import org.jsfml.window.event.MouseEvent;
 
+import ravage.IBaseRavage;
 import coreEvent.IEventCallBack;
 import coreEvent.IEventInterfaceCallBack;
 
-public abstract class Gui 
+public abstract class Gui implements IBaseRavage
 {
 	protected Model m_model;
 	

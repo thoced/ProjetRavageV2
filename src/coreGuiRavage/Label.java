@@ -7,6 +7,7 @@ import org.jsfml.graphics.Font;
 import org.jsfml.graphics.RenderStates;
 import org.jsfml.graphics.RenderTarget;
 import org.jsfml.graphics.Text;
+import org.jsfml.system.Time;
 import org.jsfml.system.Vector2f;
 import org.jsfml.window.Mouse.Button;
 import org.jsfml.window.event.KeyEvent;
@@ -145,6 +146,24 @@ public class Label extends Widget
 	public boolean onMouseReleased(Vector2f position, Button mouseType) {
 		// TODO Auto-generated method stub
 		return false;
+	}
+
+	@Override
+	public void init() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void update(Time deltaTime) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void destroy() {
+		// TODO Auto-generated method stub
+		
 	}
 
 

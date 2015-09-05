@@ -4,9 +4,11 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Random;
+import java.util.Set;
 
 import org.jbox2d.collision.AABB;
 import org.jbox2d.common.Rot;
@@ -145,7 +147,7 @@ public class EntityManager implements IBaseRavage,IEventCallBack,IRegionSelected
 		gamePlayModel.update(deltaTime);
 		
 		// mise à jour du temps pour la recherche des enemy
-		elapsedTimeForSearchNewEnemy += deltaTime.asMilliseconds();
+		elapsedTimeForSearchNewEnemy += deltaTime.asSeconds();
 		
 		// on parse les unitÃ©
 		for(UnityBaseController unity : vectorUnity.values())
@@ -163,28 +165,37 @@ public class EntityManager implements IBaseRavage,IEventCallBack,IRegionSelected
 		if(arrow!=null)
 			arrow.update(deltaTime);
 		
-		
 		// recherche des enemy dans les zones
 		// pour chaque unity on lance la recherche
+		// ----------------------------------------------------------------------
+		//
+		// Recherche d'un enemmi 
+		//
+		// ----------------------------------------------------------------------
 		
 		if(elapsedTimeForSearchNewEnemy > 2f)
 		{
 			for(UnityBaseController unity : this.vectorUnity.values())
 			{
-				if(unity.getModel().getEnemy() == null) // si aucun enemy n'est encore attribué.
+				if(unity.getModel().getIdEnemy() == -1) // si aucun enemy n'est encore attribué.
 				{
 					// on lance la recherche
 					List<UnityNetController> listEnemy = this.searchEnemyZone(unity);
 					if(listEnemy != null && listEnemy.size() > 0)
 					{
 						// on selectionne au hazard
-						Random rand = new Random();
+						/*Random rand = new Random();
 						int ind = rand.nextInt(listEnemy.size());
 						// on récupère l'enemy
 						UnityNetController enemy = listEnemy.get(ind);
 						// on attribue l'enemy
-						unity.getModel().setEnemy(enemy);
+						unity.getModel().setEnemy(enemy);*/
 						
+						// sélection de l'enemy le plus proche
+						// tri du plus petit au plus grand
+						Collections.sort(listEnemy,new TriEnemy(unity));
+						// on récupère l'unité enemmie ayant la distance la plus courte
+						unity.getModel().setIdEnemy(listEnemy.get(0).getModel().getId());
 							
 					}
 						
@@ -208,8 +219,11 @@ public class EntityManager implements IBaseRavage,IEventCallBack,IRegionSelected
 				// enlevement du vecteur
 				this.vectorUnity.remove(u.getModel().getId());
 			}
+			
+			// clear du vecteur killed
+			this.vectorUnityKilled.clear();
 		}
-		this.vectorUnityKilled.clear();
+		
 		
 		// on regarde si il n'existe pas d'unité à supprimer dans le vecteur unitykilled Net
 			if(this.vectorUnityNetKilled.size() > 0)
@@ -221,9 +235,17 @@ public class EntityManager implements IBaseRavage,IEventCallBack,IRegionSelected
 					// enlevement du vecteur
 					this.vectorUnityNet.remove(u.getModel().getId());
 				}
+				// clear du vecteur killed net
+				this.vectorUnityNetKilled.clear();
 			}
 			
-		this.vectorUnityNetKilled.clear();
+		// --------------------------------------------------------
+		//
+		// envoi du listing id pour synchronisation
+		//
+		// --------------------------------------------------------
+			
+		
 		
 	
 	}
@@ -321,7 +343,7 @@ public class EntityManager implements IBaseRavage,IEventCallBack,IRegionSelected
 				
 					// pour toutes les unités selectionnées, on attribue l'ennemy
 					for(UnityBaseController u : this.listUnitySelected)
-						u.getModel().setEnemy(unityPicked);
+						u.getModel().setIdEnemy(unityPicked.getModel().getId());
 					// pour toutes les unités, on crée leur position de formation pour attaquer
 					//this.computeFormationStrike(unityPicked, listUnitySelected, new Vec2(1,0));
 				
@@ -865,7 +887,7 @@ public class EntityManager implements IBaseRavage,IEventCallBack,IRegionSelected
 		}
 		else
 		{
-			//this.onCreateUnity(unity); // si l'unité n'avait pas été créer (suite probleme réseau), alors on crée l'unité enemy
+			this.onCreateUnity(unity); // si l'unité n'avait pas été créer (suite probleme réseau), alors on crée l'unité enemy
 			System.out.println("(onUpdateUnity) vectorUnityNet ne contient pas l'id du model demandé");
 		}
 			

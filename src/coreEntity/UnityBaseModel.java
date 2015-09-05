@@ -54,7 +54,7 @@ public class UnityBaseModel implements Externalizable
 	
 	protected int id;			  // id de l'unité
 	
-	protected transient UnityNetController enemy;
+	//protected transient UnityNetController enemy;
 	
 	protected int idEnemy = -1;	 // ide de l'enemy
 	
@@ -341,7 +341,7 @@ public class UnityBaseModel implements Externalizable
 		this.isKilled = isKilled;
 	}
 
-	public UnityNetController getEnemy() 
+	/*public UnityNetController getEnemy() 
 	{
 		// recherche de l'enemy
 		enemy = EntityManager.getVectorUnityNet().get(this.getIdEnemy());
@@ -353,7 +353,7 @@ public class UnityBaseModel implements Externalizable
 		this.enemy = enemy;
 		// récupération de l'id enemy
 		this.setIdEnemy(this.enemy.getModel().getId());
-	}
+	}*/
 
 	public boolean isSelected() {
 		return isSelected;

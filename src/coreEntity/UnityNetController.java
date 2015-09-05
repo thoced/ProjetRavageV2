@@ -33,12 +33,15 @@ public class UnityNetController extends UnityBaseController
 		{
 			// on joue l'animation
 			this.getView().playAnimation(TYPE_ANIMATION.STRIKE);
+			// on empèche de frapper une seconde fois
 			this.getModel().setKnocking(false);
 			// on frappe réelleemnt l'enemy
 			UnityBaseController u = EntityManager.getVectorUnity().get(this.getModel().getIdEnemy());
 			System.out.println("Enemy : " + u);
 			if(u!=null)
 				u.hit(this.getModel().getStreightStrike());
+			
+			
 		}
 		
 		if(this.getModel().isKilled)

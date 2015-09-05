@@ -103,8 +103,12 @@ public class GuiRavageManager implements IBaseRavage,IEventInterfaceCallBack, Dr
 	}
 
 	@Override
-	public void update(Time deltaTime) {
-		// TODO Auto-generated method stub
+	public void update(Time deltaTime) 
+	{
+		for(Panel p : m_panels)
+		{
+			p.update(deltaTime);
+		}
 		
 	}
 

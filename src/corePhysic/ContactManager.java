@@ -90,11 +90,11 @@ public class ContactManager implements ContactListener {
 				// on attribue l'enemy
 				if(m_userDataA.getClass() == UnityNetController.class)
 				{
-					((UnityBaseController)m_userDataB).getModel().setEnemy((UnityNetController)m_userDataA);
+					((UnityBaseController)m_userDataB).getModel().setIdEnemy(((UnityNetController)m_userDataA).getModel().getId());
 				}
 				if(m_userDataB.getClass() == UnityNetController.class)
 				{
-					((UnityBaseController)m_userDataA).getModel().setEnemy((UnityNetController)m_userDataB);
+					((UnityBaseController)m_userDataA).getModel().setIdEnemy(((UnityNetController)m_userDataB).getModel().getId());
 				}
 				
 				

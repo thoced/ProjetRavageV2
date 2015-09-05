@@ -91,14 +91,16 @@ public class KnighController extends UnityBaseController
 		// 1) un ennemi est il attribué ?
 		if(elapsedTimeAttack > 2f)
 		{
-			UnityNetController enemy = this.getModel().getEnemy(); // réception de l'enemy
+			
+			// on récupère l'objet enemy
+			UnityNetController enemy = EntityManager.getVectorUnityNet().get(this.getModel().getIdEnemy());
 			
 			if(enemy != null)
 			{
 				if(enemy.getModel().getPosition().sub(this.getModel().getPosition()).length() > 2f)	
 				{
 					// 2) recheche d'une position libre
-					Vec2 posNear = new ChoosePosition().findPositionForFight(this, this.getModel().getEnemy());
+					Vec2 posNear = new ChoosePosition().findPositionForFight(this, enemy);
 					//Vec2 posNear = enemy.getModel().getPositionNode();
 					// 3) on libère la derniere position réserve
 					/*if(this.nodeReserved != null)
@@ -138,6 +140,12 @@ public class KnighController extends UnityBaseController
 					
 				}
 				
+			}
+			else
+			{
+				// enemy == null ??
+				// alor on indique que l'id enemy est -1
+				this.getModel().setIdEnemy(-1);
 			}
 			
 			// mise à zero du compteur

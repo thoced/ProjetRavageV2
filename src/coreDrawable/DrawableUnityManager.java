@@ -2,6 +2,7 @@ package coreDrawable;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 
@@ -152,17 +153,17 @@ public class DrawableUnityManager implements IBaseRavage, Drawable
 			else
 			{
 				// pour chaque non player on vérifie la distance avec les autres
-				Iterator<UnityBaseController> other = treeSearch.getIterator();
+				Collection<UnityBaseController>  tempCollection = EntityManager.getVectorUnity().values();
+				// on récupère un intérateur
+				Iterator<UnityBaseController> other = tempCollection.iterator();
+				
 				while(other.hasNext())
 				{
 					UnityBaseController o = other.next();
-					if(o.getModel().isPlayer()) // 
+					if(u.getModel().getPosition().sub(o.getModel().getPosition()).length() < 60f) //  si la distance entre l'enemy et un player est inférieur à 10, on affiche
 					{
-						if(u.getModel().getPosition().sub(o.getModel().getPosition()).length() < 60f) //  si la distance entre l'enemy et un player est inférieur à 10, on affiche
-						{
-							u.getView().draw(render, state);
-							break; // on break;
-						}
+						u.getView().draw(render, state);
+						break; // on break;
 					}
 				}
 			}

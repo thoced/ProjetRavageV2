@@ -71,9 +71,9 @@ public class UnityBaseController implements IBaseRavage, ICallBackAStar,
 		// pas sérialisés
 		// this.getModel().setPosition(this.getModel().getBody().getPosition());
 		// this.getModel().setRotation(this.getModel().getBody().getAngle());
-		if (this.getModel().getEnemy() != null)
+		/*if (this.getModel().getEnemy() != null)
 			this.getModel().setIdEnemy(
-					this.getModel().getEnemy().getModel().getId());
+					this.getModel().getEnemy().getModel().getId());*/
 		this.getModel()
 				.setOrigineSprite(this.getView().getSprite().getOrigin());
 

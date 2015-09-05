@@ -16,6 +16,7 @@ import org.jsfml.graphics.RenderTexture;
 import org.jsfml.graphics.Sprite;
 import org.jsfml.graphics.TextureCreationException;
 import org.jsfml.graphics.Transform;
+import org.jsfml.system.Time;
 import org.jsfml.system.Vector2f;
 import org.jsfml.window.Mouse;
 import org.jsfml.window.Mouse.Button;
@@ -126,6 +127,31 @@ import CoreTexturesManager.TexturesManager;
 	public boolean onKeyboard(KeyEvent keyboardEvent) {
 		// TODO Auto-generated method stub
 		return false;
+	}
+
+
+	@Override
+	public void init() {
+		// TODO Auto-generated method stub
+		
+	}
+
+
+	@Override
+	public void update(Time deltaTime) 
+	{
+		for(Gui g : ((PanelModel)this.m_model).m_guis)
+		{
+			g.update(deltaTime);
+		}
+		
+	}
+
+
+	@Override
+	public void destroy() {
+		// TODO Auto-generated method stub
+		
 	}
 
 	

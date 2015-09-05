@@ -19,12 +19,14 @@ import coreEntityManager.EntityManager.CAMP;
 import coreGuiRavage.Button;
 import coreGuiRavage.IButtonListener;
 import coreGuiRavage.Panel;
+import coreGuiRavage.ProgressBar;
+import coreGuiRavage.ProgressBar.IProgressBarListener;
 import coreMessageManager.MessageManager;
 import coreMessageManager.MessageRavage;
 
-public class PanelInfoBuild extends Panel implements IButtonListener
+public class PanelInfoBuild extends Panel implements IButtonListener, IProgressBarListener
 {
-	
+	private ProgressBar m_barPiquier;
 
 	public PanelInfoBuild(float x, float y, Vector2f size)
 			throws TextureCreationException 
@@ -32,7 +34,7 @@ public class PanelInfoBuild extends Panel implements IButtonListener
 		super(x, y, size);
 		
 		// création des boutons
-		
+		// Bouton piquier
 		Button button01 = new Button(new Vector2f(16f,10f),new Vector2f(64f,64f));
 		if(EntityManager.campSelected == CAMP.BLUE)
 			button01.setTexture(TexturesManager.GetTextureByName("ButtonPiquierBlue.png"));
@@ -42,6 +44,10 @@ public class PanelInfoBuild extends Panel implements IButtonListener
 		this.addWidget(button01);
 		button01.setAction("CREATE_PIQUIER"); // creation de l'action
 		button01.addListener(this); // ajout du listener
+		// ajout du progress bas
+		m_barPiquier = new ProgressBar(new Vector2f(16f,76f),new Vector2f(64f,8f),3f,this); // position,size,temps max, owner pour le call back
+		this.addWidget(m_barPiquier);
+		
 		
 		
 	}
@@ -53,35 +59,25 @@ public class PanelInfoBuild extends Panel implements IButtonListener
 		{
 			case "CREATE_PIQUIER" :
 			{
-				/*MessageRavage message = new MessageRavage();
-				message.transmitterClass = this.getClass();
-				message.receiverClass = EntityManager.class;
-								
-				try 
-				{
-					ByteArrayOutputStream bao = new ByteArrayOutputStream();
-					ObjectOutputStream oos;
-					oos = new ObjectOutputStream(bao);
-					oos.writeUTF(action);
-					oos.close();
-					bao.flush();
-					message.bufferMessage = bao.toByteArray();
-					MessageManager.sendMessage(message);
-				} catch (IOException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
+				// activation de la bare de progression de création de l'unité piquier
+				m_barPiquier.startProgressBar();
 				
-				
-				
-			}*/
-				
-				EntityManager.createPiquier();
 			}
 
 		
 			
 		
+		}
+	}
+
+	@Override
+	public void onActionProgressBar(ProgressBar owner)
+	{
+		// TODO Auto-generated method stub
+		if(owner == m_barPiquier)
+		{
+			// création du piquer
+			EntityManager.createPiquier();
 		}
 	}
 

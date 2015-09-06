@@ -19,12 +19,12 @@ public class PanelInfoGold extends Panel
 		super(x, y, size);
 		
 		// placement du label du gold coin
-		m_labelGoldCoin = new Label(new Vector2f(10f,24f));
+		m_labelGoldCoin = new Label(new Vector2f(10f,18f));
 		m_labelGoldCoin.setText("0 pièces d'or");
 		m_labelGoldCoin.setColor(Color.YELLOW);
 		this.addWidget(m_labelGoldCoin);
 		// placement du label du nombre d'unité
-		m_labelNbTroops = new Label(new Vector2f(160f,24f));
+		m_labelNbTroops = new Label(new Vector2f(160f,18f));
 		m_labelNbTroops.setText("0 unité(s)");
 		m_labelNbTroops.setColor(Color.WHITE);
 		this.addWidget(m_labelNbTroops);

@@ -8,9 +8,15 @@ import java.io.ObjectInput;
 import java.io.ObjectOutput;
 import java.io.ObjectOutputStream;
 import java.io.OutputStream;
+import java.util.Queue;
+import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.BlockingQueue;
 import java.util.stream.Stream;
 
+import org.jsfml.graphics.Color;
+import org.jsfml.graphics.IntRect;
 import org.jsfml.graphics.TextureCreationException;
+import org.jsfml.system.Time;
 import org.jsfml.system.Vector2f;
 
 import CoreTexturesManager.TexturesManager;
@@ -18,6 +24,8 @@ import coreEntityManager.EntityManager;
 import coreEntityManager.EntityManager.CAMP;
 import coreGuiRavage.Button;
 import coreGuiRavage.IButtonListener;
+import coreGuiRavage.Image;
+import coreGuiRavage.Label;
 import coreGuiRavage.Panel;
 import coreGuiRavage.ProgressBar;
 import coreGuiRavage.ProgressBar.IProgressBarListener;
@@ -26,12 +34,20 @@ import coreMessageManager.MessageRavage;
 
 public class PanelInfoBuild extends Panel implements IButtonListener, IProgressBarListener
 {
+	private enum TYPE_ACTION_POLL {CREATE_PIQUIER};
+	// file d'attnte de construction
+	private ArrayBlockingQueue<TYPE_ACTION_POLL> m_pollCreatePiquier; 
+	// bar de progression pour les piquier
 	private ProgressBar m_barPiquier;
+	private Label       m_labelFilePiquier;
 
 	public PanelInfoBuild(float x, float y, Vector2f size)
-			throws TextureCreationException 
+			throws TextureCreationException, IOException 
 	{
 		super(x, y, size);
+		
+		// instance de la file d'attente
+		m_pollCreatePiquier = new ArrayBlockingQueue<TYPE_ACTION_POLL>(256);
 		
 		// création des boutons
 		// Bouton piquier
@@ -44,12 +60,27 @@ public class PanelInfoBuild extends Panel implements IButtonListener, IProgressB
 		this.addWidget(button01);
 		button01.setAction("CREATE_PIQUIER"); // creation de l'action
 		button01.addListener(this); // ajout du listener
-		// ajout du progress bas
-		m_barPiquier = new ProgressBar(new Vector2f(16f,76f),new Vector2f(64f,8f),3f,this); // position,size,temps max, owner pour le call back
+		// creation du progress bar piquier
+		m_barPiquier = new ProgressBar(new Vector2f(16f,76f),new Vector2f(64f,4f),3f,this);
 		this.addWidget(m_barPiquier);
-		
-		
-		
+		// création du label de file d'attente pour le piquier
+		m_labelFilePiquier = new Label(new Vector2f(20f,12f));
+		m_labelFilePiquier.setColor(new Color(128,128,128,256));
+		m_labelFilePiquier.setText("");
+		this.addWidget(m_labelFilePiquier);
+				
+	}
+	
+	
+	private void pollProgress(ArrayBlockingQueue<TYPE_ACTION_POLL> queue,ProgressBar bar)
+	{
+		if(bar != null && !bar.isInAction())
+		{
+			if((queue.poll()) != null)
+			{
+				bar.startProgressBar();
+			}
+		}
 	}
 
 	@Override
@@ -59,8 +90,18 @@ public class PanelInfoBuild extends Panel implements IButtonListener, IProgressB
 		{
 			case "CREATE_PIQUIER" :
 			{
-				// activation de la bare de progression de création de l'unité piquier
-				m_barPiquier.startProgressBar();
+				// ajout du progress bas
+					 // position,size,temps max, owner pour le call back
+				     // dans la file d'attente
+									
+					m_pollCreatePiquier.add(TYPE_ACTION_POLL.CREATE_PIQUIER);
+					pollProgress(m_pollCreatePiquier,m_barPiquier); // poll
+					if(m_pollCreatePiquier.size() > 0) 
+						m_labelFilePiquier.setText(String.valueOf(m_pollCreatePiquier.size()));
+					else
+						m_labelFilePiquier.setText("");
+					break;
+				
 				
 			}
 
@@ -68,6 +109,8 @@ public class PanelInfoBuild extends Panel implements IButtonListener, IProgressB
 			
 		
 		}
+		
+		
 	}
 
 	@Override
@@ -76,8 +119,26 @@ public class PanelInfoBuild extends Panel implements IButtonListener, IProgressB
 		// TODO Auto-generated method stub
 		if(owner == m_barPiquier)
 		{
-			// création du piquer
-			EntityManager.createPiquier();
+			if(EntityManager.getGamePlayModel().pay(10)) // on pay
+			{
+					// création du piquer
+					EntityManager.createPiquier();
+				
+				// on regarde si il existe d'autres actions dans la file d'attente
+				if((m_pollCreatePiquier.poll()) != null)
+				{
+					// déclenchement du progress
+					m_barPiquier.startProgressBar();
+					
+					// mise à jour du label de construction
+					if(m_pollCreatePiquier.size() > 0) 
+						m_labelFilePiquier.setText(String.valueOf(m_pollCreatePiquier.size()));
+					else
+						m_labelFilePiquier.setText("");
+				}
+				else
+					m_labelFilePiquier.setText("");
+			}
 		}
 	}
 

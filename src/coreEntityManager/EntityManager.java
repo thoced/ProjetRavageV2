@@ -141,7 +141,7 @@ public class EntityManager implements IBaseRavage,IEventCallBack,IRegionSelected
 		// instnce de la queue id delete (pour la synchronisation)
 		queueIdDelete = new ArrayBlockingQueue<Integer>(256);
 		
-		// créatino du panel de groupe d'unité
+		// création du panel de groupe d'unité
 		try 
 		{
 			infoUnite = new PanelInfoUnite(0.5f, 1f - (1f / FrameWork.getWindow().getSize().y) * 27f,new Vector2f(1024f,54f));

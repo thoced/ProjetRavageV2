@@ -1,5 +1,6 @@
 package coreGuiRavage;
 
+import org.jbox2d.common.Vec3;
 import org.jsfml.graphics.Color;
 import org.jsfml.graphics.IntRect;
 import org.jsfml.graphics.RectangleShape;
@@ -8,6 +9,7 @@ import org.jsfml.graphics.RenderTarget;
 import org.jsfml.graphics.Texture;
 import org.jsfml.system.Time;
 import org.jsfml.system.Vector2f;
+import org.jsfml.system.Vector3i;
 
 import coreEntity.UnityBaseController;
 
@@ -16,6 +18,7 @@ public class ImageEnergy extends Image
 
 	// parent unity
 	private UnityBaseController m_unity;
+
 	
 	public ImageEnergy(UnityBaseController unity,Vector2f position) 
 	{
@@ -35,8 +38,13 @@ public class ImageEnergy extends Image
 		// TODO Auto-generated method stub
 		super.update(deltaTime);
 		// mise à jour de l'énergie
-		((ImageEnergyView)this.m_view).m_shape.setSize(new Vector2f((24f / m_unity.getModel().getEnergyMax()) * m_unity.getModel().getEnergy(),2f));
-			
+		// modification des couleurs de l'energie du vert au rouge
+		int g = (255 / m_unity.getModel().getEnergyMax()) *  m_unity.getModel().getEnergy();
+		int r = 255 - g;
+		// placementd de la couleur
+		((ImageEnergyView)this.m_view).m_shape.setFillColor(new Color(r,g,0));
+		// positionnement de la grandeur de l'energie
+		((ImageEnergyView)this.m_view).m_shape.setSize(new Vector2f((24f / m_unity.getModel().getEnergyMax()) * m_unity.getModel().getEnergy(),2f));			
 	}
 
 
@@ -47,7 +55,7 @@ public class ImageEnergy extends Image
 		// shape de l'energy
 		public RectangleShape m_shape;
 		
-		
+				
 		public ImageEnergyView(Texture texture,IntRect textureRect,Vector2f position) 
 		{
 			super(texture, textureRect, position);
@@ -55,10 +63,8 @@ public class ImageEnergy extends Image
 			m_shape = new RectangleShape();
 			m_shape.setPosition(Vector2f.sub(ImageEnergy.this.m_model.m_position,new Vector2f(16f,16f)));
 			m_shape.setSize(new Vector2f(24f,2f));
-			m_shape.setFillColor(Color.GREEN);
 			m_shape.setOrigin(0f,0f);
-			
-		
+
 		}
 
 		public void setSize(Vector2f size)

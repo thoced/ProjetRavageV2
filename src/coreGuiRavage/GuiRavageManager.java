@@ -21,14 +21,14 @@ import coreEvent.IEventInterfaceCallBack;
 public class GuiRavageManager implements IBaseRavage,IEventInterfaceCallBack, Drawable 
 {
 
-	private List<Panel> m_panels;
+	private static List<Panel> m_panels = new ArrayList<Panel>();;
 	
 	public GuiRavageManager()
 	{
-		m_panels = new ArrayList<Panel>();
+		
 	}
 	
-	public void addPanel(Panel p)
+	public static void addPanel(Panel p)
 	{
 		m_panels.add(p);
 	}

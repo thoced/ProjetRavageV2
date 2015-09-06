@@ -38,6 +38,7 @@ import org.jsfml.window.event.Event;
 
 import UI.PanelInfoBuild;
 import UI.PanelInfoGold;
+import UI.PanelInfoUnite;
 import CoreTexturesManager.TexturesManager;
 import coreAI.AstarManager;
 import coreAI.Node;
@@ -62,6 +63,8 @@ import corePhysic.PhysicWorldManager;
 
 public class FrameWork
 {
+	// max fps
+	private final int MAX_FRAME = 60;
 	// Managers
 	private PhysicWorldManager physicWorld;
 	//private LevelManager levelManager;
@@ -122,7 +125,7 @@ public class FrameWork
 		else
 			window = new RenderWindow(new VideoMode(menu.getResolutionScreenXY()[0],menu.getResolutionScreenXY()[1]),"ProjetRavage",RenderWindow.DEFAULT);
 		
-		window.setFramerateLimit(60);
+		window.setFramerateLimit(MAX_FRAME);
 				
 		
 		messageManager = new MessageManager();
@@ -154,10 +157,11 @@ public class FrameWork
 		
 	
 		// création des guis tests
-		PanelInfoGold infoGold = new PanelInfoGold(0.5f,0.1f,new Vector2f(256f,64f));
+		PanelInfoGold infoGold = new PanelInfoGold(0.5f,(1f / window.getSize().y) * 24f,new Vector2f(256f,48f));
 		guiManager.addPanel(infoGold);
-		PanelInfoBuild infoBuild = new PanelInfoBuild(0.9f,0.5f,new Vector2f(96f,512f));
+		PanelInfoBuild infoBuild = new PanelInfoBuild(1f - (1f / window.getSize().x) * 48f,0.5f,new Vector2f(96f,512f));
 		guiManager.addPanel(infoBuild);
+		
 		
 		// attachement au call back
 		RectSelected.attachCallBack(entityManager);

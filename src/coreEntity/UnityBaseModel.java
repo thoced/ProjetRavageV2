@@ -73,6 +73,8 @@ public class UnityBaseModel implements Externalizable
 	protected boolean isKilled = false;
 	// energie
 	protected int energy;
+	// max energie 
+	protected int energyMax;
 	
 	// information concernant l'origine du sprite
 	protected Animations animations;
@@ -124,6 +126,7 @@ public class UnityBaseModel implements Externalizable
 		clone.setAnimations(this.getAnimations());
 		clone.setOrigineSprite(this.getOrigineSprite());
 		clone.setEnergy(this.getEnergy());
+		clone.setEnergyMax(this.getEnergyMax());
 		clone.setStreightStrike(this.getStreightStrike());
 		return clone;
 	}
@@ -166,6 +169,16 @@ public class UnityBaseModel implements Externalizable
 	}
 	
 	
+
+	public int getEnergyMax() {
+		return energyMax;
+	}
+
+
+	public void setEnergyMax(int energyMax) {
+		this.energyMax = energyMax;
+	}
+
 
 	/**
 	 * @return the isPlayer
@@ -505,6 +518,8 @@ public class UnityBaseModel implements Externalizable
 		this.isKilled = arg0.readBoolean();
 		// Energy
 		this.energy = arg0.readInt();
+		// Energy max
+		this.energyMax = arg0.readInt();
 		// animation
 	//	this.animations = (Animations)arg0.readObject();
 		
@@ -632,6 +647,8 @@ public class UnityBaseModel implements Externalizable
 		out.writeBoolean(this.isKilled);
 		// Energy
 		out.writeInt(this.energy);
+		// Energy max
+		out.writeInt(this.energyMax);
 		// animation
 		//out.writeObject(this.animations);
 		

@@ -55,6 +55,7 @@ public class KnighController extends UnityBaseController
 		
 		// energy
 		this.getModel().setEnergy(50);
+		this.getModel().setEnergyMax(50);
 	}
 
 	@Override
@@ -89,13 +90,13 @@ public class KnighController extends UnityBaseController
 		
 		// code de l'attaque
 		// 1) un ennemi est il attribué ?
-		if(elapsedTimeAttack > 2f)
+		if(elapsedTimeAttack > 2f)  // toutes les deux secondes
 		{
 			
 			// on récupère l'objet enemy
 			UnityNetController enemy = EntityManager.getVectorUnityNet().get(this.getModel().getIdEnemy());
 			
-			if(enemy != null)
+			if(enemy != null && this.getSequencePath() == ETAPE.NONE)
 			{
 				if(enemy.getModel().getPosition().sub(this.getModel().getPosition()).length() > 2f)	
 				{
@@ -130,13 +131,13 @@ public class KnighController extends UnityBaseController
 					System.out.println("LONGUEUR : " + enemy.getModel().getPosition().sub(this.getModel().getPosition()).length() );
 					this.getView().playAnimation(TYPE_ANIMATION.STRIKE);
 					// on envoie sur le réseau la frappe
-					NetDataUnity data = new NetDataUnity();
-					data.setTypeMessage(NetBase.TYPE.UPDATE);
-					this.getModel().setKnocking(true);
-					this.getModel().setStreightStrike(10);
-					this.prepareModelToNet();
-					data.setModel(this.getModel());
-					NetSendThread.push(data);
+					NetDataUnity data = new NetDataUnity();			// creatin du netdataunity
+					data.setTypeMessage(NetBase.TYPE.UPDATE);		// on spécifie que c'est une update
+					this.getModel().setKnocking(true);				// on spécifie au modèle que nous sommes en train de frapper
+					this.getModel().setStreightStrike(10);			// on spécifie la force de frappe
+					this.prepareModelToNet();						// préparation du model pour l'envoi sur le réseau
+					data.setModel(this.getModel());					// placement du model dans le netdataunity
+					NetSendThread.push(data);						// envoi sur le réseau
 					
 				}
 				

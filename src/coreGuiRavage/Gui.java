@@ -12,9 +12,11 @@ import coreEvent.IEventInterfaceCallBack;
 
 public abstract class Gui implements IBaseRavage
 {
-	protected Model m_model;
+	protected Model m_model;   // model
 	
-	protected View m_view;
+	protected View m_view; 	   /// view
+	
+	protected boolean m_isMovable = true; // le gui est-il déplacable ?
 	
 
 	public Model getM_model() {
@@ -34,7 +36,26 @@ public abstract class Gui implements IBaseRavage
 	}
 
 	
+	
+	public boolean isM_isMovable() {
+		return m_isMovable;
+	}
+
+	public void setM_isMovable(boolean m_isMovable) {
+		this.m_isMovable = m_isMovable;
+	}
+
 	public void addWidget(Widget widget)
+	{
+		
+	}
+	
+	public void removeAllWidget()
+	{
+		
+	}
+	
+	public void removeWidget(Widget widget)
 	{
 		
 	}

@@ -79,14 +79,14 @@ public class ContactManager implements ContactListener {
 			if(m_userDataA.getClass() == String.class  || m_userDataB.getClass() == String.class)	
 				return;
 			
-			// si il s'agit de deux unité différente, on active le contact
+			// si il s'agit de deux unités différentse, on active le contact
 			if(m_userDataA.getClass() != m_userDataB.getClass())
 			{
 				// on active le contact
 				l_contact.setEnabled(true);
-				// on arrête sur place l'unité
+				/*// on arrête sur place l'unité
 				m_bodyA.setLinearVelocity(ZERO_VECTOR);
-			    m_bodyB.setLinearVelocity(ZERO_VECTOR);
+			    m_bodyB.setLinearVelocity(ZERO_VECTOR);*/
 				// on attribue l'enemy
 				if(m_userDataA.getClass() == UnityNetController.class)
 				{

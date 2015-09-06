@@ -9,6 +9,8 @@ import java.util.Hashtable;
 import java.util.List;
 import java.util.Random;
 import java.util.Set;
+import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.jbox2d.collision.AABB;
 import org.jbox2d.common.Rot;
@@ -17,6 +19,7 @@ import org.jbox2d.dynamics.Body;
 import org.jsfml.graphics.FloatRect;
 import org.jsfml.graphics.RenderStates;
 import org.jsfml.graphics.RenderTarget;
+import org.jsfml.graphics.TextureCreationException;
 import org.jsfml.system.Clock;
 import org.jsfml.system.Time;
 import org.jsfml.system.Vector2f;
@@ -31,6 +34,7 @@ import org.jsfml.window.event.MouseButtonEvent;
 import org.jsfml.window.event.MouseEvent;
 
 import UI.PanelInfoGold;
+import UI.PanelInfoUnite;
 import coreAI.AstarManager;
 import coreAI.Node;
 import coreEntity.KnighController;
@@ -46,6 +50,7 @@ import coreEntity.UnityBaseView.TYPE_ANIMATION;
 import coreEntity.UnityNetController;
 import coreEvent.IEventCallBack;
 import coreGUI.IRegionSelectedCallBack;
+import coreGuiRavage.GuiRavageManager;
 import coreGuiRavage.IButtonListener;
 import coreLevel.LevelManager;
 import coreMessageManager.IPumpMessage;
@@ -55,6 +60,8 @@ import coreMessageManager.RegistrationObject;
 import coreNet.INetManagerCallBack;
 import coreNet.NetBase.TYPE;
 import coreNet.NetDataUnity;
+import coreNet.NetDeleteSynchronised;
+import coreNet.NetHeader;
 import coreNet.NetHello;
 import coreNet.NetManager;
 import coreNet.NetSendThread;
@@ -75,16 +82,19 @@ public class EntityManager implements IBaseRavage,IEventCallBack,IRegionSelected
 	// compteur d'id 
 	private static int cptIdUnity = -1;
 	// vecteur des unity du player
-	private static Hashtable<Integer,UnityBaseController> vectorUnity;
+	private static ConcurrentHashMap<Integer,UnityBaseController> vectorUnity;
 	// vecteur de killed
 	private static List<UnityBaseController> vectorUnityKilled;
 	// vecteur des unity du joueur adverse (réseau)
 	//private static List<UnityNetController> vectorUnityNet;
 	
-	private static Hashtable<Integer,UnityNetController> vectorUnityNet;
+	private static ConcurrentHashMap<Integer,UnityNetController> vectorUnityNet;
 	// vecteur net killed
 	private static List<UnityNetController> vectorUnityNetKilled;
 	
+	// queue des id supprimés (synchronisation)
+	private ArrayBlockingQueue<Integer> queueIdDelete;
+	private float timeElapsedForSynchronised = 0f;
 	// test clock
 	private Clock clock;
 	private Time delta;
@@ -102,6 +112,8 @@ public class EntityManager implements IBaseRavage,IEventCallBack,IRegionSelected
 	// temps écoulé pour la recherche d'enemi
 	private float elapsedTimeForSearchNewEnemy = 0f;
 	
+	// Panel d'afficahge des unités
+	private PanelInfoUnite infoUnite;;
 	
 	
 	public static CAMP getCampSelected() {
@@ -118,14 +130,27 @@ public class EntityManager implements IBaseRavage,IEventCallBack,IRegionSelected
 	public void init()
 	{
 		// TODO Auto-generated method stub
-		vectorUnity = new Hashtable<Integer,UnityBaseController>();
+		vectorUnity = new ConcurrentHashMap<Integer,UnityBaseController>();
 		vectorUnityKilled = new ArrayList<UnityBaseController>();
 		// liste des unitÃ©s selectionnÃ©s
 		listUnitySelected = new ArrayList<UnityBaseController>();
 		// instance vectorunitynet
 		//vectorUnityNet = new ArrayList<UnityNet>();
-		vectorUnityNet = new Hashtable<Integer,UnityNetController>();
+		vectorUnityNet = new ConcurrentHashMap<Integer,UnityNetController>();
 		vectorUnityNetKilled = new ArrayList<UnityNetController>();
+		// instnce de la queue id delete (pour la synchronisation)
+		queueIdDelete = new ArrayBlockingQueue<Integer>(256);
+		
+		// créatino du panel de groupe d'unité
+		try 
+		{
+			infoUnite = new PanelInfoUnite(0.5f, 1f - (1f / FrameWork.getWindow().getSize().y) * 27f,new Vector2f(1024f,54f));
+			GuiRavageManager.addPanel(infoUnite);
+		} catch (TextureCreationException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	
 		
 		clock = new Clock();
 		delta = Time.ZERO;
@@ -173,7 +198,7 @@ public class EntityManager implements IBaseRavage,IEventCallBack,IRegionSelected
 		//
 		// ----------------------------------------------------------------------
 		
-		if(elapsedTimeForSearchNewEnemy > 2f)
+		if(elapsedTimeForSearchNewEnemy > 2f) // toutes les deux secondes
 		{
 			for(UnityBaseController unity : this.vectorUnity.values())
 			{
@@ -212,8 +237,15 @@ public class EntityManager implements IBaseRavage,IEventCallBack,IRegionSelected
 		// on regarde si il n'existe pas d'unité à supprimer dans le vecteur unitykilled
 		if(this.vectorUnityKilled.size() > 0)
 		{
+			
+			
+			
+			
 			for(UnityBaseController u : this.vectorUnityKilled)
 			{
+				// mise à jour de la liste des id à supprimer (pour la synchronisation
+				queueIdDelete.add(u.getModel().getId());
+				
 				// destruction propre de l'objet
 				u.destroy();
 				// enlevement du vecteur
@@ -241,10 +273,21 @@ public class EntityManager implements IBaseRavage,IEventCallBack,IRegionSelected
 			
 		// --------------------------------------------------------
 		//
-		// envoi du listing id pour synchronisation
+		// envoie d'une liste des id supprimé 
 		//
 		// --------------------------------------------------------
-			
+			timeElapsedForSynchronised += deltaTime.asSeconds();
+			if(timeElapsedForSynchronised > 2f)
+			{
+				Integer[] arrayId = new Integer[queueIdDelete.size()];
+				queueIdDelete.toArray(arrayId);
+				NetDeleteSynchronised net = new NetDeleteSynchronised(arrayId);
+				net.setTypeMessage(TYPE.SYNCHRONISED); 
+				NetSendThread.push(net);
+				// suppression du premier entré
+				queueIdDelete.poll();
+				timeElapsedForSynchronised = 0f;
+			}
 		
 		
 	
@@ -274,17 +317,17 @@ public class EntityManager implements IBaseRavage,IEventCallBack,IRegionSelected
 		EntityManager.vectorUnityKilled = vectorUnityKilled;
 	}
 
-	public static Hashtable<Integer, UnityBaseController> getVectorUnity() {
+	public static ConcurrentHashMap<Integer, UnityBaseController> getVectorUnity() {
 		return vectorUnity;
 	}
 
-	public static void setVectorUnity(Hashtable<Integer, UnityBaseController> vectorUnity) {
+	public static void setVectorUnity(ConcurrentHashMap<Integer, UnityBaseController> vectorUnity) {
 		EntityManager.vectorUnity = vectorUnity;
 	}
 
 	
 
-	public static Hashtable<Integer, UnityNetController> getVectorUnityNet() {
+	public static ConcurrentHashMap<Integer, UnityNetController> getVectorUnityNet() {
 		return vectorUnityNet;
 	}
 
@@ -293,7 +336,7 @@ public class EntityManager implements IBaseRavage,IEventCallBack,IRegionSelected
 	}
 
 	public static void setVectorUnityNet(
-			Hashtable<Integer, UnityNetController> vectorUnityNet) {
+			ConcurrentHashMap<Integer, UnityNetController> vectorUnityNet) {
 		EntityManager.vectorUnityNet = vectorUnityNet;
 	}
 
@@ -330,6 +373,9 @@ public class EntityManager implements IBaseRavage,IEventCallBack,IRegionSelected
 				
 			}
 			
+			// mise à jour du panel d'affichage
+			infoUnite.setGroupUnity(this.listUnitySelected);
+			
 			return true;
 		}
 		else if(mouseEvent.asMouseButtonEvent().button == Mouse.Button.RIGHT)
@@ -363,8 +409,7 @@ public class EntityManager implements IBaseRavage,IEventCallBack,IRegionSelected
 	
 	public static void createPiquier()
 	{
-		if(gamePlayModel.pay(10))
-		{
+		
 		
 			KnighController knight = new KnighController();
 			knight.getModel().setPosition(new Vec2(NetManager.getPosxStartFlag(),NetManager.getPosyStartFlag()));
@@ -392,7 +437,7 @@ public class EntityManager implements IBaseRavage,IEventCallBack,IRegionSelected
 			
 			// gamePlayModel
 			gamePlayModel.setM_nbUnity(getVectorUnity().size());
-		}
+		
 		
 	}
 
@@ -459,6 +504,9 @@ public class EntityManager implements IBaseRavage,IEventCallBack,IRegionSelected
 						
 					}
 		}
+		
+		// mise à jour du panel d'info des unités
+		infoUnite.setGroupUnity(this.listUnitySelected);
 		
 	}
 
@@ -887,10 +935,22 @@ public class EntityManager implements IBaseRavage,IEventCallBack,IRegionSelected
 		}
 		else
 		{
-			this.onCreateUnity(unity); // si l'unité n'avait pas été créer (suite probleme réseau), alors on crée l'unité enemy
+			//this.onCreateUnity(unity); // si l'unité n'avait pas été créer (suite probleme réseau), alors on crée l'unité enemy
 			System.out.println("(onUpdateUnity) vectorUnityNet ne contient pas l'id du model demandé");
 		}
 			
+		
+	}
+	
+	@Override
+	public void onSynchronised(NetDeleteSynchronised sync)
+	{
+		// réception de la liste des id de synchronisation de suppression
+		for(Integer i : sync.m_arrayId)
+		{
+			this.vectorUnity.remove(i.intValue());
+		}
+		
 		
 	}
 
@@ -914,7 +974,7 @@ public class EntityManager implements IBaseRavage,IEventCallBack,IRegionSelected
 	}
 	
 	// Class contenant le model gameplay du jeu
-	class DataGamePlay implements IBaseRavage
+	public class DataGamePlay implements IBaseRavage
 	{
 		private final int m_maxUnity = 128;
 		
@@ -1016,6 +1076,8 @@ public class EntityManager implements IBaseRavage,IEventCallBack,IRegionSelected
 			
 		}
 	}
+
+	
 
 	
 

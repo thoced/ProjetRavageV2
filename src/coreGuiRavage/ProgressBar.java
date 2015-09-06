@@ -40,7 +40,10 @@ public class ProgressBar extends Widget
 		((ProgressBarModel)this.m_model).m_timeValue = 0f; // remise à zero du timer
 	}
 
-	
+	public boolean isInAction()
+	{
+		return m_isActive;
+	}
 
 	@Override
 	public void update(Time deltaTime) 
@@ -52,13 +55,15 @@ public class ProgressBar extends Widget
 			
 			if(((ProgressBarModel)this.m_model).m_timeValue >= ((ProgressBarModel)this.m_model).m_timeEndProgress)
 			{
+				// on désactive le progress bar
+					m_isActive = false;
+					((ProgressBarModel)this.m_model).m_sizeValue = new Vector2f(0f,((ProgressBarModel)this.m_model).m_sizeValue.y);
+					((ProgressBarModel)this.m_model).m_timeValue = 0; // remise à zero du timer
 				// appel Call Back
 				if(m_listener != null)
 					m_listener.onActionProgressBar(this);
-				// on désactive le progress bar
-				m_isActive = false;
-				((ProgressBarModel)this.m_model).m_sizeValue = new Vector2f(0f,((ProgressBarModel)this.m_model).m_sizeValue.y);
-				((ProgressBarModel)this.m_model).m_timeValue = 0; // remise à zero du timer
+				
+				
 				
 				
 			}

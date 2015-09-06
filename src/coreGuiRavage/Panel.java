@@ -2,7 +2,10 @@ package coreGuiRavage;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
+import java.util.ListIterator;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 import javax.json.stream.JsonParser.Event;
 
@@ -33,6 +36,7 @@ import CoreTexturesManager.TexturesManager;
 	 
 	// différence entre la position du panel et la position du click
     private Vector2f m_diffPosClick;
+   
 	
 	public Panel(float x,float y,Vector2f size) throws TextureCreationException {
 		super();
@@ -47,6 +51,10 @@ import CoreTexturesManager.TexturesManager;
 	
 	public boolean onMouseMove(Vector2f position) 
 	{
+		// si le gui n'est pas dépacable
+		if(!this.isM_isMovable())
+			return false;
+		
 			boolean ret = false;
 			Vector2f p = this.m_model.m_position;
 			Vector2f s = this.m_model.m_size;
@@ -89,9 +97,9 @@ import CoreTexturesManager.TexturesManager;
 			// on modifie la posiiton pour la transformer en position relative
 			Vector2f posRelative = Vector2f.sub(position, p);
 			// appel au gui
-			 for(Gui gui : ((PanelModel)m_model).m_guis)
-				 gui.onMousePressed(posRelative, button);
 			
+				 for(Gui gui : ((PanelModel)m_model).m_guis)
+					 gui.onMousePressed(posRelative, button);
 			
 			this.getM_model().setPressed(true); // on indique au gui qu'un coli 
 			this.m_diffPosClick = Vector2f.sub(position, this.m_model.m_position);
@@ -112,7 +120,28 @@ import CoreTexturesManager.TexturesManager;
 	public void addWidget(Widget widget)
 	{
 		// ajout du widget dans le panel
+		
 		((PanelModel)this.m_model).m_guis.add(widget); 
+		
+	}
+
+	
+
+	@Override
+	public void removeAllWidget() {
+		// TODO Auto-generated method stub
+		super.removeAllWidget();
+		// suppression de tous les widget
+		((PanelModel)this.m_model).m_guis.clear();
+	}
+
+
+	@Override
+	public void removeWidget(Widget widget) {
+		// TODO Auto-generated method stub
+		super.removeWidget(widget);
+		// suppresion du widget
+		((PanelModel)this.m_model).m_guis.remove(widget);
 	}
 
 
@@ -140,10 +169,12 @@ import CoreTexturesManager.TexturesManager;
 	@Override
 	public void update(Time deltaTime) 
 	{
-		for(Gui g : ((PanelModel)this.m_model).m_guis)
-		{
-			g.update(deltaTime);
-		}
+		
+			for(Gui g : ((PanelModel)this.m_model).m_guis)
+			{
+				g.update(deltaTime);
+			}
+		
 		
 	}
 
@@ -162,14 +193,15 @@ import CoreTexturesManager.TexturesManager;
 class PanelModel extends Model
 {
 	// list des gui contenu dans le panel
-	List<Gui> m_guis;
+	//List<Gui> m_guis;
+	CopyOnWriteArrayList<Gui> m_guis;
 	
 	
 	public PanelModel(Vector2f posPanel,Vector2f size)
 	{
 		super(posPanel,size);
 		// instance de la liste
-		m_guis = new ArrayList<Gui>();
+		m_guis = new CopyOnWriteArrayList<Gui>();
 	}
 	
 	public void add(Gui g)

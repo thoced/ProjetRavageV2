@@ -208,9 +208,23 @@ public class NetManager implements IBaseRavage
 						callBackUpdate(update);
 						break;
 						
+			case SYNCHRONISED: 
+						NetDeleteSynchronised sync = (NetDeleteSynchronised)data;
+						callBackDeleteSynchronised(sync);
+						break;
+						
+						
 				
 										   	
 			default: break;
+		}
+	}
+	
+	private void callBackDeleteSynchronised(NetDeleteSynchronised sync)
+	{
+		for(INetManagerCallBack i : listCallBack)
+		{
+			i.onSynchronised(sync);
 		}
 	}
 	

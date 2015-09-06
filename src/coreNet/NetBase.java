@@ -9,7 +9,7 @@ import java.io.Serializable;
 
 public class NetBase implements Externalizable
 {
-	public static enum TYPE {HELLO,CREATE,UPDATE,DELETE};
+	public static enum TYPE {HELLO,CREATE,UPDATE,DELETE,SYNCHRONISED};
 	// type de message
 	protected TYPE typeMessage;
 	

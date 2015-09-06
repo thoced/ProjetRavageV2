@@ -69,7 +69,10 @@ public class ProgressBar extends Widget
 			}
 			else
 			{
-				
+				 // création de la couleur de progression
+				 int alpha = (int) ((255 / ((ProgressBarModel)this.m_model).m_timeEndProgress) * ((ProgressBarModel)this.m_model).m_timeValue);
+				 ((ProgressBarView)this.m_view).m_shape.setFillColor(new Color(128,128,128,alpha));
+				 // création de la valeur x de progression
 				 float x = (((ProgressBarModel)this.m_model).m_xValue / ((ProgressBarModel)this.m_model).m_timeEndProgress) * ((ProgressBarModel)this.m_model).m_timeValue;
 				 ((ProgressBarModel)this.m_model).m_sizeValue = new Vector2f(x, ((ProgressBarModel)this.m_model).m_sizeValue.y);
 			}

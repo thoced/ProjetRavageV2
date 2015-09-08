@@ -96,49 +96,54 @@ public class KnighController extends UnityBaseController
 			// on récupère l'objet enemy
 			UnityNetController enemy = EntityManager.getVectorUnityNet().get(this.getModel().getIdEnemy());
 			
-			if(enemy != null && this.getSequencePath() == ETAPE.NONE)
+			if(enemy != null)
 			{
-				if(enemy.getModel().getPosition().sub(this.getModel().getPosition()).length() > 2f)	
+				
+				if(this.getModel().getBody().getLinearVelocity().length() < 0.5f) // si la velocity est presque à 0 alors on pourra frapper
 				{
-					// 2) recheche d'une position libre
-					Vec2 posNear = new ChoosePosition().findPositionForFight(this, enemy);
-					//Vec2 posNear = enemy.getModel().getPositionNode();
-					// 3) on libère la derniere position réserve
-					/*if(this.nodeReserved != null)
-						this.nodeReserved.bookNode(this);
-					// 4) on réserve la node
-					this.nodeReserved = LevelManager.getLevel().getModel().bookNode((int)posNear.x, (int)posNear.y, this);*/
-					
-					if(this.getModel().getNodeReserved() != null)
-						ReservationManager.remove(this.getModel().getNodeReserved());
-					ReservationManager.add(posNear, this);
-					
-					// 5) on se déplace
-					Vec2 posFinal = posNear;
-					posFinal = posFinal.add(new Vec2(.5f,.5f));
-					Vec2 posEnemy = enemy.getModel().getPosition();
-					Vec2 dir = posEnemy.sub(posFinal);
-					dir.normalize();
-					EntityManager.computeDestination(this, posFinal, posNear, dir);
-					
-					
-				}
-				else
-				{
-					// si l'enemy est à porté
-					
-					// 1) on combat
-					System.out.println("LONGUEUR : " + enemy.getModel().getPosition().sub(this.getModel().getPosition()).length() );
-					this.getView().playAnimation(TYPE_ANIMATION.STRIKE);
-					// on envoie sur le réseau la frappe
-					NetDataUnity data = new NetDataUnity();			// creatin du netdataunity
-					data.setTypeMessage(NetBase.TYPE.UPDATE);		// on spécifie que c'est une update
-					this.getModel().setKnocking(true);				// on spécifie au modèle que nous sommes en train de frapper
-					this.getModel().setStreightStrike(10);			// on spécifie la force de frappe
-					this.prepareModelToNet();						// préparation du model pour l'envoi sur le réseau
-					data.setModel(this.getModel());					// placement du model dans le netdataunity
-					NetSendThread.push(data);						// envoi sur le réseau
-					
+				
+					if(enemy.getModel().getPosition().sub(this.getModel().getPosition()).length() > 2f)	
+					{
+						// 2) recheche d'une position libre
+						Vec2 posNear = new ChoosePosition().findPositionForFight(this, enemy);
+						//Vec2 posNear = enemy.getModel().getPositionNode();
+						// 3) on libère la derniere position réserve
+						/*if(this.nodeReserved != null)
+							this.nodeReserved.bookNode(this);
+						// 4) on réserve la node
+						this.nodeReserved = LevelManager.getLevel().getModel().bookNode((int)posNear.x, (int)posNear.y, this);*/
+						
+						if(this.getModel().getNodeReserved() != null)
+							ReservationManager.remove(this.getModel().getNodeReserved());
+						ReservationManager.add(posNear, this);
+						
+						// 5) on se déplace
+						Vec2 posFinal = posNear;
+						posFinal = posFinal.add(new Vec2(.5f,.5f));
+						Vec2 posEnemy = enemy.getModel().getPosition();
+						Vec2 dir = posEnemy.sub(posFinal);
+						dir.normalize();
+						EntityManager.computeDestination(this, posFinal, posNear, dir);
+						
+						
+					}
+					else
+					{
+						// si l'enemy est à porté
+						
+						// 1) on combat
+						System.out.println("LONGUEUR : " + enemy.getModel().getPosition().sub(this.getModel().getPosition()).length() );
+						this.getView().playAnimation(TYPE_ANIMATION.STRIKE);
+						// on envoie sur le réseau la frappe
+						NetDataUnity data = new NetDataUnity();			// creatin du netdataunity
+						data.setTypeMessage(NetBase.TYPE.UPDATE);		// on spécifie que c'est une update
+						this.getModel().setKnocking(true);				// on spécifie au modèle que nous sommes en train de frapper
+						this.getModel().setStreightStrike(10);			// on spécifie la force de frappe
+						this.prepareModelToNet();						// préparation du model pour l'envoi sur le réseau
+						data.setModel(this.getModel());					// placement du model dans le netdataunity
+						NetSendThread.push(data);						// envoi sur le réseau
+						
+					}
 				}
 				
 			}

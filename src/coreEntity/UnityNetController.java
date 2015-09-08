@@ -47,7 +47,9 @@ public class UnityNetController extends UnityBaseController
 		if(this.getModel().isKilled)
 		{
 			// on joue la mort
-			EntityManager.getVectorUnityNetKilled().add(this);
+			this.destroy();
+			EntityManager.getVectorUnityNet().remove(this.getModel().getId());
+			
 			// on ajoute un cadavre
 			BloodManager.addUnityKilled(this.getModel().getPosition(), this.getModel().getMyCamp());
 		}

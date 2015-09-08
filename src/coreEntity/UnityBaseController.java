@@ -122,6 +122,8 @@ public class UnityBaseController implements IBaseRavage, ICallBackAStar,
 		return true; // pas de node occupé
 	}
 
+	
+	
 	private void computeNextStep() // on récupère une étape de chemion
 	{
 		try {
@@ -146,7 +148,7 @@ public class UnityBaseController implements IBaseRavage, ICallBackAStar,
 			// modification de l'animation
 			this.getView().playAnimation(TYPE_ANIMATION.WALK);
 			// modifiation de l'etape en move
-			this.sequencePath = ETAPE.MOVE;
+			this.setSequence(ETAPE.MOVE);
 
 		} catch (IndexOutOfBoundsException iooe) {
 			this.getModel().setPaths(null);
@@ -164,7 +166,8 @@ public class UnityBaseController implements IBaseRavage, ICallBackAStar,
 	private void moveToNextStep() // déplacement jusqu'a la prochaine étape
 	{
 		Vec2 diff = vecStep.sub(this.getModel().getBody().getPosition());
-		if (diff.length() < 0.5f) {
+		if (diff.length() < 0.5f) 
+		{
 
 			// si c'est le dernier node, il faut déplacer l'unité jusque sa
 			// position réel finale
@@ -182,7 +185,7 @@ public class UnityBaseController implements IBaseRavage, ICallBackAStar,
 				// l'unité est arrivé sur une étape (step)
 				step = null;
 				this.getModel().getBody().setLinearVelocity(new Vec2(0f, 0f));
-				this.sequencePath = ETAPE.GETSTEP;
+				this.setSequence(ETAPE.GETSTEP);
 
 			}
 
@@ -206,19 +209,21 @@ public class UnityBaseController implements IBaseRavage, ICallBackAStar,
 		// incrémentation du temps écoulé pour les animations
 		this.getView().elapsedAnimationTime += deltaTime.asSeconds();
 
-		synchronized (lock) {
+		synchronized (lock) 
+		{
 
 			// on stoppe le tout
 			this.getModel().getBody().setLinearVelocity(new Vec2(0f, 0f));
 			// switch pour les mouvements
-			switch (sequencePath) {
+			switch (sequencePath) 
+			
+			{
 			case NONE:
 				this.computeRotation(this.getModel().dirFormation); // retourne// l'unité// en// formation
 				break;
 
 			case GETSTEP:
-				if (this.getModel().getPaths() != null) // récupère une étape de
-														// chemin
+				if (this.getModel().getPaths() != null) // récupère une étape de chemin
 					this.computeNextStep();
 				break;
 
@@ -264,7 +269,8 @@ public class UnityBaseController implements IBaseRavage, ICallBackAStar,
 	public void onCallsearchPath(Path finalPath) {
 		// réception du chemin calculé
 
-		synchronized (lock) {
+		synchronized (lock) 
+		{
 			this.getModel().setIndicePaths(0);
 			step = null;
 			vecStep = null;
@@ -308,7 +314,9 @@ public class UnityBaseController implements IBaseRavage, ICallBackAStar,
 			}
 
 			// suppresin de l'unité dans le vecteur
-			EntityManager.getVectorUnityKilled().add(this);
+			this.destroy();
+			EntityManager.getVectorUnity().remove(this.getModel().getId());
+			
 
 			// ensutie il faut jouer la mort en view, on place un cadavre
 			BloodManager.addUnityKilled(this.getModel().getPosition(), this.getModel().getMyCamp());
@@ -320,8 +328,25 @@ public class UnityBaseController implements IBaseRavage, ICallBackAStar,
 		return sequencePath;
 	}
 
-	public void setSequencePath(ETAPE sequencePath) {
+	public void setSequence(ETAPE sequencePath)
+{
 		this.sequencePath = sequencePath;
+		
+		switch(this.sequencePath)
+		{
+		case NONE : this.getModel().getBody().setLinearVelocity(new Vec2(0f,0f));
+					this.getView().playAnimation(TYPE_ANIMATION.NON);
+					this.getModel().setPositionNodeFinal(this.getModel().getPositionNode());
+					this.getModel().setPaths(null); // on force à nul pour dire qu'il n'y a plus de chemin
+					break;
+					
+		case MOVE : this.getView().playAnimation(TYPE_ANIMATION.WALK);
+					break;
+					
+		case GETSTEP: this.getView().playAnimation(TYPE_ANIMATION.WALK);
+					break;
+		
+		}
 	}
 
 	@Override

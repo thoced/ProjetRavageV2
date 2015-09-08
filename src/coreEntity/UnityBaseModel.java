@@ -83,6 +83,9 @@ public class UnityBaseModel implements Externalizable
 	
 	protected NodeReserved nodeReserved = null; // node réservé par une unité alliée
 	
+	// test
+	protected boolean isOneContact = false;
+	
 	
 	public UnityBaseModel() {
 		super();
@@ -128,6 +131,7 @@ public class UnityBaseModel implements Externalizable
 		clone.setEnergy(this.getEnergy());
 		clone.setEnergyMax(this.getEnergyMax());
 		clone.setStreightStrike(this.getStreightStrike());
+		clone.setOneContact(this.isOneContact());
 		return clone;
 	}
 
@@ -169,6 +173,16 @@ public class UnityBaseModel implements Externalizable
 	}
 	
 	
+
+	public boolean isOneContact() {
+		return isOneContact;
+	}
+
+
+	public void setOneContact(boolean isOneContact) {
+		this.isOneContact = isOneContact;
+	}
+
 
 	public int getEnergyMax() {
 		return energyMax;
@@ -535,7 +549,8 @@ public class UnityBaseModel implements Externalizable
 		
 		// Position
 		this.origineSprite = new Vector2f(arg0.readFloat(),arg0.readFloat());
-		
+		// one contact ?
+		this.isOneContact = arg0.readBoolean();
 	}
 
 
@@ -681,6 +696,9 @@ public class UnityBaseModel implements Externalizable
 			out.writeFloat(0f);
 			out.writeFloat(0f);
 		}
+		
+		// one contact ?
+		out.writeBoolean(this.isOneContact);
 		
 	}
 

@@ -235,16 +235,13 @@ public class EntityManager implements IBaseRavage,IEventCallBack,IRegionSelected
 		
 		
 		// on regarde si il n'existe pas d'unité à supprimer dans le vecteur unitykilled
-		if(this.vectorUnityKilled.size() > 0)
+		/*if(this.vectorUnityKilled.size() > 0)
 		{
-			
-			
-			
 			
 			for(UnityBaseController u : this.vectorUnityKilled)
 			{
 				// mise à jour de la liste des id à supprimer (pour la synchronisation
-				queueIdDelete.add(u.getModel().getId());
+				//queueIdDelete.add(u.getModel().getId());
 				
 				// destruction propre de l'objet
 				u.destroy();
@@ -290,8 +287,9 @@ public class EntityManager implements IBaseRavage,IEventCallBack,IRegionSelected
 			}
 		
 		
-	
+	*/
 	}
+	
 
 	@Override
 	public void destroy() {
@@ -927,7 +925,7 @@ public class EntityManager implements IBaseRavage,IEventCallBack,IRegionSelected
 			// on initialise le model
 			controller.getModel().initModel(controller);
 			controller.getModel().setPlayer(false); // c'est un model qui n'est pas controllé par le joueur
-			controller.setSequencePath(ETAPE.GETSTEP); // on spécifie au controller la sequence à adopter pourl a recheche de chemin
+			controller.setSequence(ETAPE.GETSTEP); // on spécifie au controller la sequence à adopter pourl a recheche de chemin
 			
 			// ----------------------------------------------------------------------------------------
 			// vérification de la mort
@@ -935,7 +933,7 @@ public class EntityManager implements IBaseRavage,IEventCallBack,IRegionSelected
 		}
 		else
 		{
-			//this.onCreateUnity(unity); // si l'unité n'avait pas été créer (suite probleme réseau), alors on crée l'unité enemy
+			this.onCreateUnity(unity); // si l'unité n'avait pas été créer (suite probleme réseau), alors on crée l'unité enemy
 			System.out.println("(onUpdateUnity) vectorUnityNet ne contient pas l'id du model demandé");
 		}
 			
@@ -948,7 +946,9 @@ public class EntityManager implements IBaseRavage,IEventCallBack,IRegionSelected
 		// réception de la liste des id de synchronisation de suppression
 		for(Integer i : sync.m_arrayId)
 		{
-			this.vectorUnity.remove(i.intValue());
+			
+			this.vectorUnity.get(i.intValue()).destroy(); // destruction du physic
+			this.vectorUnity.remove(i.intValue()); // on enlève du systeme.
 		}
 		
 		

@@ -10,6 +10,7 @@ import org.jbox2d.dynamics.joints.JointEdge;
 
 import coreEntity.UnityBaseController;
 import coreEntity.UnityNetController;
+import coreEntity.UnityBaseController.ETAPE;
 
 public class ContactManager implements ContactListener {
 
@@ -42,6 +43,10 @@ public class ContactManager implements ContactListener {
 			
 			((UnityBaseController)m_userDataA).getModel().setSpeed(6f);
 			((UnityBaseController)m_userDataB).getModel().setSpeed(6f);
+			
+			// on enleve le contact
+			((UnityBaseController)m_userDataA).getModel().setOneContact(false);
+			((UnityBaseController)m_userDataB).getModel().setOneContact(false);
 		}
 		catch(NullPointerException npe)
 		{
@@ -62,7 +67,7 @@ public class ContactManager implements ContactListener {
 	public void preSolve(Contact l_contact, Manifold arg1)
 	{
 		// désactiovation du contact
-		l_contact.setEnabled(false);
+		//l_contact.setEnabled(false);
 		
 		// réception du bodyA et bodyB
 		Body m_bodyA = l_contact.getFixtureA().getBody();
@@ -80,21 +85,30 @@ public class ContactManager implements ContactListener {
 				return;
 			
 			// si il s'agit de deux unités différentse, on active le contact
-			if(m_userDataA.getClass() != m_userDataB.getClass())
+			if(m_userDataA.getClass() != m_userDataB.getClass() && ( !((UnityBaseController)m_userDataB).getModel().isOneContact() || !((UnityBaseController)m_userDataA).getModel().isOneContact()) )
 			{
+				
+				// on précise aux unités qu'il y a un contact
+				((UnityBaseController)m_userDataB).getModel().setOneContact(true);
+				((UnityBaseController)m_userDataA).getModel().setOneContact(true);
 				// on active le contact
 				l_contact.setEnabled(true);
-				/*// on arrête sur place l'unité
-				m_bodyA.setLinearVelocity(ZERO_VECTOR);
-			    m_bodyB.setLinearVelocity(ZERO_VECTOR);*/
+				// on arrête sur place l'unité
+				//m_bodyA.setLinearVelocity(ZERO_VECTOR);
+			    //m_bodyB.setLinearVelocity(ZERO_VECTOR);
+			    ((UnityBaseController)m_userDataA).setSequence(ETAPE.NONE);
+			    ((UnityBaseController)m_userDataB).setSequence(ETAPE.NONE);
 				// on attribue l'enemy
 				if(m_userDataA.getClass() == UnityNetController.class)
 				{
 					((UnityBaseController)m_userDataB).getModel().setIdEnemy(((UnityNetController)m_userDataA).getModel().getId());
+				//	((UnityBaseController)m_userDataB).setSequencePath(ETAPE.NONE);
+					
 				}
 				if(m_userDataB.getClass() == UnityNetController.class)
 				{
 					((UnityBaseController)m_userDataA).getModel().setIdEnemy(((UnityNetController)m_userDataB).getModel().getId());
+					//((UnityBaseController)m_userDataA).setSequencePath(ETAPE.NONE);
 				}
 				
 				

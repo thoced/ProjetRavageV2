@@ -154,7 +154,7 @@ public class DrawableUnityManager implements IBaseRavage, Drawable
 			{
 				// pour chaque non player on vérifie la distance avec les autres
 				Collection<UnityBaseController>  tempCollection = EntityManager.getVectorUnity().values();
-				// on récupère un intérateur
+							// on récupère un intérateur
 				Iterator<UnityBaseController> other = tempCollection.iterator();
 				
 				while(other.hasNext())

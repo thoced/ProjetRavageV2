@@ -32,14 +32,14 @@ public class UnityNetController extends UnityBaseController
 		if(this.getModel().isKnocking())
 		{
 			// on joue l'animation
-			this.getView().playAnimation(TYPE_ANIMATION.STRIKE);
+			//this.strike();
 			// on empèche de frapper une seconde fois
-			this.getModel().setKnocking(false);
+			//this.getModel().setKnocking(false);
 			// on frappe réelleemnt l'enemy
-			UnityBaseController u = EntityManager.getVectorUnity().get(this.getModel().getIdEnemy());
+			/*UnityBaseController u = EntityManager.getVectorUnity().get(this.getModel().getIdEnemy());
 			System.out.println("Enemy : " + u);
 			if(u!=null)
-				u.hit(this.getModel().getStreightStrike());
+				u.hit(this.getModel().getStreightStrike());*/
 			
 			
 		}
@@ -56,6 +56,20 @@ public class UnityNetController extends UnityBaseController
 		
 		
 		
+	}
+	
+	
+
+	@Override
+	public void strike() {
+		// TODO Auto-generated method stub
+		super.strike();
+		
+		// on frappe réelleemnt l'enemy
+		UnityBaseController u = EntityManager.getVectorUnity().get(this.getModel().getIdEnemy());
+		System.out.println("Enemy : " + u);
+		if(u!=null)
+		u.hit(this.getModel().getStreightStrike());
 	}
 
 	@Override

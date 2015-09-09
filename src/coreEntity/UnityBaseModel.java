@@ -66,7 +66,7 @@ public class UnityBaseModel implements Externalizable
 	
 	protected transient  Object lock;
 	
-	protected Path paths ;
+	protected Path paths = null;
 	protected  int  indicePaths = 0;
 
 	//est on mort ?
@@ -154,7 +154,7 @@ public class UnityBaseModel implements Externalizable
 				// creation du body
 				this.setBody(PhysicWorldManager.getWorld().createBody(bdef));	
 				Shape shape = new CircleShape();
-				shape.m_radius = 0.55f;
+				shape.m_radius = 0.45f;
 				FixtureDef fDef = new FixtureDef();
 				fDef.shape = shape;
 				fDef.density = 0f;
@@ -166,6 +166,8 @@ public class UnityBaseModel implements Externalizable
 				this.body.setTransform(this.position, this.rotation);
 				// création du lock
 				lock = new Object();
+				
+			
 				// on replace le path et l'indice du path à 0 pour éviter les téléportation réseau
 				//this.setIndicePaths(0); // positionnement à 0 
 				//this.setPosition(new Vec2(this.getPaths().getStep(0).getX(),this.getPaths().getStep(0).getY())); // positionnement de la position à 0
@@ -522,10 +524,14 @@ public class UnityBaseModel implements Externalizable
 		
 		// Paths
 		int l = arg0.readInt();
-		this.paths = new Path();
-		for(int i=0;i<l;i++)
-			this.paths.appendStep(arg0.readInt(), arg0.readInt());
-				
+		if(l > 0)
+		{
+			this.paths = new Path();
+			for(int i=0;i<l;i++)
+				this.paths.appendStep(arg0.readInt(), arg0.readInt());
+		}
+		else
+			this.paths = null;
 		// Indice path
 		this.indicePaths = arg0.readInt();
 		// Is Killed

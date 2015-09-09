@@ -88,21 +88,38 @@ public class KnighController extends UnityBaseController
 		// mise à jour du temps écoulé pour l'attaque
 		elapsedTimeAttack += deltaTime.asSeconds();
 		
-		// code de l'attaque
-		// 1) un ennemi est il attribué ?
-		if(elapsedTimeAttack > 2f)  // toutes les deux secondes
+		if(elapsedTimeAttack > 2f)
 		{
 			
-			// on récupère l'objet enemy
-			UnityNetController enemy = EntityManager.getVectorUnityNet().get(this.getModel().getIdEnemy());
-			
-			if(enemy != null)
+			if(this.getModel().getIdEnemy() != -1 && m_isLastStep)
 			{
+				// récupération de l'objet enemy
+				UnityBaseController enemy = EntityManager.getVectorUnityNet().get(this.getModel().getIdEnemy());
 				
-				if(this.getModel().getBody().getLinearVelocity().length() < 0.5f) // si la velocity est presque à 0 alors on pourra frapper
+				if(enemy != null)
 				{
-				
-					if(enemy.getModel().getPosition().sub(this.getModel().getPosition()).length() > 2f)	
+					Vec2 v = enemy.getModel().getPosition().sub(this.getModel().getPosition());
+					if(v.length() < 2f)
+					{
+						this.strike();
+						v.normalize();
+						this.computeRotation(v);
+						
+						NetDataUnity data = new NetDataUnity();			// creatin du netdataunity
+						data.setTypeMessage(NetBase.TYPE.UPDATE);		// on spécifie que c'est une update
+						this.getModel().setKnocking(true);				// on spécifie au modèle que nous sommes en train de frapper
+						this.getModel().setStreightStrike(10);			// on spécifie la force de frappe
+						this.prepareModelToNet();						// préparation du model pour l'envoi sur le réseau
+						try
+						{
+							data.setModel(this.getModel().clone());
+						} catch (CloneNotSupportedException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}					// placement du model dans le netdataunity
+						NetSendThread.push(data);						// envoi sur le réseau
+					}
+					else
 					{
 						// 2) recheche d'une position libre
 						Vec2 posNear = new ChoosePosition().findPositionForFight(this, enemy);
@@ -124,39 +141,20 @@ public class KnighController extends UnityBaseController
 						Vec2 dir = posEnemy.sub(posFinal);
 						dir.normalize();
 						EntityManager.computeDestination(this, posFinal, posNear, dir);
-						
-						
 					}
-					else
-					{
-						// si l'enemy est à porté
-						
-						// 1) on combat
-						System.out.println("LONGUEUR : " + enemy.getModel().getPosition().sub(this.getModel().getPosition()).length() );
-						this.getView().playAnimation(TYPE_ANIMATION.STRIKE);
-						// on envoie sur le réseau la frappe
-						NetDataUnity data = new NetDataUnity();			// creatin du netdataunity
-						data.setTypeMessage(NetBase.TYPE.UPDATE);		// on spécifie que c'est une update
-						this.getModel().setKnocking(true);				// on spécifie au modèle que nous sommes en train de frapper
-						this.getModel().setStreightStrike(10);			// on spécifie la force de frappe
-						this.prepareModelToNet();						// préparation du model pour l'envoi sur le réseau
-						data.setModel(this.getModel());					// placement du model dans le netdataunity
-						NetSendThread.push(data);						// envoi sur le réseau
-						
-					}
+					
+				}
+				{
+					this.getModel().setIdEnemy(-1);
 				}
 				
-			}
-			else
-			{
-				// enemy == null ??
-				// alor on indique que l'id enemy est -1
-				this.getModel().setIdEnemy(-1);
+				
 			}
 			
-			// mise à zero du compteur
+		// remise à zero du temps d'attaque
 			elapsedTimeAttack = 0f;
 		}
+		
 		
 		
 	}
@@ -165,18 +163,6 @@ public class KnighController extends UnityBaseController
 	public boolean onKeyboard(KeyEvent keyboardEvent) {
 		// TODO Auto-generated method stub
 		super.onKeyboard(keyboardEvent);
-		
-		if(keyboardEvent.key == Key.W)
-		{
-			this.getView().playAnimation(TYPE_ANIMATION.WALK);
-			return true;
-		}
-		
-		if(keyboardEvent.key == Key.S)
-		{
-			this.getView().playAnimation(TYPE_ANIMATION.STRIKE);
-			return true;
-		}
 		
 		return false;
 		

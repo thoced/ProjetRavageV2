@@ -47,6 +47,8 @@ public class ContactManager implements ContactListener {
 			// on enleve le contact
 			((UnityBaseController)m_userDataA).getModel().setOneContact(false);
 			((UnityBaseController)m_userDataB).getModel().setOneContact(false);
+			
+			
 		}
 		catch(NullPointerException npe)
 		{
@@ -60,14 +62,13 @@ public class ContactManager implements ContactListener {
 		// TODO Auto-generated method stub
 		// réception du bodyA et bodyB
 		
-		
 	}
 
 	@Override
 	public void preSolve(Contact l_contact, Manifold arg1)
 	{
 		// désactiovation du contact
-		//l_contact.setEnabled(false);
+		l_contact.setEnabled(true);
 		
 		// réception du bodyA et bodyB
 		Body m_bodyA = l_contact.getFixtureA().getBody();
@@ -77,12 +78,16 @@ public class ContactManager implements ContactListener {
 		Object m_userDataB = m_bodyB.getUserData();
 		
 		
+		
 		try
 		{
 			
 			// il s'agit d'un contact avec autre chose ques des unités, on sort
 			if(m_userDataA.getClass() == String.class  || m_userDataB.getClass() == String.class)	
 				return;
+			
+			
+			
 			
 			// si il s'agit de deux unités différentse, on active le contact
 			if(m_userDataA.getClass() != m_userDataB.getClass() && ( !((UnityBaseController)m_userDataB).getModel().isOneContact() || !((UnityBaseController)m_userDataA).getModel().isOneContact()) )
@@ -93,11 +98,14 @@ public class ContactManager implements ContactListener {
 				((UnityBaseController)m_userDataA).getModel().setOneContact(true);
 				// on active le contact
 				l_contact.setEnabled(true);
+			
+				
+				
 				// on arrête sur place l'unité
 				//m_bodyA.setLinearVelocity(ZERO_VECTOR);
 			    //m_bodyB.setLinearVelocity(ZERO_VECTOR);
-			    ((UnityBaseController)m_userDataA).setSequence(ETAPE.NONE);
-			    ((UnityBaseController)m_userDataB).setSequence(ETAPE.NONE);
+			   // ((UnityBaseController)m_userDataA).setSequence(ETAPE.NONE);
+			   // ((UnityBaseController)m_userDataB).setSequence(ETAPE.NONE);
 				// on attribue l'enemy
 				if(m_userDataA.getClass() == UnityNetController.class)
 				{

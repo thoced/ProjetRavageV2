@@ -609,12 +609,12 @@ public class EntityManager implements IBaseRavage,IEventCallBack,IRegionSelected
 			u.getModel().setIdEnemy(-1);
 			
 			// on calcul sa destination
-			Vec2 positionFinalAdd = positionFinal.add(offset.add(dir.negate().mul(cptLine * 1.5f )));
+			Vec2 positionFinalAdd = positionFinal.add(offset.add(dir.negate().mul(cptLine * 2f )));
 			Vec2 posNodeFinal = new Vec2();
 			posNodeFinal.x = (int)positionFinalAdd.x;
 			posNodeFinal.y = (int)positionFinalAdd.y;
 			// ajout du vecteur skew à l'offset
-			offset = offset.add(skew.mul(1.5f));
+			offset = offset.add(skew.mul(2f));
 			
 			if(this.computeDestination(u, positionFinalAdd, posNodeFinal, dir) == false)
 			{
@@ -925,7 +925,12 @@ public class EntityManager implements IBaseRavage,IEventCallBack,IRegionSelected
 			// on initialise le model
 			controller.getModel().initModel(controller);
 			controller.getModel().setPlayer(false); // c'est un model qui n'est pas controllé par le joueur
-			controller.setSequence(ETAPE.GETSTEP); // on spécifie au controller la sequence à adopter pourl a recheche de chemin
+			
+			
+			if(controller.getModel().getPaths() != null && controller.getModel().getPaths().getLength() > 0)
+				controller.move();
+			else if(controller.getModel().isKnocking())
+					controller.strike();
 			
 			// ----------------------------------------------------------------------------------------
 			// vérification de la mort

@@ -47,12 +47,20 @@ public class UnityBaseController implements IBaseRavage, ICallBackAStar,
 
 	protected Object lock;
 
-	protected ETAPE sequencePath = ETAPE.NONE;
+	protected ETAPE m_sequencePath = ETAPE.NONE;
 
 	protected Node nodeTake = null; // node pris lors d'un déplacement
+	
+	protected boolean m_isOnNewNextStep = false;
+	
+	protected boolean	 m_isLastStep = true;
+	
+	protected Vec2	  m_nextStep;
+	
+	
 
 	public enum ETAPE {
-		GETSTEP, MOVE, NONE
+		 MOVE, STRIKE,NONE
 	};
 
 	public enum TYPEUNITY {
@@ -126,118 +134,135 @@ public class UnityBaseController implements IBaseRavage, ICallBackAStar,
 	
 	private void computeNextStep() // on récupère une étape de chemion
 	{
-		try {
-			step = this.getModel().getPaths()
-					.getStep(this.getModel().getIndicePathsAndIncrement());
-			// on vérifie si le node n'est pas occupé
-			// if(this.checkNodeFree() != true)
-			// return;
-
-			// calcul du vecteur de direction
-			vecStep = new Vec2(step.getX(), step.getY());
-			// ajout du 0.5 pour placer l'unité au centre du node
-			vecStep = vecStep.add(new Vec2(.5f, .5f));
-
-			// soustraction pour déterminer le vecteur de direction +
-			// normalisation
-			dir = vecStep.sub(this.getModel().getBody().getPosition());
-			dir.normalize();
-			// déplacement
-			this.getModel().getBody()
-					.setLinearVelocity(dir.mul(this.getModel().getSpeed()));
-			// modification de l'animation
-			this.getView().playAnimation(TYPE_ANIMATION.WALK);
-			// modifiation de l'etape en move
-			this.setSequence(ETAPE.MOVE);
-
-		} catch (IndexOutOfBoundsException iooe) {
-			this.getModel().setPaths(null);
-			this.getModel().getBody().setLinearVelocity(new Vec2(0, 0));
-			this.getView().playAnimation(TYPE_ANIMATION.NON);
-			this.sequencePath = ETAPE.NONE;
-			nodeTake = LevelManager
-					.getLevel()
-					.getModel()
-					.takeNode((int) this.getModel().getPositionNode().x,
-							(int) this.getModel().getPositionNode().y, this);
-		}
+		
 	}
 
 	private void moveToNextStep() // déplacement jusqu'a la prochaine étape
 	{
-		Vec2 diff = vecStep.sub(this.getModel().getBody().getPosition());
-		if (diff.length() < 0.5f) 
+		
+	}
+	
+	public void move()
+	{
+		this.setSequence(ETAPE.MOVE);
+		m_isOnNewNextStep = true;
+		m_isLastStep = false;
+		this.getView().playAnimation(TYPE_ANIMATION.WALK);
+	}
+	
+	public void stop()
+	{
+		this.getModel().getBody().setLinearVelocity(new Vec2(0f,0f));
+		if(m_isLastStep)
 		{
-
-			// si c'est le dernier node, il faut déplacer l'unité jusque sa
-			// position réel finale
-			if (this.getModel().getPaths().getLength() == this.getModel().getIndicePaths()) {
-				vecStep = this.getModel().getPositionlFinal();
-				Vec2 dir = vecStep.sub(this.getModel().getBody().getPosition());
-				dir.normalize();
-
-				// déplacement
-				this.getModel().getBody()
-						.setLinearVelocity(dir.mul(this.getModel().getSpeed()));
-				this.getModel().getIndicePathsAndIncrement();
-
-			} else {
-				// l'unité est arrivé sur une étape (step)
-				step = null;
-				this.getModel().getBody().setLinearVelocity(new Vec2(0f, 0f));
-				this.setSequence(ETAPE.GETSTEP);
-
-			}
-
-		} else {
-			// l'unité n'est pas encore arrivée sur une étape (step)
-			dir = vecStep.sub(this.getModel().getBody().getPosition());
-
-			dir.normalize();
-
-			this.computeRotation(dir); // calcul de la rotation
-
-			this.getModel()
-					.getBody()
-					.setLinearVelocity(this.dir.mul(this.getModel().getSpeed()));
-
+			this.getModel().setPaths(null);
+			this.setSequence(ETAPE.NONE);
+			this.getView().playAnimation(TYPE_ANIMATION.NON);
 		}
 	}
+	
+	public void strike()
+	{
+		this.setSequence(ETAPE.STRIKE);
+		this.getView().playAnimation(TYPE_ANIMATION.STRIKE);
+		
+	}
+	
+	public void updateMove()
+	{	
+		try
+		{
+			
+			if(m_isOnNewNextStep && !m_isLastStep)
+			{
+				m_nextStep = this.getNextStep();
+				m_isOnNewNextStep = false;
+			}
+			else
+			{
+				if(m_nextStep != null)
+				{
+					Vec2 dirStep = m_nextStep.sub(this.getModel().getPosition());
+					dirStep.normalize();
+					Vec2 velocity = dirStep.mul(this.getModel().getSpeed());
+					this.getModel().getBody().setLinearVelocity(velocity);
+					
+					// calcul la rotation
+					this.computeRotation(dirStep);
+					
+					if(this.getModel().getPosition().sub(m_nextStep).length() < 0.5f)
+					{
+						m_isOnNewNextStep = true;
+						this.stop();
+					}
+				}
+					
+	
+			}
+		}
+		catch(LastStepException lse)
+		{
+			m_isLastStep = true;
+		}
+	}
+	
+	// -------------------------------------------------------
+	// récupère la prochaine position dans le chemin déterminé
+	// retourne un VEC2
+	// lance une exception si c'est la dernière destination avec la position finale
+	//
+	// -------------------------------------------------------
+	
+	
+	private Vec2 getNextStep() throws LastStepException
+	{
+		if(this.getModel().getPaths() != null)
+		{
+			if(this.getModel().getIndicePaths() < this.getModel().getPaths().getLength())
+			{
+				Step stepPath = this.getModel().getPaths().getStep(this.getModel().getIndicePathsAndIncrement());
+				Vec2 step = new Vec2(stepPath.getX(),stepPath.getY());
+				step = step.add(new Vec2(0.5f,0.5f));
+				return step;
+			}
+			else
+			{
+				
+				throw new LastStepException(this.getModel().getPositionlFinal());
+			}
+		}
+		
+		return null;
+		
+	}
+	
+	
+	
+	
 
 	@Override
 	public void update(Time deltaTime) {
 		// incrémentation du temps écoulé pour les animations
 		this.getView().elapsedAnimationTime += deltaTime.asSeconds();
-
-		synchronized (lock) 
+		
+		// arret constant de la velocity
+		this.getModel().getBody().setLinearVelocity(new Vec2(0f,0f));
+		
+		switch(m_sequencePath)
 		{
-
-			// on stoppe le tout
-			this.getModel().getBody().setLinearVelocity(new Vec2(0f, 0f));
-			// switch pour les mouvements
-			switch (sequencePath) 
+			case NONE: this.computeRotation(this.getModel().getDirFormation());break;
 			
-			{
-			case NONE:
-				this.computeRotation(this.getModel().dirFormation); // retourne// l'unité// en// formation
-				break;
-
-			case GETSTEP:
-				if (this.getModel().getPaths() != null) // récupère une étape de chemin
-					this.computeNextStep();
-				break;
-
-			case MOVE:
-				this.moveToNextStep();
-				break; // déplacement l'unité
-
-			default:
-				this.moveToNextStep();
-				break;
-
-			}
+			
+			case MOVE: this.updateMove();break;
+			
+			case STRIKE: break;
+			
+			
+			
+			
 		}
-
+		
+		
 	}
 
 	protected float lerp(float value, float start, float end) {
@@ -272,10 +297,8 @@ public class UnityBaseController implements IBaseRavage, ICallBackAStar,
 		synchronized (lock) 
 		{
 			this.getModel().setIndicePaths(0);
-			step = null;
-			vecStep = null;
 			this.getModel().setPaths(finalPath);
-			this.sequencePath = ETAPE.GETSTEP;
+			this.move();
 
 			// emission sur le réseau
 			NetDataUnity data = new NetDataUnity();
@@ -325,28 +348,12 @@ public class UnityBaseController implements IBaseRavage, ICallBackAStar,
 	}
 
 	public ETAPE getSequencePath() {
-		return sequencePath;
+		return m_sequencePath;
 	}
 
 	public void setSequence(ETAPE sequencePath)
-{
-		this.sequencePath = sequencePath;
-		
-		switch(this.sequencePath)
-		{
-		case NONE : this.getModel().getBody().setLinearVelocity(new Vec2(0f,0f));
-					this.getView().playAnimation(TYPE_ANIMATION.NON);
-					this.getModel().setPositionNodeFinal(this.getModel().getPositionNode());
-					this.getModel().setPaths(null); // on force à nul pour dire qu'il n'y a plus de chemin
-					break;
-					
-		case MOVE : this.getView().playAnimation(TYPE_ANIMATION.WALK);
-					break;
-					
-		case GETSTEP: this.getView().playAnimation(TYPE_ANIMATION.WALK);
-					break;
-		
-		}
+	{
+		m_sequencePath = sequencePath;
 	}
 
 	@Override
@@ -404,7 +411,27 @@ public class UnityBaseController implements IBaseRavage, ICallBackAStar,
 		
 		
 	}
+	
+	public class LastStepException extends Exception
+	{
+		private Vec2 m_lastStep;
 
+		public LastStepException(Vec2 m_lastStep)
+		{
+			this.m_lastStep = m_lastStep;
+		}
+		
+		public Vec2 getLastStep() {
+			return m_lastStep;
+		}
+
+		public void setLastStep(Vec2 m_lastStep) {
+			this.m_lastStep = m_lastStep;
+		}
+		
+		
+	}
+	
 
 
 

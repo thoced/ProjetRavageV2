@@ -98,12 +98,14 @@ public class KnighController extends UnityBaseController
 				
 				if(enemy != null)
 				{
-					Vec2 v = enemy.getModel().getPosition().sub(this.getModel().getPosition());
-					if(v.length() < 2f)
+					this.m_dirEnemy = enemy.getModel().getPosition().sub(this.getModel().getPosition());
+					
+					if(this.m_dirEnemy.length() < 2f)
 					{
+						
+						
 						this.strike();
-						v.normalize();
-						this.computeRotation(v);
+						
 						
 						NetDataUnity data = new NetDataUnity();			// creatin du netdataunity
 						data.setTypeMessage(NetBase.TYPE.UPDATE);		// on spécifie que c'est une update

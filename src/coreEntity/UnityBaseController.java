@@ -57,6 +57,8 @@ public class UnityBaseController implements IBaseRavage, ICallBackAStar,
 	
 	protected Vec2	  m_nextStep;
 	
+	protected Vec2	  m_dirEnemy;
+	
 	
 
 	public enum ETAPE {
@@ -64,7 +66,7 @@ public class UnityBaseController implements IBaseRavage, ICallBackAStar,
 	};
 
 	public enum TYPEUNITY {
-		KNIGHT
+		KNIGHT,BUCHE,PIQUIER,ESCRIME,ARCHER,CATAPULTE
 	};
 
 	public UnityBaseController() {
@@ -255,10 +257,14 @@ public class UnityBaseController implements IBaseRavage, ICallBackAStar,
 			
 			case MOVE: this.updateMove();break;
 			
-			case STRIKE: break;
-			
-			
-			
+			case STRIKE:	
+							if(m_dirEnemy != null)
+							{
+							Vec2 d = m_dirEnemy;
+							d.normalize();
+							this.computeRotation(d);
+							}
+							break;
 			
 		}
 		

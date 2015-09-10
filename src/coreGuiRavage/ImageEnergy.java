@@ -6,6 +6,7 @@ import org.jsfml.graphics.IntRect;
 import org.jsfml.graphics.RectangleShape;
 import org.jsfml.graphics.RenderStates;
 import org.jsfml.graphics.RenderTarget;
+import org.jsfml.graphics.Sprite;
 import org.jsfml.graphics.Texture;
 import org.jsfml.system.Time;
 import org.jsfml.system.Vector2f;
@@ -18,13 +19,20 @@ public class ImageEnergy extends Image
 
 	// parent unity
 	private UnityBaseController m_unity;
-
 	
-	public ImageEnergy(UnityBaseController unity,Vector2f position) 
+	// Panel container
+	private Panel m_container;
+	
+	public ImageEnergy(UnityBaseController unity,Vector2f position,Texture texture,Panel container) 
 	{
 		super((Texture)unity.getView().getSprite().getTexture(),unity.getModel().getAnimations().getInd(0), position);
+		// parent container
+		m_container = container;
 		// TODO Auto-generated constructor stub
-		this.m_view = new ImageEnergyView((Texture)unity.getView().getSprite().getTexture(),unity.getModel().getAnimations().getInd(0),position);
+		// création du intrect en fonction de l'unité à afficher
+		int indIntRect = unity.getModel().getIdType().ordinal();
+		IntRect intRect = new IntRect(indIntRect * 32,0,32,32);
+		this.m_view = new ImageEnergyView((Texture)texture,intRect,position);
 		m_unity = unity;
 	
 		
@@ -44,7 +52,11 @@ public class ImageEnergy extends Image
 		// placementd de la couleur
 		((ImageEnergyView)this.m_view).m_shape.setFillColor(new Color(r,g,0));
 		// positionnement de la grandeur de l'energie
-		((ImageEnergyView)this.m_view).m_shape.setSize(new Vector2f((24f / m_unity.getModel().getEnergyMax()) * m_unity.getModel().getEnergy(),2f));			
+		((ImageEnergyView)this.m_view).m_shape.setSize(new Vector2f((24f / m_unity.getModel().getEnergyMax()) * m_unity.getModel().getEnergy(),2f));	
+		
+		if(m_unity.getModel().getEnergy() <= 0)
+			m_container.removeWidget(this);
+		
 	}
 
 
@@ -76,11 +88,11 @@ public class ImageEnergy extends Image
 		@Override
 		public void draw(RenderTarget render, RenderStates state) 
 		{
-		
+			super.draw(render, state);
 			// affichage
 			render.draw(m_shape);
 			
-			super.draw(render, state);
+		
 			
 		}
 		

@@ -414,7 +414,7 @@ public class EntityManager implements IBaseRavage,IEventCallBack,IRegionSelected
 			knight.getModel().setSpeed(6f);
 			knight.getModel().setId((EntityManager.getNewIdUnity()));
 			knight.getModel().setMyCamp(EntityManager.getCampSelected());
-			knight.getModel().setIdType(TYPEUNITY.KNIGHT);
+			knight.getModel().setIdType(TYPEUNITY.PIQUIER );
 			knight.getModel().setPlayer(true); // c'est un model controllé par le joueur
 			knight.getModel().initModel(knight);
 			knight.init();

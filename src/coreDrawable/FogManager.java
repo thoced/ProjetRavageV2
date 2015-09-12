@@ -1,0 +1,198 @@
+package coreDrawable;
+
+import java.util.Collection;
+import java.util.List;
+
+import org.jsfml.graphics.BlendMode;
+import org.jsfml.graphics.CircleShape;
+import org.jsfml.graphics.Color;
+import org.jsfml.graphics.ConstTexture;
+import org.jsfml.graphics.Drawable;
+import org.jsfml.graphics.IntRect;
+import org.jsfml.graphics.RenderStates;
+import org.jsfml.graphics.RenderTarget;
+import org.jsfml.graphics.RenderTexture;
+import org.jsfml.graphics.Sprite;
+import org.jsfml.graphics.TextureCreationException;
+import org.jsfml.system.Time;
+import org.jsfml.system.Vector2f;
+import org.jsfml.system.Vector2i;
+
+import coreEntity.UnityBaseController;
+import ravage.IBaseRavage;
+
+public class FogManager extends Thread implements IBaseRavage,Drawable 
+{
+	// Time to sleep
+	private final int TIME_TO_SLEEP = 250;
+	// back Buffer Render Texture 01
+	private RenderTexture m_backBufferRender01;
+	// back Buffer Render Texture 02
+	private RenderTexture m_backBufferRender02;
+	// back Buffer current Render;
+	private RenderTexture m_backBufferCurrentRender;
+	// back Buffer current Render;
+	private RenderTexture m_backBufferReturn;
+	// is flip
+	private boolean m_isFlip = false;
+	// Color Back Buffer
+	private Color m_color = new Color(200,200,200,240);
+	// Sprite d'afficahge
+	private Sprite m_sprite;
+	
+	// object lock 
+	private Object m_lock;
+	// callback fog
+	private IFogVector m_callBackFog;
+	// CircleShape
+	private CircleShape m_shape;
+	// renderstate
+	private RenderStates m_state;
+	
+	public FogManager(Vector2i sizeMap,IFogVector callBack) throws TextureCreationException,NullPointerException
+	{
+		
+		// callback
+		if(callBack == null)
+			throw new NullPointerException();
+		
+		m_callBackFog = callBack;
+		
+		// Buffers Render 01
+		m_backBufferRender01 = new RenderTexture();
+		m_backBufferRender01.create(sizeMap.x * 2, sizeMap.y * 2 );
+		// Buffers Render 02
+		m_backBufferRender02 = new RenderTexture();
+		m_backBufferRender02.create(sizeMap.x * 2, sizeMap.y * 2);
+
+			
+		// Color gris
+		m_backBufferRender01.clear(m_color);
+		m_backBufferRender02.clear(m_color);
+		// objet lock
+		m_lock = new Object();
+		
+		m_backBufferCurrentRender = m_backBufferRender01;
+		m_backBufferReturn = m_backBufferRender02;
+		// instance de circleshape
+		m_shape = new CircleShape();
+		m_shape.setFillColor(new Color(255,255,255,255));
+		m_shape.setOutlineColor(new Color(255,255,255,230));
+		m_shape.setOutlineThickness(-6f);
+		
+		
+		// sprite
+		m_sprite = new Sprite();
+		m_sprite.setTexture(m_backBufferReturn.getTexture());
+		// taille dus prite
+		m_sprite.setOrigin(new Vector2f(0f,0f));
+		m_sprite.setPosition(new Vector2f(0f,0f));
+		m_sprite.setScale(new Vector2f(8f,8f));
+		m_sprite.setTextureRect(new IntRect(0,0,sizeMap.x * 2,sizeMap.y * 2));
+		
+		// state
+		m_state = new RenderStates(BlendMode.MULTIPLY);
+		
+	}
+	
+	@Override
+	public void run() 
+	{
+		// TODO Auto-generated method stub
+		super.run();
+		
+		try
+		{
+			while(this.isAlive())
+			{
+				// on clear le current render
+				m_backBufferCurrentRender.clear(m_color);
+				// on fait dormir le thread pendant 250 ms
+				Thread.sleep(TIME_TO_SLEEP);
+				// le thread se réveille, on dessine dans 	le back buffer current render
+				Collection<UnityBaseController> objs = m_callBackFog.getObjectFog();
+				for(UnityBaseController o : objs)
+				{
+					
+					m_shape.setRadius(60f * 2);
+					m_shape.setOrigin(new Vector2f(60f * 2,60f * 2));
+					m_shape.setPosition(new Vector2f(o.getModel().getPositionNode().x * 2,o.getModel().getPositionNode().y * 2));
+					m_backBufferCurrentRender.draw(m_shape);
+				}
+				
+				m_backBufferCurrentRender.display();
+				
+				// on inverse le back buffer return texture
+				synchronized(m_lock)
+				{
+					
+					if(m_backBufferReturn == m_backBufferRender01)
+						m_backBufferReturn = m_backBufferRender02;
+					else
+						m_backBufferReturn = m_backBufferRender01;
+					
+				//	m_backBufferReturn.display();
+				}
+				
+				// on indique que la texture peut être flipé dans le sprite
+				m_isFlip = true;
+				
+				// on inverse le back buffer render
+				if(m_backBufferCurrentRender == m_backBufferRender01)
+					m_backBufferCurrentRender = m_backBufferRender02;
+				else
+					m_backBufferCurrentRender = m_backBufferRender01;
+				
+				
+			}
+			
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+
+
+
+	@Override
+	public void init() 
+	{
+		// lancement du thread
+		this.start();
+
+	}
+
+	@Override
+	public void update(Time deltaTime) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void destroy() {
+		// TODO Auto-generated method stub
+
+	}
+	
+	public interface IFogVector
+	{
+		public Collection<UnityBaseController> getObjectFog();
+	}
+
+	@Override
+	public void draw(RenderTarget arg0, RenderStates arg1) 
+	{
+		if(m_isFlip)
+		{
+			synchronized(m_lock)
+			{
+				m_sprite.setTexture(m_backBufferReturn.getTexture());
+			}
+			m_isFlip = false;
+		}
+		
+		arg0.draw(m_sprite,m_state);
+		
+	}
+
+}

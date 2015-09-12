@@ -90,7 +90,7 @@ public class ContactManager implements ContactListener {
 			
 			
 			// si il s'agit de deux unités différentse, on active le contact
-			if(m_userDataA.getClass() != m_userDataB.getClass() && ( !((UnityBaseController)m_userDataB).getModel().isOneContact() || !((UnityBaseController)m_userDataA).getModel().isOneContact()) )
+			if(m_userDataA.getClass() != m_userDataB.getClass() /*&& ( !((UnityBaseController)m_userDataB).getModel().isOneContact() || !((UnityBaseController)m_userDataA).getModel().isOneContact())*/ )
 			{
 				
 				// on précise aux unités qu'il y a un contact
@@ -103,7 +103,7 @@ public class ContactManager implements ContactListener {
 				
 				// on arrête sur place l'unité
 				//m_bodyA.setLinearVelocity(ZERO_VECTOR);
-			    //m_bodyB.setLinearVelocity(ZERO_VECTOR);
+				//m_bodyB.setLinearVelocity(ZERO_VECTOR);
 			   // ((UnityBaseController)m_userDataA).setSequence(ETAPE.NONE);
 			   // ((UnityBaseController)m_userDataB).setSequence(ETAPE.NONE);
 				// on attribue l'enemy

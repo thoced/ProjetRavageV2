@@ -930,14 +930,14 @@ public class EntityManager implements IBaseRavage,IEventCallBack,IRegionSelected
 			controller.getModel().setPlayer(false); // c'est un model qui n'est pas controllé par le joueur
 			
 			
+			// dispatch 
 			if(controller.getModel().getPaths() != null && controller.getModel().getPaths().getLength() > 0)
 				controller.move();
 			else if(controller.getModel().isKnocking())
 					controller.strike();
-			
-			// ----------------------------------------------------------------------------------------
-			// vérification de la mort
-			
+			else if(controller.getModel().isMoveToEnemy())
+					controller.moveToEnemy();
+							
 		}
 		else
 		{

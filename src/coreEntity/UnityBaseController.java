@@ -158,12 +158,19 @@ public class UnityBaseController implements IBaseRavage, ICallBackAStar,
 	public void stop()
 	{
 		this.getModel().getBody().setLinearVelocity(new Vec2(0f,0f));
-		if(m_isLastStep)
+		/*if(m_isLastStep)
 		{
 			this.getModel().setPaths(null);
 			this.setSequence(ETAPE.NONE);
 			this.getView().playAnimation(TYPE_ANIMATION.NON);
-		}
+		}*/
+		
+		
+			this.getModel().setPaths(null);
+			this.setSequence(ETAPE.NONE);
+			this.getView().playAnimation(TYPE_ANIMATION.NON);
+			m_isLastStep = true;
+		
 	}
 	
 	public void strike()
@@ -180,8 +187,24 @@ public class UnityBaseController implements IBaseRavage, ICallBackAStar,
 		{
 			if(LevelManager.getLevel().getModel().isNodesCross(this.getModel().getPositionNode(), m_enemy.getModel().getPositionNode()))
 			{
+				// l'unité peut avancer en ligne droite
 				this.setSequence(ETAPE.MOVE_TO_ENEMY);
 				this.getView().playAnimation(TYPE_ANIMATION.WALK);
+				this.getModel().setMoveToEnemy(true);
+				// envoie du code sur le réseau
+				// emission sur le réseau
+				NetDataUnity data = new NetDataUnity();
+				this.prepareModelToNet();
+				try
+				{
+					data.setModel(this.getModel().clone());
+				} catch (CloneNotSupportedException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				data.setTypeMessage(TYPE.UPDATE);
+				NetSendThread.push(data);
+				
 			}
 			else
 			{
@@ -205,10 +228,10 @@ public class UnityBaseController implements IBaseRavage, ICallBackAStar,
 				Vec2 dirEnemy = m_enemy.getModel().getPosition().sub(this.getModel().getPosition());
 				dirEnemy.normalize();
 				Vec2 velocity = dirEnemy.mul(this.getModel().getSpeed());
-				this.getModel().getBody().setLinearVelocity(velocity);
-			
-			
-			
+				this.getModel().getBody().setLinearVelocity(velocity); // on avance
+				// modification du sens de marche
+				this.computeRotation(dirEnemy);
+
 		}
 	}
 	
@@ -295,21 +318,21 @@ public class UnityBaseController implements IBaseRavage, ICallBackAStar,
 		
 		switch(m_sequencePath)
 		{
-			case NONE: this.computeRotation(this.getModel().getDirFormation());break;
+			case NONE: 			this.computeRotation(this.getModel().getDirFormation());break;
 			
 			
-			case MOVE: this.updateMove();break;
+			case MOVE: 			this.updateMove();break;
 			
 			case MOVE_TO_ENEMY: this.updateMoveToEnemy();break;
 			
 			case STRIKE:	
-							if(m_dirEnemy != null)
-							{
-							Vec2 d = m_dirEnemy;
-							d.normalize();
-							this.computeRotation(d);
-							}
-							break;
+								if(m_dirEnemy != null)
+								{
+									Vec2 d = m_dirEnemy;
+									d.normalize();
+									this.computeRotation(d);
+								}
+								break;
 			
 		}
 		

@@ -41,8 +41,8 @@ public class ContactManager implements ContactListener {
 			if(m_userDataA.getClass() == String.class  || m_userDataB.getClass() == String.class)	
 				return;
 			
-			((UnityBaseController)m_userDataA).getModel().setSpeed(6f);
-			((UnityBaseController)m_userDataB).getModel().setSpeed(6f);
+			//((UnityBaseController)m_userDataA).getModel().setSpeed(6f);
+			//((UnityBaseController)m_userDataB).getModel().setSpeed(6f);
 			
 			// on enleve le contact
 			((UnityBaseController)m_userDataA).getModel().setOneContact(false);
@@ -87,8 +87,6 @@ public class ContactManager implements ContactListener {
 				return;
 			
 			
-			
-			
 			// si il s'agit de deux unités différentse, on active le contact
 			if(m_userDataA.getClass() != m_userDataB.getClass() /*&& ( !((UnityBaseController)m_userDataB).getModel().isOneContact() || !((UnityBaseController)m_userDataA).getModel().isOneContact())*/ )
 			{
@@ -98,12 +96,16 @@ public class ContactManager implements ContactListener {
 				((UnityBaseController)m_userDataA).getModel().setOneContact(true);
 				// on active le contact
 				l_contact.setEnabled(true);
-			
-				
-				
+							
+				if(!((UnityBaseController)m_userDataB).getModel().isOneContact())
+					((UnityBaseController)m_userDataB).stop();     // J4AI AJOUT2 CECI
+					
+				if(!((UnityBaseController)m_userDataA).getModel().isOneContact())
+					((UnityBaseController)m_userDataA).stop(); 	   // J4AI AJOUTE CECI
 				// on arrête sur place l'unité
 				//m_bodyA.setLinearVelocity(ZERO_VECTOR);
 				//m_bodyB.setLinearVelocity(ZERO_VECTOR);
+				
 			   // ((UnityBaseController)m_userDataA).setSequence(ETAPE.NONE);
 			   // ((UnityBaseController)m_userDataB).setSequence(ETAPE.NONE);
 				// on attribue l'enemy

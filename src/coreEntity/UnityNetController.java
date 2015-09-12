@@ -71,6 +71,18 @@ public class UnityNetController extends UnityBaseController
 		if(u!=null)
 		u.hit(this.getModel().getStreightStrike());
 	}
+	
+	
+    
+	@Override
+	public void moveToEnemy() 
+	{
+		// move to enemy pour l'unité réseau
+		this.m_enemy = EntityManager.getVectorUnity().get(this.getModel().getIdEnemy());
+		this.setSequence(ETAPE.MOVE_TO_ENEMY);
+		this.getView().playAnimation(TYPE_ANIMATION.WALK);
+				
+	}
 
 	@Override
 	public void init() 

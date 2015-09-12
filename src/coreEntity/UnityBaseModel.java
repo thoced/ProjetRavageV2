@@ -85,6 +85,9 @@ public class UnityBaseModel implements Externalizable
 	
 	// test
 	protected boolean isOneContact = false;
+	// move to enemy
+	protected boolean isMoveToEnemy = false;
+	
 	
 	
 	public UnityBaseModel() {
@@ -132,6 +135,8 @@ public class UnityBaseModel implements Externalizable
 		clone.setEnergyMax(this.getEnergyMax());
 		clone.setStreightStrike(this.getStreightStrike());
 		clone.setOneContact(this.isOneContact());
+		clone.setMoveToEnemy(this.isMoveToEnemy());
+		
 		return clone;
 	}
 
@@ -175,6 +180,16 @@ public class UnityBaseModel implements Externalizable
 	}
 	
 	
+
+	public boolean isMoveToEnemy() {
+		return isMoveToEnemy;
+	}
+
+
+	public void setMoveToEnemy(boolean isMoveToEnemy) {
+		this.isMoveToEnemy = isMoveToEnemy;
+	}
+
 
 	public boolean isOneContact() {
 		return isOneContact;
@@ -557,6 +572,8 @@ public class UnityBaseModel implements Externalizable
 		this.origineSprite = new Vector2f(arg0.readFloat(),arg0.readFloat());
 		// one contact ?
 		this.isOneContact = arg0.readBoolean();
+		// mote to enemy ?
+		this.isMoveToEnemy = arg0.readBoolean();
 	}
 
 
@@ -705,6 +722,9 @@ public class UnityBaseModel implements Externalizable
 		
 		// one contact ?
 		out.writeBoolean(this.isOneContact);
+		
+		// is mote to enemy
+		out.writeBoolean(this.isMoveToEnemy);
 		
 	}
 

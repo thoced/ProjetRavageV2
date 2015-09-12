@@ -53,7 +53,7 @@ public class CameraManager implements IBaseRavage, IEventCallBack
 	private static Vector2f m_sizeUp;
 	private static Vector2f m_sizeBackup;
 	// value lerp size et scrolling
-	private final float LERP_SIZE 		= 0.05f;
+	private final float LERP_SIZE 		= 0.02f;
 	private final float LERP_SCROLLING 	= 0.05f;
 	
 	// active fly mode
@@ -80,7 +80,7 @@ public class CameraManager implements IBaseRavage, IEventCallBack
 		// size
 		this.m_sizeNormal = m_size = m_sizeSought = m_sizeBackup = m_sizeInit =  this.getView().getSize();
 		this.m_sizeDown = Vector2f.mul(this.m_sizeNormal, 0.8f);
-		this.m_sizeUp = Vector2f.mul(m_sizeNormal, 1.1f);
+		this.m_sizeUp = Vector2f.mul(m_sizeNormal, 1.2f);
 		
 		// cadre
 		m_cadre = new IntRect(m_spaceScrolling,m_spaceScrolling,(int)this.getView().getSize().x - m_spaceScrolling * 2,(int) this.getView().getSize().y - m_spaceScrolling * 2);

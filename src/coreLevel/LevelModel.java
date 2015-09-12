@@ -35,6 +35,37 @@ public class LevelModel
 		nodes = new Node[m_sizeX * m_sizeY];
 	}
 	
+	// ---------------------------------- indique si tous les nodes sont passable sur un vecteur donné
+	//
+	// -----------------------------------------------------------------------------------------------
+	
+	public boolean isNodesCross(Vec2 start, Vec2 end)
+	{
+		// on calcul le vecteur de direction
+		Vec2 dir = end.sub(start);
+		// on normalize
+		dir.normalize();
+		
+		// on boucle depuis le start vers le end et on regarde si tous les nodes sont blanc
+		// si c'est le cas alors la ligne droite est libre
+		Vec2 etape = start;
+		while(end.sub(etape).length() > 1f)
+		{
+			if(this.isNodeObstacle((int)etape.x, (int)etape.y))
+			{
+				return false; // il y a un obstacle, on retourne false
+			}
+			
+			// on avance
+			etape = etape.add(dir);
+		}
+		
+		return true; // aucun obstacle détecté, on retourne true
+		
+		
+	}
+	
+	
 	
 	
 	/**

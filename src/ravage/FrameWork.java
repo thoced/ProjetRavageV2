@@ -44,6 +44,7 @@ import coreAI.AstarManager;
 import coreAI.Node;
 import coreCamera.CameraManager;
 import coreDrawable.DrawableUnityManager;
+import coreDrawable.FogManager;
 import coreEntity.Unity;
 import coreEntity.UnityBaseModel;
 import coreEntityManager.BloodManager;
@@ -79,6 +80,7 @@ public class FrameWork
 	private BloodManager bloodManager;
 	private GuiRavageManager guiManager;
 	private MessageManager messageManager;
+	private FogManager fogManager;
 	// Clocks
 	private Clock frameClock;
 	// fps
@@ -154,6 +156,8 @@ public class FrameWork
 		bloodManager.init();
 		guiManager = new GuiRavageManager();
 		guiManager.init();
+		fogManager = new FogManager(new Vector2i(currentLevel.getModel().getM_sizeX(),currentLevel.getModel().getM_sizeY()),entityManager);
+		fogManager.init();
 		
 	
 		// création des guis tests
@@ -253,7 +257,12 @@ public class FrameWork
 			drawaUnityManager.draw(renderTexture, null);
 			// draw du level foregrounds
 			currentLevel.getView().drawForeground(renderTexture, null); // affichage du foreground du level (arbre et toi
-			renderTexture.display();
+		
+			
+			// draw du fog
+			fogManager.draw(renderTexture, null);
+			//renderTexture.display();
+			
 			// draw du guiManager
 			renderGui.clear(Color.TRANSPARENT);
 			guiManager.draw(renderGui, null);
@@ -279,6 +288,9 @@ public class FrameWork
 		// destruction du thread
 		if(astarManager != null)
 			astarManager.interrupt();
+		// destruction du thread fogmanager
+		if(fogManager != null)
+			fogManager.interrupt();
 		// fermeture de la connection UDP et du theadd
 		if(netManager != null)
 			netManager.close();

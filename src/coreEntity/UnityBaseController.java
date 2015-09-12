@@ -7,6 +7,7 @@ import org.jbox2d.common.Rot;
 import org.jbox2d.common.Vec2;
 import org.jbox2d.dynamics.Body;
 import org.jsfml.system.Time;
+import org.jsfml.system.Vector2f;
 import org.jsfml.window.event.KeyEvent;
 import org.jsfml.window.event.MouseButtonEvent;
 import org.jsfml.window.event.MouseEvent;
@@ -59,10 +60,12 @@ public class UnityBaseController implements IBaseRavage, ICallBackAStar,
 	
 	protected Vec2	  m_dirEnemy;
 	
+	protected UnityBaseController m_enemy;
+	
 	
 
 	public enum ETAPE {
-		 MOVE, STRIKE,NONE
+		 MOVE, MOVE_TO_ENEMY,STRIKE,NONE
 	};
 
 	public enum TYPEUNITY {
@@ -170,6 +173,45 @@ public class UnityBaseController implements IBaseRavage, ICallBackAStar,
 		
 	}
 	
+	public void moveToEnemy()
+	{
+		// d'abord on regarde si les nodes sont passable (cros))
+		if(m_enemy != null)
+		{
+			if(LevelManager.getLevel().getModel().isNodesCross(this.getModel().getPositionNode(), m_enemy.getModel().getPositionNode()))
+			{
+				this.setSequence(ETAPE.MOVE_TO_ENEMY);
+				this.getView().playAnimation(TYPE_ANIMATION.WALK);
+			}
+			else
+			{
+				// les nodes ne sont pas traversables, on lance une recherche de chemin classique et on spécifie que l'on avance normalement
+				EntityManager.computeDestination(this, m_enemy.getModel().getPosition(), m_enemy.getModel().getPositionNode(), new Vec2(1f,0f));
+				
+			}
+		}
+		
+		
+	}
+	
+	public void updateMoveToEnemy()
+	{
+		// on se déplace en ligne droite
+		
+		if(m_enemy != null)
+		{
+			
+				// on récupère la direction
+				Vec2 dirEnemy = m_enemy.getModel().getPosition().sub(this.getModel().getPosition());
+				dirEnemy.normalize();
+				Vec2 velocity = dirEnemy.mul(this.getModel().getSpeed());
+				this.getModel().getBody().setLinearVelocity(velocity);
+			
+			
+			
+		}
+	}
+	
 	public void updateMove()
 	{	
 		try
@@ -204,6 +246,7 @@ public class UnityBaseController implements IBaseRavage, ICallBackAStar,
 		}
 		catch(LastStepException lse)
 		{
+			m_nextStep = lse.getLastStep();
 			m_isLastStep = true;
 		}
 	}
@@ -220,7 +263,7 @@ public class UnityBaseController implements IBaseRavage, ICallBackAStar,
 	{
 		if(this.getModel().getPaths() != null)
 		{
-			if(this.getModel().getIndicePaths() < this.getModel().getPaths().getLength())
+			if(this.getModel().getIndicePaths() < this.getModel().getPaths().getLength() - 1)
 			{
 				Step stepPath = this.getModel().getPaths().getStep(this.getModel().getIndicePathsAndIncrement());
 				Vec2 step = new Vec2(stepPath.getX(),stepPath.getY());
@@ -256,6 +299,8 @@ public class UnityBaseController implements IBaseRavage, ICallBackAStar,
 			
 			
 			case MOVE: this.updateMove();break;
+			
+			case MOVE_TO_ENEMY: this.updateMoveToEnemy();break;
 			
 			case STRIKE:	
 							if(m_dirEnemy != null)

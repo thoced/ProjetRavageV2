@@ -4,6 +4,7 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Hashtable;
 import java.util.List;
@@ -37,6 +38,7 @@ import UI.PanelInfoGold;
 import UI.PanelInfoUnite;
 import coreAI.AstarManager;
 import coreAI.Node;
+import coreDrawable.FogManager.IFogVector;
 import coreEntity.KnighController;
 import coreEntity.Knight;
 import coreEntity.Unity;
@@ -71,7 +73,7 @@ import ravage.FrameWork;
 import ravage.IBaseRavage;
 
 
-public class EntityManager implements IBaseRavage,IEventCallBack,IRegionSelectedCallBack,INetManagerCallBack
+public class EntityManager implements IBaseRavage,IEventCallBack,IRegionSelectedCallBack,INetManagerCallBack,IFogVector
 {
 	// Data GamePlay
 	private static DataGamePlay gamePlayModel;
@@ -421,6 +423,7 @@ public class EntityManager implements IBaseRavage,IEventCallBack,IRegionSelected
 			EntityManager.getVectorUnity().put(knight.getModel().getId(), knight);
 			// emission sur le réseau de l'unité
 			NetDataUnity create = new NetDataUnity();
+			
 			knight.prepareModelToNet();
 			try {
 				create.setModel(knight.getModel().clone());
@@ -1080,6 +1083,13 @@ public class EntityManager implements IBaseRavage,IEventCallBack,IRegionSelected
 			// TODO Auto-generated method stub
 			
 		}
+	}
+
+	@Override
+	public Collection<UnityBaseController> getObjectFog() 
+	{
+		// TODO Auto-generated method stub
+		return this.vectorUnity.values();
 	}
 
 	

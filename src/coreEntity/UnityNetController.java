@@ -81,7 +81,7 @@ public class UnityNetController extends UnityBaseController
 		// chargement des textures en fonction du model
 		if(this.getModel().getMyCamp() == CAMP.YELLOW)
 		{
-			if(this.getModel().getIdType() == TYPEUNITY.KNIGHT)
+			if(this.getModel().getIdType() == TYPEUNITY.PIQUIER)
 			{
 				this.getView().setSprite(TexturesManager.GetSpriteByName("ANIM_Piquiers_Jaunes.png"));
 			}
@@ -89,7 +89,7 @@ public class UnityNetController extends UnityBaseController
 		
 		if(this.getModel().getMyCamp() == CAMP.BLUE)
 		{
-			if(this.getModel().getIdType() == TYPEUNITY.KNIGHT)
+			if(this.getModel().getIdType() == TYPEUNITY.PIQUIER)
 			{
 				this.getView().setSprite(TexturesManager.GetSpriteByName("ANIM_Piquiers_Bleus.png"));
 			}

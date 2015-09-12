@@ -88,22 +88,21 @@ public class KnighController extends UnityBaseController
 		// mise à jour du temps écoulé pour l'attaque
 		elapsedTimeAttack += deltaTime.asSeconds();
 		
-		if(elapsedTimeAttack > 2f)
+		if(elapsedTimeAttack > 1f)
 		{
 			
 			if(this.getModel().getIdEnemy() != -1 && m_isLastStep)
 			{
 				// récupération de l'objet enemy
-				UnityBaseController enemy = EntityManager.getVectorUnityNet().get(this.getModel().getIdEnemy());
+				m_enemy = EntityManager.getVectorUnityNet().get(this.getModel().getIdEnemy());
 				
-				if(enemy != null)
+				if(m_enemy != null)
 				{
-					this.m_dirEnemy = enemy.getModel().getPosition().sub(this.getModel().getPosition());
+					this.m_dirEnemy = m_enemy.getModel().getPosition().sub(this.getModel().getPosition());
 					
 					if(this.m_dirEnemy.length() < 2f)
 					{
-						
-						
+					
 						this.strike();
 						
 						
@@ -123,26 +122,8 @@ public class KnighController extends UnityBaseController
 					}
 					else
 					{
-						// 2) recheche d'une position libre
-						Vec2 posNear = new ChoosePosition().findPositionForFight(this, enemy);
-						//Vec2 posNear = enemy.getModel().getPositionNode();
-						// 3) on libère la derniere position réserve
-						/*if(this.nodeReserved != null)
-							this.nodeReserved.bookNode(this);
-						// 4) on réserve la node
-						this.nodeReserved = LevelManager.getLevel().getModel().bookNode((int)posNear.x, (int)posNear.y, this);*/
-						
-						if(this.getModel().getNodeReserved() != null)
-							ReservationManager.remove(this.getModel().getNodeReserved());
-						ReservationManager.add(posNear, this);
-						
-						// 5) on se déplace
-						Vec2 posFinal = posNear;
-						posFinal = posFinal.add(new Vec2(.5f,.5f));
-						Vec2 posEnemy = enemy.getModel().getPosition();
-						Vec2 dir = posEnemy.sub(posFinal);
-						dir.normalize();
-						EntityManager.computeDestination(this, posFinal, posNear, dir);
+						// déplacement vers l'enemy
+						this.moveToEnemy();
 					}
 					
 				}

@@ -297,7 +297,7 @@ public class UnityBaseModel implements Externalizable
 	
 	public Vec2 getPositionNode() 
 	{
-		positionNode = this.getPosition();
+		positionNode = this.getPosition().clone();
 		positionNode.x = (int)positionNode.x;
 		positionNode.y = (int)positionNode.y;
 		return positionNode;

@@ -52,9 +52,9 @@ public class UnityBaseController implements IBaseRavage, ICallBackAStar,
 
 	protected Node nodeTake = null; // node pris lors d'un déplacement
 	
-	protected boolean m_isOnNewNextStep = false;
+	protected boolean m_isOnNewNextStep = true;
 	
-	protected boolean	 m_isLastStep = true;
+	protected boolean	 m_isLastStep = false;
 	
 	protected Vec2	  m_nextStep;
 	
@@ -135,18 +135,14 @@ public class UnityBaseController implements IBaseRavage, ICallBackAStar,
 		return true; // pas de node occupé
 	}
 
-	
-	
-	private void computeNextStep() // on récupère une étape de chemion
-	{
 		
-	}
-
-	private void moveToNextStep() // déplacement jusqu'a la prochaine étape
-	{
-		
-	}
-	
+	// ---------------------------------
+	// activation du mode de mouvement
+	// - active le mouvement
+	// - indique que l'on est sur un prochain step
+	// - indique que l'on est plus sur le dernier step
+	// - joue l'animation de marche
+	// ---------------------------------
 	public void move()
 	{
 		this.setSequence(ETAPE.MOVE);
@@ -155,23 +151,30 @@ public class UnityBaseController implements IBaseRavage, ICallBackAStar,
 		this.getView().playAnimation(TYPE_ANIMATION.WALK);
 	}
 	
+	// ---------------------------------
+	// Arret
+	// - active l'arret de l'unité
+	// - place la velocité à 0
+	// - place null dans la liste des chemins
+	// - arrête les animations
+	// - précise que l'on est sur le dernier step
+	// ---------------------------------
+	
 	public void stop()
 	{
 		this.getModel().getBody().setLinearVelocity(new Vec2(0f,0f));
-		/*if(m_isLastStep)
-		{
-			this.getModel().setPaths(null);
-			this.setSequence(ETAPE.NONE);
-			this.getView().playAnimation(TYPE_ANIMATION.NON);
-		}*/
-		
-		
-			this.getModel().setPaths(null);
-			this.setSequence(ETAPE.NONE);
-			this.getView().playAnimation(TYPE_ANIMATION.NON);
-			m_isLastStep = true;
+		this.getModel().setPaths(null);
+		this.setSequence(ETAPE.NONE);
+		this.getView().playAnimation(TYPE_ANIMATION.NON);
+		m_isLastStep = true;
 		
 	}
+	
+	// ---------------------------------
+	// Frappe (strike)
+	// - active le mode de frappe
+	// - joue l'animation de frappe
+	// ---------------------------------
 	
 	public void strike()
 	{
@@ -179,6 +182,17 @@ public class UnityBaseController implements IBaseRavage, ICallBackAStar,
 		this.getView().playAnimation(TYPE_ANIMATION.STRIKE);
 		
 	}
+	
+	// ---------------------------------
+	// bouge vers l'enemy
+	// - Si un enemy est bien attribué, on vérifie que le chemin en ligne droite ne passe pas par une node noire 
+	// - si le chemin est libre, l'unité peut avancer en ligne droite
+	// - activation du mode MOTE_TO_ENEMY
+	// - on joue l'animaiton de marche
+	// - activation du flag motetoenemy dans le model
+	// - envoie sur le réseau
+	// - si la ligne droite est obstruée par une node noire, on lance une recherche de chemin classique
+	// ---------------------------------
 	
 	public void moveToEnemy()
 	{
@@ -217,6 +231,16 @@ public class UnityBaseController implements IBaseRavage, ICallBackAStar,
 		
 	}
 	
+	// ---------------------------------
+	// update de mouvement vers l'enemy (methode joué à chaque frame)
+	// - si un enemy est bien attribué, 
+	// - récupération du vecteur de direction vers l'enemy
+	// - normalisation du vecteur
+	// - création d'un vecteur de velocité créé à partir du vecteur de direction normalisé
+	// - set du vecteur de velocité
+	// - calcul constant de la rotation de l'unité, (pointe vers l'enemy)
+	// ---------------------------------
+	
 	public void updateMoveToEnemy()
 	{
 		// on se déplace en ligne droite
@@ -234,6 +258,17 @@ public class UnityBaseController implements IBaseRavage, ICallBackAStar,
 
 		}
 	}
+	
+	// ---------------------------------
+	// uupdate de mouvement
+	// - si l'unité est sur une nouvelle step && qu'elle ne se trouve pas encore sur la dernière step 
+	// - récupération du prochain step
+	// - placement du flag isOnNewNextStep à false
+	// - si non
+	// - mouvement vers le step récupéré
+	// - si l'exeption LastStepException est lancée, on récupère le dernier step (placement au pixel prêt-
+	// - flag m_isLastStep placé à true
+	// ---------------------------------
 	
 	public void updateMove()
 	{	
@@ -260,7 +295,7 @@ public class UnityBaseController implements IBaseRavage, ICallBackAStar,
 					if(this.getModel().getPosition().sub(m_nextStep).length() < 0.5f)
 					{
 						m_isOnNewNextStep = true;
-						this.stop();
+						
 					}
 				}
 					
@@ -271,6 +306,7 @@ public class UnityBaseController implements IBaseRavage, ICallBackAStar,
 		{
 			m_nextStep = lse.getLastStep();
 			m_isLastStep = true;
+			this.stop();
 		}
 	}
 	
@@ -305,7 +341,16 @@ public class UnityBaseController implements IBaseRavage, ICallBackAStar,
 	}
 	
 	
-	
+	// ---------------------------------
+	// update (dispatch)
+	// - modification du elpsedAnimationTime utilisé par la vue 
+	// - placement d'une vélocité à 0
+	// - dispatch du mode
+	// - NONE : l'unité s'arrête et pointe dans la direction de formation souhaitée
+	// - MOVE : l'unité avance, appel de la methode updateMove
+	// - MOVE_TO_ENEMY: l'unité avance en ligne droite vers l'enemy
+	// - STRIKE: l'unité se retourne constamment vers l'enemy
+	// ---------------------------------
 	
 
 	@Override
@@ -338,11 +383,20 @@ public class UnityBaseController implements IBaseRavage, ICallBackAStar,
 		
 		
 	}
-
+	// ---------------------------------
+	// lerp
+	// - calcul lerp
+	// ---------------------------------
+	
 	protected float lerp(float value, float start, float end) {
 		return start + (end - start) * value;
 	}
-
+	// ---------------------------------
+	// computeRotation (calcul de la rotation)
+	// - si le vecteur passé n'est pas null
+	// - calcul de l'angle de rotation en utilisant la methode lerp
+	// - modification de l'angle dans le body
+	// ---------------------------------
 	protected void computeRotation(Vec2 vec) // calcul la rotation de l'unité
 	{
 		if (vec != null) {
@@ -363,7 +417,12 @@ public class UnityBaseController implements IBaseRavage, ICallBackAStar,
 							angle);
 		}
 	}
-
+	// ---------------------------------
+	// onCallsearchPath (réception du chemin déterminé par le ASTAR
+	// - placement du vecteur de chemnin
+	// - applicatin du mode MOVE
+	// - envoie sur le réseau
+	// ---------------------------------
 	@Override
 	public void onCallsearchPath(Path finalPath) {
 		// réception du chemin calculé
@@ -411,10 +470,10 @@ public class UnityBaseController implements IBaseRavage, ICallBackAStar,
 			}
 
 			// suppresin de l'unité dans le vecteur
-			this.destroy();
+			this.destroy(); // suppresion de l'objet dans le monde physique
+			// suppresion de l'unité
 			EntityManager.getVectorUnity().remove(this.getModel().getId());
 			
-
 			// ensutie il faut jouer la mort en view, on place un cadavre
 			BloodManager.addUnityKilled(this.getModel().getPosition(), this.getModel().getMyCamp());
 			

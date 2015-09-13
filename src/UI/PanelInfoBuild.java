@@ -61,7 +61,7 @@ public class PanelInfoBuild extends Panel implements IButtonListener, IProgressB
 		button01.setAction("CREATE_PIQUIER"); // creation de l'action
 		button01.addListener(this); // ajout du listener
 		// creation du progress bar piquier
-		m_barPiquier = new ProgressBar(new Vector2f(16f,76f),new Vector2f(64f,4f),3f,this);
+		m_barPiquier = new ProgressBar(new Vector2f(16f,76f),new Vector2f(64f,4f),1f,this);
 		this.addWidget(m_barPiquier);
 		// création du label de file d'attente pour le piquier
 		m_labelFilePiquier = new Label(new Vector2f(20f,12f));

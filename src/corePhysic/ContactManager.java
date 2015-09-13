@@ -41,8 +41,8 @@ public class ContactManager implements ContactListener {
 			if(m_userDataA.getClass() == String.class  || m_userDataB.getClass() == String.class)	
 				return;
 			
-			//((UnityBaseController)m_userDataA).getModel().setSpeed(6f);
-			//((UnityBaseController)m_userDataB).getModel().setSpeed(6f);
+			((UnityBaseController)m_userDataA).getModel().setSpeed(6f);
+			((UnityBaseController)m_userDataB).getModel().setSpeed(6f);
 			
 			// on enleve le contact
 			((UnityBaseController)m_userDataA).getModel().setOneContact(false);

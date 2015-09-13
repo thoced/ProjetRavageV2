@@ -56,6 +56,7 @@ public class FogManager extends Thread implements IBaseRavage,Drawable
 		if(callBack == null)
 			throw new NullPointerException();
 		
+		// callBackFog - objet où se trouve la liste des unités
 		m_callBackFog = callBack;
 		
 		// Buffers Render 01
@@ -80,8 +81,7 @@ public class FogManager extends Thread implements IBaseRavage,Drawable
 		m_shape.setOutlineColor(new Color(255,255,255,230));
 		m_shape.setOutlineThickness(-6f);
 		
-		
-		// sprite
+				// sprite
 		m_sprite = new Sprite();
 		m_sprite.setTexture(m_backBufferReturn.getTexture());
 		// taille dus prite
@@ -103,23 +103,25 @@ public class FogManager extends Thread implements IBaseRavage,Drawable
 		
 		try
 		{
-			while(this.isAlive())
+			while(this.isAlive()) // temps que le thread est en vie, on continue
 			{
 				// on clear le current render
 				m_backBufferCurrentRender.clear(m_color);
 				// on fait dormir le thread pendant 250 ms
 				Thread.sleep(TIME_TO_SLEEP);
-				// le thread se réveille, on dessine dans 	le back buffer current render
+				// le thread se réveille
+				// récupération des objets (unités)
 				Collection<UnityBaseController> objs = m_callBackFog.getObjectFog();
 				for(UnityBaseController o : objs)
 				{
-					
-					m_shape.setRadius(60f * 2);
-					m_shape.setOrigin(new Vector2f(60f * 2,60f * 2));
+					// on dessine dans 	le back buffer current render
+					m_shape.setRadius(40f * 2);
+					m_shape.setOrigin(new Vector2f(40f * 2,40f * 2));
 					m_shape.setPosition(new Vector2f(o.getModel().getPositionNode().x * 2,o.getModel().getPositionNode().y * 2));
 					m_backBufferCurrentRender.draw(m_shape);
 				}
 				
+				// display
 				m_backBufferCurrentRender.display();
 				
 				// on inverse le back buffer return texture
@@ -130,11 +132,10 @@ public class FogManager extends Thread implements IBaseRavage,Drawable
 						m_backBufferReturn = m_backBufferRender02;
 					else
 						m_backBufferReturn = m_backBufferRender01;
-					
-				//	m_backBufferReturn.display();
+							
 				}
 				
-				// on indique que la texture peut être flipé dans le sprite
+				// on indique que la texture peut être flipée dans le sprite
 				m_isFlip = true;
 				
 				// on inverse le back buffer render
@@ -146,8 +147,9 @@ public class FogManager extends Thread implements IBaseRavage,Drawable
 				
 			}
 			
-		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
+		} catch (InterruptedException e) 
+		{
+			
 			e.printStackTrace();
 		}
 	}

@@ -160,7 +160,7 @@ public class DrawableUnityManager implements IBaseRavage, Drawable
 				while(other.hasNext())
 				{
 					UnityBaseController o = other.next();
-					if(u.getModel().getPosition().sub(o.getModel().getPosition()).length() < 60f) //  si la distance entre l'enemy et un player est inférieur à 10, on affiche
+					if(u.getModel().getPosition().sub(o.getModel().getPosition()).length() < 40f) //  si la distance entre l'enemy et un player est inférieur à 10, on affiche
 					{
 						u.getView().draw(render, state);
 						break; // on break;

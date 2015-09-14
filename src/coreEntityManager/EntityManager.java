@@ -460,7 +460,7 @@ public class EntityManager implements IBaseRavage,IEventCallBack,IRegionSelected
 		{
 		
 				// on relache le clic, on récupère la dirction de formation et on lance la formation
-				if(arrow != null)
+			/*	if(arrow != null)
 				{
 					
 					
@@ -476,7 +476,15 @@ public class EntityManager implements IBaseRavage,IEventCallBack,IRegionSelected
 					arrow = null;
 					
 					return true;
-				}
+				}*/
+			
+			// on calcul la FormationMovable
+			Vector2f pos = Vector2f.div(posMouseWorld, PhysicWorldManager.getRatioPixelMeter());
+			FormationMovable formationMovable = new FormationMovable();
+			Vec2 posNode = new Vec2((int)pos.x,(int)pos.y);
+			formationMovable.moveFormation(listUnitySelected, posNode);
+			
+			
 				
 				
 			

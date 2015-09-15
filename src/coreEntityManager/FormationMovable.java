@@ -49,7 +49,7 @@ public class FormationMovable implements IBaseRavage
 		return PI_DIV_180 * degree;
 	}
 	
-	public void moveFormation(List<UnityBaseController> unityMovables, Vec2 positionDestination)
+	public void moveFormation(List<UnityBaseController> unityMovables, Vec2 positionDestination,Vec2 dirFormation)
 	{
 		
 		
@@ -57,11 +57,11 @@ public class FormationMovable implements IBaseRavage
 		if(!LevelManager.getLevel().getModel().isNodeObstacle((int)positionDestination.x,(int) positionDestination.y))
 		{
 			// on positionne l'ancre
-			m_model.getAnchor().m_position = positionDestination;
+			m_model.getAnchor().m_position = positionDestination.add(new Vec2(0.5f,0.5f)); // ajout des 0.5 pour arriver au centre du node
 			
 			// ce n'est pas un obstacle, on détermine la forme (pattern) de la formation en fonction du nombre d'unité et de la spécificité du terrain
 			int nbUnity = unityMovables.size();
-			int nbCouche = (nbUnity - 1) / 8; 
+			//int nbCouche = (nbUnity - 1) / 8; 
 			// utilisation d'un cercle concentrique , le 1er cercle fait 45 ° de pas
 			float pasQuartier = 45f;
 			// création du Rot avec valeur du vecteur de départ à x = 1, y = 0
@@ -82,7 +82,7 @@ public class FormationMovable implements IBaseRavage
 			do
 			{
 			
-				while((angleQuartier < 380) && cptUnity < nbUnity)
+				while((angleQuartier < 360) && cptUnity < nbUnity)
 				{
 					// on spécifie l'angle en radian
 					rot.set(degreeToRadian(angleQuartier));
@@ -114,7 +114,7 @@ public class FormationMovable implements IBaseRavage
 				}
 				
 				// adition du rayon
-				rayon += 1f;
+				rayon += 1.1f;
 				// on replace la pas à 0
 				angleQuartier = 0f;
 				pasQuartier = pasQuartier / 2f;
@@ -132,7 +132,7 @@ public class FormationMovable implements IBaseRavage
 		for(SlotFormation slot : m_model.m_slots)
 		{
 			Vec2 posNode = new Vec2((int)slot.getPositionAbsolue().x,(int)slot.getPositionAbsolue().y);
-			EntityManager.computeDestination(slot.getUnityMovable(), posNode, posNode, new Vec2(1f,0f));
+			EntityManager.computeDestination(slot.getUnityMovable(), posNode, posNode, dirFormation);
 		}
 	}
 	

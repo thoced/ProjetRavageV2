@@ -33,21 +33,29 @@ public class FogManager extends Thread implements IBaseRavage,Drawable
 	private RenderTexture m_backBufferCurrentRender;
 	// back Buffer current Render;
 	private RenderTexture m_backBufferReturn;
-	// is flip
+	
+	
+	// is flip fog
 	private boolean m_isFlip = false;
+	
 	// Color Back Buffer
 	private Color m_color = new Color(200,200,200,240);
+
 	// Sprite d'afficahge
 	private Sprite m_sprite;
 	
+	
 	// object lock 
 	private Object m_lock;
+	
 	// callback fog
 	private IFogVector m_callBackFog;
 	// CircleShape
 	private CircleShape m_shape;
+
 	// renderstate
 	private RenderStates m_state;
+
 	
 	public FogManager(Vector2i sizeMap,IFogVector callBack) throws TextureCreationException,NullPointerException
 	{
@@ -65,21 +73,20 @@ public class FogManager extends Thread implements IBaseRavage,Drawable
 		// Buffers Render 02
 		m_backBufferRender02 = new RenderTexture();
 		m_backBufferRender02.create(sizeMap.x * 2, sizeMap.y * 2);
-
 			
 		// Color gris
 		m_backBufferRender01.clear(m_color);
 		m_backBufferRender02.clear(m_color);
 		// objet lock
 		m_lock = new Object();
-		
+				
 		m_backBufferCurrentRender = m_backBufferRender01;
 		m_backBufferReturn = m_backBufferRender02;
 		// instance de circleshape
 		m_shape = new CircleShape();
 		m_shape.setFillColor(new Color(255,255,255,255));
-		m_shape.setOutlineColor(new Color(255,255,255,230));
-		m_shape.setOutlineThickness(-6f);
+	//	m_shape.setOutlineColor(new Color(255,255,255,230));
+		m_shape.setOutlineThickness(0f);
 		
 				// sprite
 		m_sprite = new Sprite();
@@ -90,8 +97,11 @@ public class FogManager extends Thread implements IBaseRavage,Drawable
 		m_sprite.setScale(new Vector2f(8f,8f));
 		m_sprite.setTextureRect(new IntRect(0,0,sizeMap.x * 2,sizeMap.y * 2));
 		
+
+		
 		// state
 		m_state = new RenderStates(BlendMode.MULTIPLY);
+	
 		
 	}
 	
@@ -107,45 +117,61 @@ public class FogManager extends Thread implements IBaseRavage,Drawable
 			{
 				// on clear le current render
 				m_backBufferCurrentRender.clear(m_color);
-				// on fait dormir le thread pendant 250 ms
+								// on fait dormir le thread pendant 250 ms
 				Thread.sleep(TIME_TO_SLEEP);
 				// le thread se réveille
 				// récupération des objets (unités)
 				Collection<UnityBaseController> objs = m_callBackFog.getObjectFog();
 				for(UnityBaseController o : objs)
 				{
-					// on dessine dans 	le back buffer current render
+					// on dessine dans 	le back buffer current render (Fog)
 					m_shape.setRadius(40f * 2);
 					m_shape.setOrigin(new Vector2f(40f * 2,40f * 2));
 					m_shape.setPosition(new Vector2f(o.getModel().getPositionNode().x * 2,o.getModel().getPositionNode().y * 2));
 					m_backBufferCurrentRender.draw(m_shape);
+				
 				}
 				
 				// display
 				m_backBufferCurrentRender.display();
-				
-				// on inverse le back buffer return texture
+								
+				// on inverse le back buffer return texture (fog et foreground)
 				synchronized(m_lock)
 				{
 					
 					if(m_backBufferReturn == m_backBufferRender01)
+					{
 						m_backBufferReturn = m_backBufferRender02;
+						
+					}
 					else
+					{
 						m_backBufferReturn = m_backBufferRender01;
+						
+					}
 							
 				}
 				
 				// on indique que la texture peut être flipée dans le sprite
 				m_isFlip = true;
 				
+				
 				// on inverse le back buffer render
 				if(m_backBufferCurrentRender == m_backBufferRender01)
+				{
 					m_backBufferCurrentRender = m_backBufferRender02;
+					
+				}
 				else
+				{
 					m_backBufferCurrentRender = m_backBufferRender01;
+					
+				}
 				
-				
+			
 			}
+			
+			
 			
 		} catch (InterruptedException e) 
 		{
@@ -196,5 +222,7 @@ public class FogManager extends Thread implements IBaseRavage,Drawable
 		arg0.draw(m_sprite,m_state);
 		
 	}
+	
+	
 
 }

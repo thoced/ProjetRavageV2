@@ -95,7 +95,7 @@ public class ContactManager implements ContactListener {
 				((UnityBaseController)m_userDataB).getModel().setOneContact(true);
 				((UnityBaseController)m_userDataA).getModel().setOneContact(true);
 				// on active le contact
-				l_contact.setEnabled(true);
+				l_contact.setEnabled(false);
 							
 				if(!((UnityBaseController)m_userDataB).getModel().isOneContact())
 					((UnityBaseController)m_userDataB).stop();     // J4AI AJOUT2 CECI

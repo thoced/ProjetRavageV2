@@ -45,6 +45,7 @@ import coreAI.Node;
 import coreCamera.CameraManager;
 import coreDrawable.DrawableUnityManager;
 import coreDrawable.FogManager;
+import coreDrawable.ForegroundEffectManager;
 import coreEntity.Unity;
 import coreEntity.UnityBaseModel;
 import coreEntityManager.BloodManager;
@@ -81,6 +82,7 @@ public class FrameWork
 	private GuiRavageManager guiManager;
 	private MessageManager messageManager;
 	private FogManager fogManager;
+	private ForegroundEffectManager foregroundEffectManager;
 	// Clocks
 	private Clock frameClock;
 	// fps
@@ -93,10 +95,14 @@ public class FrameWork
 	private static RenderWindow window;
 	// RenderTarget
 	private RenderTexture renderTexture;
-	private Sprite	renderSprite;
+	private Sprite	spriteBackground;
+	// RenderForeground
+	private RenderTexture renderForeground;
+	private Sprite spriteForeground;
+	
 	// Render pour le Gui
 	private RenderTexture renderGui;
-	private Sprite renderGuiSprite;
+	private Sprite spriteGui;
 	
 	private menuDialogRavage menu;
 			
@@ -158,7 +164,8 @@ public class FrameWork
 		guiManager.init();
 		fogManager = new FogManager(new Vector2i(currentLevel.getModel().getM_sizeX(),currentLevel.getModel().getM_sizeY()),entityManager);
 		fogManager.init();
-		
+		foregroundEffectManager = new ForegroundEffectManager(new Vector2i(currentLevel.getModel().getM_sizeX(),currentLevel.getModel().getM_sizeY()),entityManager);
+		foregroundEffectManager.init();
 	
 		// création des guis tests
 		PanelInfoGold infoGold = new PanelInfoGold(0.5f,(1f / window.getSize().y) * 24f,new Vector2f(256f,48f));
@@ -183,11 +190,16 @@ public class FrameWork
 		// crÃ©ation d'une premiÃ¨re render texture
 		renderTexture = new RenderTexture();
 		renderTexture.create(window.getSize().x, window.getSize().y);
-		renderSprite = new Sprite(renderTexture.getTexture());
+		spriteBackground = new Sprite(renderTexture.getTexture());
+		// création du renderforeground
+		renderForeground = new RenderTexture();
+		renderForeground.create(window.getSize().x, window.getSize().y);
+		spriteForeground = new Sprite(renderForeground.getTexture());
+		
 		// création de la texture pour le render gui
 		renderGui = new RenderTexture();
 		renderGui.create(window.getSize().x, window.getSize().y);
-		renderGuiSprite = new Sprite(renderGui.getTexture());
+		spriteGui = new Sprite(renderGui.getTexture());
 		
 		
 	}
@@ -255,13 +267,22 @@ public class FrameWork
 			currentLevel.getView().drawBackground(renderTexture, null); // affichage du background du level
 			// Draw des unity
 			drawaUnityManager.draw(renderTexture, null);
+			
+			
 			// draw du level foregrounds
-			currentLevel.getView().drawForeground(renderTexture, null); // affichage du foreground du level (arbre et toi
-		
+			renderForeground.clear(Color.TRANSPARENT);
+			renderForeground.setView(cameraManager.getView());
+			currentLevel.getView().drawForeground(renderForeground, null); // affichage du foreground du level (arbre et toi
+			
+			// application de l'effect foreground
+			foregroundEffectManager.draw(renderForeground, null);
+			renderForeground.display();
+			
+	
 			
 			// draw du fog
 			fogManager.draw(renderTexture, null);
-			//renderTexture.display();
+			renderTexture.display();
 			
 			// draw du guiManager
 			renderGui.clear(Color.TRANSPARENT);
@@ -273,8 +294,9 @@ public class FrameWork
 			renderTexture.display();
 			// draw final
 			window.clear();
-			window.draw(renderSprite);
-			window.draw(renderGuiSprite);
+			window.draw(spriteBackground);
+			window.draw(spriteForeground);
+			window.draw(spriteGui);
 			window.display();
 			
 			
@@ -291,6 +313,10 @@ public class FrameWork
 		// destruction du thread fogmanager
 		if(fogManager != null)
 			fogManager.interrupt();
+		
+		// destruction du thread foregroundEffectManager
+		if(foregroundEffectManager != null)
+			foregroundEffectManager.interrupt();
 		// fermeture de la connection UDP et du theadd
 		if(netManager != null)
 			netManager.close();

@@ -478,11 +478,20 @@ public class EntityManager implements IBaseRavage,IEventCallBack,IRegionSelected
 					return true;
 				}*/
 			
-			// on calcul la FormationMovable
-			Vector2f pos = Vector2f.div(posMouseWorld, PhysicWorldManager.getRatioPixelMeter());
-			FormationMovable formationMovable = new FormationMovable();
-			Vec2 posNode = new Vec2((int)pos.x,(int)pos.y);
-			formationMovable.moveFormation(listUnitySelected, posNode);
+			if(arrow != null)
+			{
+				dirFormation = arrow.getVectorDirectionFormation();
+			
+				// on calcul la FormationMovable
+				Vector2f pos = Vector2f.div(posMouseWorld, PhysicWorldManager.getRatioPixelMeter());
+				FormationMovable formationMovable = new FormationMovable();
+				Vec2 posNode = new Vec2((int)pos.x,(int)pos.y);
+				formationMovable.moveFormation(listUnitySelected, posNode,dirFormation);
+				// suppression de la fleche dans les callback
+				arrow.destroy();
+				arrow = null;
+				return true;
+			}
 			
 			
 				

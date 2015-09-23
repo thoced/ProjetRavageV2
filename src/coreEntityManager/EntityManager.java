@@ -41,6 +41,7 @@ import coreAI.Node;
 import coreDrawable.FogManager.IFogVector;
 import coreEntity.KnighController;
 import coreEntity.Knight;
+import coreEntity.PiquierController;
 import coreEntity.Unity;
 import coreEntity.Unity.ANIMATE;
 import coreEntity.UnityBaseController;
@@ -407,7 +408,7 @@ public class EntityManager implements IBaseRavage,IEventCallBack,IRegionSelected
 		return false;
 	}
 	
-	public static void createPiquier()
+	public static void createKnight()
 	{
 		
 		
@@ -416,7 +417,7 @@ public class EntityManager implements IBaseRavage,IEventCallBack,IRegionSelected
 			knight.getModel().setSpeed(6f);
 			knight.getModel().setId((EntityManager.getNewIdUnity()));
 			knight.getModel().setMyCamp(EntityManager.getCampSelected());
-			knight.getModel().setIdType(TYPEUNITY.PIQUIER );
+			knight.getModel().setIdType(TYPEUNITY.KNIGHT );
 			knight.getModel().setPlayer(true); // c'est un model controllé par le joueur
 			knight.getModel().initModel(knight);
 			knight.init();
@@ -427,6 +428,41 @@ public class EntityManager implements IBaseRavage,IEventCallBack,IRegionSelected
 			knight.prepareModelToNet();
 			try {
 				create.setModel(knight.getModel().clone());
+			} catch (CloneNotSupportedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			create.setTypeMessage(TYPE.CREATE);
+			
+			System.out.println("envoie du header : " );
+			NetSendThread.push(create);
+			
+			// gamePlayModel
+			gamePlayModel.setM_nbUnity(getVectorUnity().size());
+		
+		
+	}
+	
+	public static void createPiquier()
+	{
+		
+		
+			PiquierController piquier = new PiquierController();
+			piquier.getModel().setPosition(new Vec2(NetManager.getPosxStartFlag(),NetManager.getPosyStartFlag()));
+			piquier.getModel().setSpeed(6f);
+			piquier.getModel().setId((EntityManager.getNewIdUnity()));
+			piquier.getModel().setMyCamp(EntityManager.getCampSelected());
+			piquier.getModel().setIdType(TYPEUNITY.PIQUIER );
+			piquier.getModel().setPlayer(true); // c'est un model controllé par le joueur
+			piquier.getModel().initModel(piquier);
+			piquier.init();
+			EntityManager.getVectorUnity().put(piquier.getModel().getId(), piquier);
+			// emission sur le réseau de l'unité
+			NetDataUnity create = new NetDataUnity();
+			
+			piquier.prepareModelToNet();
+			try {
+				create.setModel(piquier.getModel().clone());
 			} catch (CloneNotSupportedException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();

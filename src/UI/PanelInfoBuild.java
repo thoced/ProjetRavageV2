@@ -34,12 +34,16 @@ import coreMessageManager.MessageRavage;
 
 public class PanelInfoBuild extends Panel implements IButtonListener, IProgressBarListener
 {
-	private enum TYPE_ACTION_POLL {CREATE_PIQUIER};
+	private enum TYPE_ACTION_POLL {CREATE_PIQUIER,CREATE_KNIGHT};
 	// file d'attnte de construction
 	private ArrayBlockingQueue<TYPE_ACTION_POLL> m_pollCreatePiquier; 
+	private ArrayBlockingQueue<TYPE_ACTION_POLL> m_pollCreateKnight; 
 	// bar de progression pour les piquier
 	private ProgressBar m_barPiquier;
 	private Label       m_labelFilePiquier;
+	// progression knight
+	private ProgressBar m_barKnight;
+	private Label		m_labelFileKnight;
 
 	public PanelInfoBuild(float x, float y, Vector2f size)
 			throws TextureCreationException, IOException 
@@ -48,6 +52,29 @@ public class PanelInfoBuild extends Panel implements IButtonListener, IProgressB
 		
 		// instance de la file d'attente
 		m_pollCreatePiquier = new ArrayBlockingQueue<TYPE_ACTION_POLL>(256);
+		m_pollCreateKnight = new ArrayBlockingQueue<TYPE_ACTION_POLL>(256);
+		
+		
+		// création des boutons knight
+		Button buttonKnight = new Button(new Vector2f(16f,84f),new Vector2f(64f,64f));
+		if(EntityManager.campSelected == CAMP.BLUE)
+			buttonKnight.setTexture(TexturesManager.GetTextureByName("ButtonKnightBlue.png"));
+		else
+			buttonKnight.setTexture(TexturesManager.GetTextureByName("ButtonKnightYellow.png"));
+		// ajout du widget au panel
+		this.addWidget(buttonKnight);
+		buttonKnight.setAction("CREATE_KNIGHT"); // creation de l'action
+		buttonKnight.addListener(this); // ajout du listener
+		// creation du progress bar piquier
+		m_barKnight = new ProgressBar(new Vector2f(16f,150f),new Vector2f(64f,4f),1f,this);
+		this.addWidget(m_barKnight);
+		// création du label de file d'attente pour le piquier
+		m_labelFileKnight = new Label(new Vector2f(20f,86f));
+		m_labelFileKnight.setColor(new Color(128,128,128,256));
+		m_labelFileKnight.setText("");
+		this.addWidget(m_labelFileKnight);
+		
+		
 		
 		// création des boutons
 		// Bouton piquier
@@ -104,6 +131,16 @@ public class PanelInfoBuild extends Panel implements IButtonListener, IProgressB
 				
 				
 			}
+			
+			case "CREATE_KNIGHT":
+				
+				m_pollCreateKnight.add(TYPE_ACTION_POLL.CREATE_KNIGHT);
+				pollProgress(m_pollCreateKnight,m_barKnight); // poll
+				if(m_pollCreateKnight.size() > 0) 
+					m_labelFileKnight.setText(String.valueOf(m_pollCreateKnight.size()));
+				else
+					m_labelFileKnight.setText("");
+				break;
 
 		
 			
@@ -138,6 +175,30 @@ public class PanelInfoBuild extends Panel implements IButtonListener, IProgressB
 				}
 				else
 					m_labelFilePiquier.setText("");
+			}
+		}
+		
+		if(owner == m_barKnight)
+		{
+			if(EntityManager.getGamePlayModel().pay(10)) // on pay
+			{
+					// création du knight
+					EntityManager.createKnight();
+				
+				// on regarde si il existe d'autres actions dans la file d'attente
+				if((m_pollCreateKnight.poll()) != null)
+				{
+					// déclenchement du progress
+					m_barKnight.startProgressBar();
+					
+					// mise à jour du label de construction
+					if(m_pollCreateKnight.size() > 0) 
+						m_labelFileKnight.setText(String.valueOf(m_pollCreateKnight.size()));
+					else
+						m_labelFileKnight.setText("");
+				}
+				else
+					m_labelFileKnight.setText("");
 			}
 		}
 	}

@@ -131,8 +131,8 @@ public class ForegroundEffectManager extends Thread implements IBaseRavage,Drawa
 				for(UnityBaseController o : objs)
 				{
 					// on dessine dans 	le back buffer current render (Fog)
-					m_shape.setRadius(20f * 4);
-					m_shape.setOrigin(new Vector2f(20f * 4,20f * 4));
+					m_shape.setRadius(10f * 4);
+					m_shape.setOrigin(new Vector2f(10f * 4,10f * 4));
 					m_shape.setPosition(new Vector2f(o.getModel().getPositionNode().x * 4,o.getModel().getPositionNode().y * 4));
 					m_backBufferCurrentRender.draw(m_shape,m_stateSprite);
 				

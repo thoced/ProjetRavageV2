@@ -63,14 +63,21 @@ public class KnighController extends UnityBaseController
 	{
 		// initialisation de la vue avec un sprite
 		if(this.getModel().getMyCamp() == CAMP.YELLOW)
-			this.getView().setSprite(TexturesManager.GetSpriteByName("ANIM_Piquiers_Jaunes.png"));
+			this.getView().setSprite(TexturesManager.GetSpriteByName("ANIM_KNIGHT_YELLOW.png"));
 		if(this.getModel().getMyCamp() == CAMP.BLUE)
-			this.getView().setSprite(TexturesManager.GetSpriteByName("ANIM_Piquiers_Bleus.png"));
+			this.getView().setSprite(TexturesManager.GetSpriteByName("ANIM_KNIGHT_BLUE.png"));
 
 		// initialisa la vue avec l'origine du sprite
-		this.getView().getSprite().setOrigin(new Vector2f(40f,40f));
+		this.getView().getSprite().setOrigin(new Vector2f(16f,16f));
 		// spécifie à la vue l'animation à joué par défaut
 		this.getView().playAnimation(TYPE_ANIMATION.NON);
+		
+		// on parametre la vue pour préciser les indices des frames
+		this.getView().setMIN_IND_FOR_WALK(0);
+		this.getView().setMAX_IND_FOR_WALK(5);
+		this.getView().setMIN_IND_FOR_STRIKE(6);
+		this.getView().setMAX_IND_FOR_STRIKE(18);
+		this.getView().setNB_FRAME_BY_SECOND(10);
 		
 		// ajout au event manager
 		EventManager.addCallBack(this);

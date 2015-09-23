@@ -32,7 +32,7 @@ public class KnightView extends UnityBaseView
 		
 		for(int i=0;i<animations.getAnimations().length;i++)
 		{
-			animations.getAnimations()[i] = new IntRect(i*80,0 ,80, 80);
+			animations.getAnimations()[i] = new IntRect(i*32,0 ,32, 32);
 		}
 		
 	}

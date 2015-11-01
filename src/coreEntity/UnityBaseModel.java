@@ -88,6 +88,17 @@ public class UnityBaseModel implements Externalizable
 	// move to enemy
 	protected boolean isMoveToEnemy = false;
 	
+	// information sur les frames
+	protected  int NB_FRAME_BY_SECOND;
+	protected  int NB_TOTAL_FRAME ;
+	protected  int MIN_IND_FOR_WALK;
+	protected  int MAX_IND_FOR_WALK ;  // 4
+	protected  int MIN_IND_FOR_STRIKE ;
+	protected  int MAX_IND_FOR_STRIKE;
+	
+	protected int WIDTH_FRAME ;
+	protected int HEIGHT_FRAME ;
+	
 	
 	
 	public UnityBaseModel() {
@@ -136,6 +147,13 @@ public class UnityBaseModel implements Externalizable
 		clone.setStreightStrike(this.getStreightStrike());
 		clone.setOneContact(this.isOneContact());
 		clone.setMoveToEnemy(this.isMoveToEnemy());
+		clone.setNB_FRAME_BY_SECOND(this.NB_FRAME_BY_SECOND);
+		clone.setWIDTH_FRAME(this.WIDTH_FRAME);
+		clone.setHEIGHT_FRAME(this.HEIGHT_FRAME);
+		clone.setMIN_IND_FOR_WALK(this.MIN_IND_FOR_WALK);
+		clone.setMAX_IND_FOR_WALK(this.MAX_IND_FOR_WALK);
+		clone.setMIN_IND_FOR_STRIKE(this.MIN_IND_FOR_STRIKE);
+		clone.setMAX_IND_FOR_STRIKE(this.MAX_IND_FOR_STRIKE);
 		
 		return clone;
 	}
@@ -180,6 +198,86 @@ public class UnityBaseModel implements Externalizable
 	}
 	
 	
+
+	public int getNB_FRAME_BY_SECOND() {
+		return NB_FRAME_BY_SECOND;
+	}
+
+
+	public int getNB_TOTAL_FRAME() {
+		return NB_TOTAL_FRAME;
+	}
+
+
+	public int getMIN_IND_FOR_WALK() {
+		return MIN_IND_FOR_WALK;
+	}
+
+
+	public int getMAX_IND_FOR_WALK() {
+		return MAX_IND_FOR_WALK;
+	}
+
+
+	public int getMIN_IND_FOR_STRIKE() {
+		return MIN_IND_FOR_STRIKE;
+	}
+
+
+	public int getMAX_IND_FOR_STRIKE() {
+		return MAX_IND_FOR_STRIKE;
+	}
+
+
+	public int getWIDTH_FRAME() {
+		return WIDTH_FRAME;
+	}
+
+
+	public int getHEIGHT_FRAME() {
+		return HEIGHT_FRAME;
+	}
+
+
+	public void setNB_FRAME_BY_SECOND(int nB_FRAME_BY_SECOND) {
+		NB_FRAME_BY_SECOND = nB_FRAME_BY_SECOND;
+	}
+
+
+	public void setNB_TOTAL_FRAME(int nB_TOTAL_FRAME) {
+		NB_TOTAL_FRAME = nB_TOTAL_FRAME;
+	}
+
+
+	public void setMIN_IND_FOR_WALK(int mIN_IND_FOR_WALK) {
+		MIN_IND_FOR_WALK = mIN_IND_FOR_WALK;
+	}
+
+
+	public void setMAX_IND_FOR_WALK(int mAX_IND_FOR_WALK) {
+		MAX_IND_FOR_WALK = mAX_IND_FOR_WALK;
+	}
+
+
+	public void setMIN_IND_FOR_STRIKE(int mIN_IND_FOR_STRIKE) {
+		MIN_IND_FOR_STRIKE = mIN_IND_FOR_STRIKE;
+	}
+
+
+	public void setMAX_IND_FOR_STRIKE(int mAX_IND_FOR_STRIKE) {
+		MAX_IND_FOR_STRIKE = mAX_IND_FOR_STRIKE;
+	}
+
+
+	public void setWIDTH_FRAME(int wIDTH_FRAME) {
+		WIDTH_FRAME = wIDTH_FRAME;
+	}
+
+
+	public void setHEIGHT_FRAME(int hEIGHT_FRAME) {
+		HEIGHT_FRAME = hEIGHT_FRAME;
+	}
+
 
 	public boolean isMoveToEnemy() {
 		return isMoveToEnemy;
@@ -574,6 +672,20 @@ public class UnityBaseModel implements Externalizable
 		this.isOneContact = arg0.readBoolean();
 		// mote to enemy ?
 		this.isMoveToEnemy = arg0.readBoolean();
+		
+		// nombre de frame
+		this.NB_FRAME_BY_SECOND = arg0.readInt();
+		// taille hauteur et largeur
+		this.WIDTH_FRAME = arg0.readInt();
+		this.HEIGHT_FRAME = arg0.readInt();
+		// min walk
+		this.MIN_IND_FOR_WALK = arg0.readInt();
+		// max walk
+		this.MAX_IND_FOR_WALK = arg0.readInt();
+		// min strike
+		this.MIN_IND_FOR_STRIKE = arg0.readInt();
+		// max strike
+		this.MAX_IND_FOR_STRIKE = arg0.readInt();
 	}
 
 
@@ -725,6 +837,21 @@ public class UnityBaseModel implements Externalizable
 		
 		// is mote to enemy
 		out.writeBoolean(this.isMoveToEnemy);
+		
+		// nombre de frame
+		out.writeInt(this.NB_FRAME_BY_SECOND);
+		// taille hauteur et largeur
+		out.writeInt(this.WIDTH_FRAME);
+		out.writeInt(this.HEIGHT_FRAME);
+		// min walk
+		out.writeInt(this.MIN_IND_FOR_WALK);
+		// max walk
+		out.writeInt(this.MAX_IND_FOR_WALK);
+		// min strike
+		out.writeInt(this.MIN_IND_FOR_STRIKE);
+		// max strike
+		out.writeInt(this.MAX_IND_FOR_STRIKE);
+		
 		
 	}
 

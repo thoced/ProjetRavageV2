@@ -72,6 +72,14 @@ public class PiquierController extends UnityBaseController
 		// spécifie à la vue l'animation à joué par défaut
 		this.getView().playAnimation(TYPE_ANIMATION.NON);
 		
+		this.getModel().setMIN_IND_FOR_WALK(0);
+		this.getModel().setMAX_IND_FOR_WALK(10);
+		this.getModel().setMIN_IND_FOR_STRIKE(11);
+		this.getModel().setMAX_IND_FOR_STRIKE(26);
+		this.getModel().setNB_FRAME_BY_SECOND(20);
+		this.getModel().setHEIGHT_FRAME(80);
+		this.getModel().setWIDTH_FRAME(80);
+		
 		// ajout au event manager
 		EventManager.addCallBack(this);
 		

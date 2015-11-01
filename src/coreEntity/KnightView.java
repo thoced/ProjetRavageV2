@@ -28,7 +28,7 @@ public class KnightView extends UnityBaseView
 	@Override
 	public void prepareAnimations(Animations animations)
 	{
-		animations.makeAnimation(27);
+		animations.makeAnimation(19);
 		
 		for(int i=0;i<animations.getAnimations().length;i++)
 		{

@@ -72,6 +72,8 @@ public class Knight extends Unity
 				this.indAnim = 0;
 				this.indAnimWalk = 0;
 				
+				
+				
 				// type d'unity
 				this.idType = TYPEUNITY.KNIGHT;
 	}

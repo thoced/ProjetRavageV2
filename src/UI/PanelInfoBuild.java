@@ -34,16 +34,21 @@ import coreMessageManager.MessageRavage;
 
 public class PanelInfoBuild extends Panel implements IButtonListener, IProgressBarListener
 {
-	private enum TYPE_ACTION_POLL {CREATE_PIQUIER,CREATE_KNIGHT};
+	private enum TYPE_ACTION_POLL {CREATE_PIQUIER,CREATE_KNIGHT,CREATE_DUELLISTE};
 	// file d'attnte de construction
 	private ArrayBlockingQueue<TYPE_ACTION_POLL> m_pollCreatePiquier; 
 	private ArrayBlockingQueue<TYPE_ACTION_POLL> m_pollCreateKnight; 
+	private ArrayBlockingQueue<TYPE_ACTION_POLL> m_pollCreateDuelliste; 
 	// bar de progression pour les piquier
 	private ProgressBar m_barPiquier;
 	private Label       m_labelFilePiquier;
 	// progression knight
 	private ProgressBar m_barKnight;
 	private Label		m_labelFileKnight;
+	// progression Duelliste
+	private ProgressBar m_barDuelliste;
+	private Label		m_labelFileDuelliste;
+	
 
 	public PanelInfoBuild(float x, float y, Vector2f size)
 			throws TextureCreationException, IOException 
@@ -53,7 +58,27 @@ public class PanelInfoBuild extends Panel implements IButtonListener, IProgressB
 		// instance de la file d'attente
 		m_pollCreatePiquier = new ArrayBlockingQueue<TYPE_ACTION_POLL>(256);
 		m_pollCreateKnight = new ArrayBlockingQueue<TYPE_ACTION_POLL>(256);
-		
+		m_pollCreateDuelliste = new ArrayBlockingQueue<TYPE_ACTION_POLL>(256);
+				
+		// création des boutons
+		// Bouton piquier
+		Button button01 = new Button(new Vector2f(16f,10f),new Vector2f(64f,64f));
+		if(EntityManager.campSelected == CAMP.BLUE)
+			button01.setTexture(TexturesManager.GetTextureByName("ButtonPiquierBlue.png"));
+		else
+			button01.setTexture(TexturesManager.GetTextureByName("ButtonPiquierYellow.png"));
+		// ajout du widget au panel
+		this.addWidget(button01);
+		button01.setAction("CREATE_PIQUIER"); // creation de l'action
+		button01.addListener(this); // ajout du listener
+		// creation du progress bar piquier
+		m_barPiquier = new ProgressBar(new Vector2f(16f,76f),new Vector2f(64f,4f),1f,this);
+		this.addWidget(m_barPiquier);
+		// création du label de file d'attente pour le piquier
+		m_labelFilePiquier = new Label(new Vector2f(20f,12f));
+		m_labelFilePiquier.setColor(new Color(128,128,128,256));
+		m_labelFilePiquier.setText("");
+		this.addWidget(m_labelFilePiquier);
 		
 		// création des boutons knight
 		Button buttonKnight = new Button(new Vector2f(16f,84f),new Vector2f(64f,64f));
@@ -74,27 +99,25 @@ public class PanelInfoBuild extends Panel implements IButtonListener, IProgressB
 		m_labelFileKnight.setText("");
 		this.addWidget(m_labelFileKnight);
 		
+		// création des boutons duelliste
 		
-		
-		// création des boutons
-		// Bouton piquier
-		Button button01 = new Button(new Vector2f(16f,10f),new Vector2f(64f,64f));
+		Button buttonDuelliste = new Button(new Vector2f(16f,158f),new Vector2f(64f,64f));
 		if(EntityManager.campSelected == CAMP.BLUE)
-			button01.setTexture(TexturesManager.GetTextureByName("ButtonPiquierBlue.png"));
+			buttonDuelliste.setTexture(TexturesManager.GetTextureByName("ButtonDuellisteBlue.png"));
 		else
-			button01.setTexture(TexturesManager.GetTextureByName("ButtonPiquierYellow.png"));
+			buttonDuelliste.setTexture(TexturesManager.GetTextureByName("ButtonDuellisteYellow.png"));
 		// ajout du widget au panel
-		this.addWidget(button01);
-		button01.setAction("CREATE_PIQUIER"); // creation de l'action
-		button01.addListener(this); // ajout du listener
+		this.addWidget(buttonDuelliste);
+		buttonDuelliste.setAction("CREATE_DUELLISTE"); // creation de l'action
+		buttonDuelliste.addListener(this); // ajout du listener
 		// creation du progress bar piquier
-		m_barPiquier = new ProgressBar(new Vector2f(16f,76f),new Vector2f(64f,4f),1f,this);
-		this.addWidget(m_barPiquier);
+		m_barDuelliste = new ProgressBar(new Vector2f(16f,224f),new Vector2f(64f,4f),1f,this);
+		this.addWidget(m_barDuelliste);
 		// création du label de file d'attente pour le piquier
-		m_labelFilePiquier = new Label(new Vector2f(20f,12f));
-		m_labelFilePiquier.setColor(new Color(128,128,128,256));
-		m_labelFilePiquier.setText("");
-		this.addWidget(m_labelFilePiquier);
+		m_labelFileDuelliste = new Label(new Vector2f(20f,160f));
+		m_labelFileDuelliste.setColor(new Color(128,128,128,256));
+		m_labelFileDuelliste.setText("");
+		this.addWidget(m_labelFileDuelliste);
 				
 	}
 	
@@ -140,9 +163,19 @@ public class PanelInfoBuild extends Panel implements IButtonListener, IProgressB
 					m_labelFileKnight.setText(String.valueOf(m_pollCreateKnight.size()));
 				else
 					m_labelFileKnight.setText("");
+				
 				break;
 
 		
+			case "CREATE_DUELLISTE":
+				m_pollCreateDuelliste.add(TYPE_ACTION_POLL.CREATE_DUELLISTE);
+				pollProgress(m_pollCreateDuelliste,m_barDuelliste); // poll
+				if(m_pollCreateDuelliste.size() > 0) 
+					m_labelFileDuelliste.setText(String.valueOf(m_pollCreateDuelliste.size()));
+				else
+					m_labelFileDuelliste.setText("");
+				
+				break;
 			
 		
 		}
@@ -199,6 +232,30 @@ public class PanelInfoBuild extends Panel implements IButtonListener, IProgressB
 				}
 				else
 					m_labelFileKnight.setText("");
+			}
+		}
+		
+		if(owner == m_barDuelliste)
+		{
+			if(EntityManager.getGamePlayModel().pay(10)) // on pay
+			{
+					// création du knight
+					EntityManager.createDuelliste();
+				
+				// on regarde si il existe d'autres actions dans la file d'attente
+				if((m_pollCreateDuelliste.poll()) != null)
+				{
+					// déclenchement du progress
+					m_barDuelliste.startProgressBar();
+					
+					// mise à jour du label de construction
+					if(m_pollCreateDuelliste.size() > 0) 
+						m_labelFileDuelliste.setText(String.valueOf(m_pollCreateDuelliste.size()));
+					else
+						m_labelFileDuelliste.setText("");
+				}
+				else
+					m_labelFileDuelliste.setText("");
 			}
 		}
 	}

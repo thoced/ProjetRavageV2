@@ -39,6 +39,7 @@ import UI.PanelInfoUnite;
 import coreAI.AstarManager;
 import coreAI.Node;
 import coreDrawable.FogManager.IFogVector;
+import coreEntity.DuellisteController;
 import coreEntity.KnighController;
 import coreEntity.Knight;
 import coreEntity.PiquierController;
@@ -463,6 +464,41 @@ public class EntityManager implements IBaseRavage,IEventCallBack,IRegionSelected
 			piquier.prepareModelToNet();
 			try {
 				create.setModel(piquier.getModel().clone());
+			} catch (CloneNotSupportedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			create.setTypeMessage(TYPE.CREATE);
+			
+			System.out.println("envoie du header : " );
+			NetSendThread.push(create);
+			
+			// gamePlayModel
+			gamePlayModel.setM_nbUnity(getVectorUnity().size());
+		
+		
+	}
+	
+	public static void createDuelliste()
+	{
+		
+		
+			DuellisteController duelliste = new DuellisteController();
+			duelliste.getModel().setPosition(new Vec2(NetManager.getPosxStartFlag(),NetManager.getPosyStartFlag()));
+			duelliste.getModel().setSpeed(6f);
+			duelliste.getModel().setId((EntityManager.getNewIdUnity()));
+			duelliste.getModel().setMyCamp(EntityManager.getCampSelected());
+			duelliste.getModel().setIdType(TYPEUNITY.ESCRIME );
+			duelliste.getModel().setPlayer(true); // c'est un model controllé par le joueur
+			duelliste.getModel().initModel(duelliste);
+			duelliste.init();
+			EntityManager.getVectorUnity().put(duelliste.getModel().getId(), duelliste);
+			// emission sur le réseau de l'unité
+			NetDataUnity create = new NetDataUnity();
+			
+			duelliste.prepareModelToNet();
+			try {
+				create.setModel(duelliste.getModel().clone());
 			} catch (CloneNotSupportedException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();

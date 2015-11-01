@@ -32,11 +32,11 @@ public class UnityNetController extends UnityBaseController
 		if(this.getModel().isKnocking())
 		{
 			// on joue l'animation
-			//this.strike();
+			this.strike();
 			// on empèche de frapper une seconde fois
-			//this.getModel().setKnocking(false);
+			this.getModel().setKnocking(false);
 			// on frappe réelleemnt l'enemy
-			/*UnityBaseController u = EntityManager.getVectorUnity().get(this.getModel().getIdEnemy());
+		/*	UnityBaseController u = EntityManager.getVectorUnity().get(this.getModel().getIdEnemy());
 			System.out.println("Enemy : " + u);
 			if(u!=null)
 				u.hit(this.getModel().getStreightStrike());*/
@@ -65,11 +65,15 @@ public class UnityNetController extends UnityBaseController
 		// TODO Auto-generated method stub
 		super.strike();
 		
+	
+		
 		// on frappe réelleemnt l'enemy
 		UnityBaseController u = EntityManager.getVectorUnity().get(this.getModel().getIdEnemy());
 		System.out.println("Enemy : " + u);
 		if(u!=null)
-		u.hit(this.getModel().getStreightStrike());
+			u.hit(this.getModel().getStreightStrike());
+		
+		
 	}
 	
 	
@@ -97,6 +101,16 @@ public class UnityNetController extends UnityBaseController
 			{
 				this.getView().setSprite(TexturesManager.GetSpriteByName("ANIM_Piquiers_Jaunes.png"));
 			}
+			
+			if(this.getModel().getIdType() == TYPEUNITY.KNIGHT)
+			{
+				this.getView().setSprite(TexturesManager.GetSpriteByName("ANIM_KNIGHT_YELLOW.png"));
+			}
+			
+			if(this.getModel().getIdType() == TYPEUNITY.ESCRIME)
+			{
+				this.getView().setSprite(TexturesManager.GetSpriteByName("ANIM_DUELLISTE_YELLOW.png"));
+			}
 		}
 		
 		if(this.getModel().getMyCamp() == CAMP.BLUE)
@@ -104,6 +118,16 @@ public class UnityNetController extends UnityBaseController
 			if(this.getModel().getIdType() == TYPEUNITY.PIQUIER)
 			{
 				this.getView().setSprite(TexturesManager.GetSpriteByName("ANIM_Piquiers_Bleus.png"));
+			}
+			
+			if(this.getModel().getIdType() == TYPEUNITY.KNIGHT)
+			{
+				this.getView().setSprite(TexturesManager.GetSpriteByName("ANIM_KNIGHT_BLUE.png"));
+			}
+			
+			if(this.getModel().getIdType() == TYPEUNITY.ESCRIME)
+			{
+				this.getView().setSprite(TexturesManager.GetSpriteByName("ANIM_DUELLISTE_BLUE.png"));
 			}
 		}
 		

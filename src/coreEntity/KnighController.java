@@ -73,11 +73,11 @@ public class KnighController extends UnityBaseController
 		this.getView().playAnimation(TYPE_ANIMATION.NON);
 		
 		// on parametre la vue pour préciser les indices des frames
-		this.getView().setMIN_IND_FOR_WALK(0);
-		this.getView().setMAX_IND_FOR_WALK(5);
-		this.getView().setMIN_IND_FOR_STRIKE(6);
-		this.getView().setMAX_IND_FOR_STRIKE(18);
-		this.getView().setNB_FRAME_BY_SECOND(10);
+		this.getModel().setMIN_IND_FOR_WALK(0);
+		this.getModel().setMAX_IND_FOR_WALK(5);
+		this.getModel().setMIN_IND_FOR_STRIKE(6);
+		this.getModel().setMAX_IND_FOR_STRIKE(18);
+		this.getModel().setNB_FRAME_BY_SECOND(20);
 		
 		// ajout au event manager
 		EventManager.addCallBack(this);

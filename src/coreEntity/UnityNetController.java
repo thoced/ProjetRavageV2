@@ -111,6 +111,11 @@ public class UnityNetController extends UnityBaseController
 			{
 				this.getView().setSprite(TexturesManager.GetSpriteByName("ANIM_DUELLISTE_YELLOW.png"));
 			}
+			
+			if(this.getModel().getIdType() == TYPEUNITY.BUCHE)
+			{
+				this.getView().setSprite(TexturesManager.GetSpriteByName("ANIM_HACHEUR_YELLOW.png"));
+			}
 		}
 		
 		if(this.getModel().getMyCamp() == CAMP.BLUE)
@@ -128,6 +133,11 @@ public class UnityNetController extends UnityBaseController
 			if(this.getModel().getIdType() == TYPEUNITY.ESCRIME)
 			{
 				this.getView().setSprite(TexturesManager.GetSpriteByName("ANIM_DUELLISTE_BLUE.png"));
+			}
+			
+			if(this.getModel().getIdType() == TYPEUNITY.BUCHE)
+			{
+				this.getView().setSprite(TexturesManager.GetSpriteByName("ANIM_HACHEUR_BLUE.png"));
 			}
 		}
 		

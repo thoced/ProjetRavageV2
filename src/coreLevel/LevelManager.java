@@ -97,6 +97,12 @@ public class LevelManager implements IBaseRavage
 					level.getView().getBackgrounds().add(sprite);
 				if(l.getName().startsWith("FG"))
 					level.getView().getForegrounds().add(sprite);
+				if(l.getName().startsWith("SH"))
+					level.getView().getShadowgrounds().add(sprite);
+				if(l.getName().startsWith("LI"))
+					level.getView().getLightgrounds().add(sprite);
+				
+					
 				
 			}
 			

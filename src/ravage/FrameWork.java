@@ -56,6 +56,7 @@ import coreGUI.RectSelected;
 import coreGUISwing.menuDialogRavage;
 import coreGuiRavage.*;
 import coreLevel.Level01;
+import coreLevel.LevelArena01;
 import coreLevel.LevelController;
 import coreLevel.LevelManager;
 import coreMessageManager.MessageManager;
@@ -90,7 +91,7 @@ public class FrameWork
 	private int fps;
 	// Level
 	//private LevelController currentLevel;
-	private  Level01 currentLevel;
+	private  LevelController currentLevel;
 	// RenderWindown
 	private static RenderWindow window;
 	// RenderTarget
@@ -145,7 +146,7 @@ public class FrameWork
 		texturesManager.init();
 		//levelManager = new LevelManager();
 		//levelManager.init();
-		currentLevel = new Level01();
+		currentLevel = new LevelArena01();
 		currentLevel.init();
 		
 		cameraManager = new CameraManager(window.getView());
@@ -267,6 +268,8 @@ public class FrameWork
 			currentLevel.getView().drawBackground(renderTexture, null); // affichage du background du level
 			// Draw des unity
 			drawaUnityManager.draw(renderTexture, null);
+			// Draw du shadow 
+			currentLevel.getView().drawShadowground(renderTexture, null);
 			
 			
 			// draw du level foregrounds
@@ -274,9 +277,14 @@ public class FrameWork
 			renderForeground.setView(cameraManager.getView());
 			currentLevel.getView().drawForeground(renderForeground, null); // affichage du foreground du level (arbre et toi
 			
+			// draw du lightmap
+			
+			
 			// application de l'effect foreground
 			foregroundEffectManager.draw(renderForeground, null);
 			renderForeground.display();
+			
+			currentLevel.getView().drawLightground(renderForeground, null);
 			
 	
 			

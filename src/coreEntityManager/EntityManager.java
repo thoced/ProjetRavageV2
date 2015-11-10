@@ -988,10 +988,13 @@ public class EntityManager implements IBaseRavage,IEventCallBack,IRegionSelected
 		{
 			// si le target position est sur un node noir, on ne fait aucune recherche
 			// si on est hors de la map
-			if(posNodeFinal.x < 0  || posNodeFinal.x > 374 || posNodeFinal.y < 0 || posNodeFinal.y > 250)
+			// on récupère la taille en x de la map en cours
+			int widthmap = LevelManager.getLevel().getModel().getM_sizeX();
+			
+			if(posNodeFinal.x < 0  || posNodeFinal.x > widthmap - 1 || posNodeFinal.y < 0 || posNodeFinal.y > 250)
 				return false;
 				
-			if(LevelManager.getLevel().getModel().getNodes()[(int) ((posNodeFinal.y * 375) + posNodeFinal.x)].getType() == 0)
+			if(LevelManager.getLevel().getModel().getNodes()[(int) ((posNodeFinal.y * widthmap) + posNodeFinal.x)].getType() == 0)
 			{
 				// enlevement de la réservation du node
 				if(unity.getModel().getNodeReserved() != null)

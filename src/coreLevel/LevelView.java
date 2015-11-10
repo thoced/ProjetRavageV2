@@ -17,6 +17,11 @@ public class LevelView implements Drawable
 	private List<Sprite> backgrounds;
 	// Textures de foreground - Arbres et toits
 	private List<Sprite> foregrounds;
+	// Textures de shadow
+	private List<Sprite> shadowgrounds;
+	// Texture de lightmap
+	private List<Sprite> lightgrounds;
+	
 	
 	
 	
@@ -27,6 +32,11 @@ public class LevelView implements Drawable
 		backgrounds = new ArrayList<Sprite>();
 		// instance de foreground
 		foregrounds = new ArrayList<Sprite>();
+		// instance du shadow
+		shadowgrounds = new ArrayList<Sprite>();
+		// instance du light map
+		lightgrounds = new ArrayList<Sprite>();
+		
 	}
 
 
@@ -40,6 +50,22 @@ public class LevelView implements Drawable
 	public List<Sprite> getForegrounds() {
 		return foregrounds;
 	}
+	
+	
+
+	public List<Sprite> getShadowgrounds() {
+		return shadowgrounds;
+	}
+	
+	
+
+
+
+	public List<Sprite> getLightgrounds() {
+		return lightgrounds;
+	}
+
+
 
 	public void drawBackground(RenderTarget render,RenderStates state)
 	{
@@ -63,11 +89,42 @@ public class LevelView implements Drawable
 						render.draw(f);
 				}
 	}
+	
+	public void drawShadowground(RenderTarget render,RenderStates state)
+	{
+		// on affiche le foreground
+				for(Sprite f : shadowgrounds)
+				{
+					FloatRect result = f.getGlobalBounds().intersection(CameraManager.getCameraBounds());
+					if(result != null)
+						render.draw(f);
+				}
+	}
+	
+	public void drawLightground(RenderTarget render,RenderStates state)
+	{
+		// on affiche le foreground
+				for(Sprite f : lightgrounds)
+				{
+					FloatRect result = f.getGlobalBounds().intersection(CameraManager.getCameraBounds());
+					if(result != null)
+						render.draw(f);
+				}
+	}
 
 	@Override
 	public void draw(RenderTarget render, RenderStates state)
 	{
 		for(Sprite s : backgrounds)
+		{
+			FloatRect result = s.getGlobalBounds().intersection(CameraManager.getCameraBounds());
+			if(result != null)
+				render.draw(s);
+		}
+		
+		// affichage du shadogrounds
+		
+		for(Sprite s : shadowgrounds)
 		{
 			FloatRect result = s.getGlobalBounds().intersection(CameraManager.getCameraBounds());
 			if(result != null)

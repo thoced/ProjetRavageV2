@@ -54,8 +54,11 @@ public class PiquierController extends UnityBaseController
 		this.setView(new PiquierView(this.getModel(),this));
 		
 		// energy
-		this.getModel().setEnergy(50);
-		this.getModel().setEnergyMax(50);
+		this.getModel().setStreightStrike(15);
+		this.getModel().setEnergy(90);
+		this.getModel().setEnergyMax(90);
+		this.getModel().setArmor(3);
+		this.getModel().setPowerPenetration(4);
 	}
 
 	@Override
@@ -117,7 +120,6 @@ public class PiquierController extends UnityBaseController
 						NetDataUnity data = new NetDataUnity();			// creatin du netdataunity
 						data.setTypeMessage(NetBase.TYPE.UPDATE);		// on spécifie que c'est une update
 						this.getModel().setKnocking(true);				// on spécifie au modèle que nous sommes en train de frapper
-						this.getModel().setStreightStrike(10);			// on spécifie la force de frappe
 						this.prepareModelToNet();						// préparation du model pour l'envoi sur le réseau
 						try
 						{

@@ -54,8 +54,11 @@ public class KnighController extends UnityBaseController
 		this.setView(new KnightView(this.getModel(),this));
 		
 		// energy
-		this.getModel().setEnergy(50);
-		this.getModel().setEnergyMax(50);
+		this.getModel().setStreightStrike(15);
+		this.getModel().setEnergy(70);
+		this.getModel().setEnergyMax(70);
+		this.getModel().setArmor(1);
+		this.getModel().setPowerPenetration(3);
 	}
 
 	@Override
@@ -74,9 +77,9 @@ public class KnighController extends UnityBaseController
 		
 		// on parametre la vue pour préciser les indices des frames
 		this.getModel().setMIN_IND_FOR_WALK(0);
-		this.getModel().setMAX_IND_FOR_WALK(5);
-		this.getModel().setMIN_IND_FOR_STRIKE(6);
-		this.getModel().setMAX_IND_FOR_STRIKE(18);
+		this.getModel().setMAX_IND_FOR_WALK(3);
+		this.getModel().setMIN_IND_FOR_STRIKE(4);
+		this.getModel().setMAX_IND_FOR_STRIKE(14);
 		this.getModel().setNB_FRAME_BY_SECOND(20);
 		
 		// ajout au event manager
@@ -116,7 +119,6 @@ public class KnighController extends UnityBaseController
 						NetDataUnity data = new NetDataUnity();			// creatin du netdataunity
 						data.setTypeMessage(NetBase.TYPE.UPDATE);		// on spécifie que c'est une update
 						this.getModel().setKnocking(true);				// on spécifie au modèle que nous sommes en train de frapper
-						this.getModel().setStreightStrike(10);			// on spécifie la force de frappe
 						this.prepareModelToNet();						// préparation du model pour l'envoi sur le réseau
 						try
 						{

@@ -54,8 +54,11 @@ public class HacheurController extends UnityBaseController
 		this.setView(new DuellisteView(this.getModel(),this));
 		
 		// energy
-		this.getModel().setEnergy(50);
-		this.getModel().setEnergyMax(50);
+		this.getModel().setStreightStrike(25);
+		this.getModel().setEnergy(90);
+		this.getModel().setEnergyMax(90);
+		this.getModel().setArmor(2);
+		this.getModel().setPowerPenetration(2);
 	}
 
 	@Override
@@ -74,9 +77,9 @@ public class HacheurController extends UnityBaseController
 		
 		// on parametre la vue pour préciser les indices des frames
 		this.getModel().setMIN_IND_FOR_WALK(0);
-		this.getModel().setMAX_IND_FOR_WALK(3);
-		this.getModel().setMIN_IND_FOR_STRIKE(4);
-		this.getModel().setMAX_IND_FOR_STRIKE(17);
+		this.getModel().setMAX_IND_FOR_WALK(7);
+		this.getModel().setMIN_IND_FOR_STRIKE(8);
+		this.getModel().setMAX_IND_FOR_STRIKE(25);
 		this.getModel().setNB_FRAME_BY_SECOND(12);
 		this.getModel().setHEIGHT_FRAME(32);
 		this.getModel().setWIDTH_FRAME(32);
@@ -122,7 +125,6 @@ public class HacheurController extends UnityBaseController
 						NetDataUnity data = new NetDataUnity();			// creatin du netdataunity
 						data.setTypeMessage(NetBase.TYPE.UPDATE);		// on spécifie que c'est une update
 						this.getModel().setKnocking(true);				// on spécifie au modèle que nous sommes en train de frapper
-						this.getModel().setStreightStrike(10);			// on spécifie la force de frappe
 						this.prepareModelToNet();						// préparation du model pour l'envoi sur le réseau
 						try
 						{

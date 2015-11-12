@@ -54,8 +54,11 @@ public class DuellisteController extends UnityBaseController
 		this.setView(new DuellisteView(this.getModel(),this));
 		
 		// energy
-		this.getModel().setEnergy(50);
-		this.getModel().setEnergyMax(50);
+		this.getModel().setStreightStrike(10);
+		this.getModel().setEnergy(90);
+		this.getModel().setEnergyMax(90);
+		this.getModel().setArmor(3);
+		this.getModel().setPowerPenetration(1);
 	}
 
 	@Override

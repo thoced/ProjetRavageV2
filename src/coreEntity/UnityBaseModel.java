@@ -71,11 +71,20 @@ public class UnityBaseModel implements Externalizable
 
 	//est on mort ?
 	protected boolean isKilled = false;
+	
+	
+	// STAT//////////////////////
 	// energie
 	protected int energy;
 	// max energie 
 	protected int energyMax;
+	// bouclier
+	protected int armor;
+	// pouvoir de penetration
+	protected int powerPenetration;
 	
+	
+	/////////////////////////////////
 	// information concernant l'origine du sprite
 	protected Animations animations;
 	// information sur l'origne du sprite
@@ -144,6 +153,8 @@ public class UnityBaseModel implements Externalizable
 		clone.setOrigineSprite(this.getOrigineSprite());
 		clone.setEnergy(this.getEnergy());
 		clone.setEnergyMax(this.getEnergyMax());
+		clone.setArmor(this.getArmor());
+		clone.setPowerPenetration(this.getPowerPenetration());
 		clone.setStreightStrike(this.getStreightStrike());
 		clone.setOneContact(this.isOneContact());
 		clone.setMoveToEnemy(this.isMoveToEnemy());
@@ -198,6 +209,26 @@ public class UnityBaseModel implements Externalizable
 	}
 	
 	
+
+	public int getArmor() {
+		return armor;
+	}
+
+
+	public int getPowerPenetration() {
+		return powerPenetration;
+	}
+
+
+	public void setArmor(int armor) {
+		this.armor = armor;
+	}
+
+
+	public void setPowerPenetration(int powerPenetration) {
+		this.powerPenetration = powerPenetration;
+	}
+
 
 	public int getNB_FRAME_BY_SECOND() {
 		return NB_FRAME_BY_SECOND;
@@ -653,6 +684,10 @@ public class UnityBaseModel implements Externalizable
 		this.energy = arg0.readInt();
 		// Energy max
 		this.energyMax = arg0.readInt();
+		// armor
+		this.armor = arg0.readInt();
+		// power penetration
+		this.powerPenetration = arg0.readInt();
 		// animation
 	//	this.animations = (Animations)arg0.readObject();
 		
@@ -799,6 +834,10 @@ public class UnityBaseModel implements Externalizable
 		out.writeInt(this.energy);
 		// Energy max
 		out.writeInt(this.energyMax);
+		// armor
+		out.writeInt(this.armor);
+		// power penetration
+		out.writeInt(this.powerPenetration);
 		// animation
 		//out.writeObject(this.animations);
 		

@@ -71,7 +71,7 @@ public class UnityNetController extends UnityBaseController
 		UnityBaseController u = EntityManager.getVectorUnity().get(this.getModel().getIdEnemy());
 		System.out.println("Enemy : " + u);
 		if(u!=null)
-			u.hit(this.getModel().getStreightStrike());
+			u.hit(this.getModel().getStreightStrike(),this.getModel().getPowerPenetration());
 		
 		
 	}

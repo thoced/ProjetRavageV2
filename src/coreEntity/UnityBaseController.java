@@ -62,8 +62,9 @@ public class UnityBaseController implements IBaseRavage, ICallBackAStar,
 	
 	protected UnityBaseController m_enemy;
 	
+	protected static float[] formulaStrike = {1f,0.9f,0.8f,0.7f,0.6f,0.5f,0.4f,0.3f,0.2f,0.1f,0f};
 	
-
+	
 	public enum ETAPE {
 		 MOVE, MOVE_TO_ENEMY,STRIKE,NONE
 	};
@@ -448,9 +449,22 @@ public class UnityBaseController implements IBaseRavage, ICallBackAStar,
 
 	}
 
-	public void hit(int hitStrenght) {
+	public void hit(int hitStrenght,int powerPenetration) {
 		// on est frappé, diminution de l'energie
-		this.getModel().setEnergy(this.getModel().getEnergy() - hitStrenght);
+		
+		// algorithme de combat
+		int valuepenetration = this.getModel().getArmor() - powerPenetration;
+		if(valuepenetration < 0)
+			valuepenetration = 0;
+		if(valuepenetration > 9)
+			valuepenetration = 9;
+		float formula =  formulaStrike[valuepenetration];
+		// multiplication du hitStrenght
+		float damage = formula * hitStrenght;
+		
+		this.getModel().setEnergy((int) (this.getModel().getEnergy() - damage));
+		
+		// FIN ALGORITHME DE COMBAT
 		// on joue un peu de sang
 		BloodManager.addBlood(this.getModel().getPosition());
 		// si l'energie est égale à 0 ou inférieur, on meurt
